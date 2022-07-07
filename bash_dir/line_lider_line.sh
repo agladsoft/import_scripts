@@ -1,3 +1,4 @@
+#!/bin/bash
 
 xls_path="${XL_IDP_ROOT}/lines_${XL_IMPORT_TERMINAL}/lider_line/"
 #xls_path=/home/timur/Anton_project/import_xls-master/lines_nutep/lider_line
