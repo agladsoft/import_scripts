@@ -1,8 +1,8 @@
-export XL_IDP_ROOT=/mnt
+export XL_IDP_ROOT=/mnt/xl_idp_root
 
 
 while true;
 do
-	/mnt/bash_dir/_all_references.sh;
+	/mnt/xl_idp_root/bash_dir/_all_references.sh;
 	sleep 1;
 done

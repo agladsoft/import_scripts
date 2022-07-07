@@ -56,7 +56,7 @@ do
 	fi
 
 	# Will convert csv to json
-	python3 /mnt/scripts_for_bash_with_inheritance/convert_csv_to_json.py "${csv_name}" "${xls_path}"/json/$(basename "${csv_name}")
+	python3 /mnt/xl_idp_root/scripts_for_bash_with_inheritance/convert_csv_to_json.py "${csv_name}" "${xls_path}"/json/$(basename "${csv_name}")
 
   if [ $? -eq 0 ]
 	then
