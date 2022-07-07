@@ -1,7 +1,7 @@
-echo ${XL_IDP_ROOT}
+
 xls_path="${XL_IDP_ROOT}/lines_${XL_IMPORT_TERMINAL}/lider_line/"
 #xls_path=/home/timur/Anton_project/import_xls-master/lines_nutep/lider_line
-echo "$xls_path"
+
 csv_path="${xls_path}"/csv
 if [ ! -d "$csv_path" ]; then
   mkdir "${csv_path}"

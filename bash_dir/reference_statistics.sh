@@ -1,8 +1,8 @@
 #!/bin/bash
-echo ${XL_IDP_ROOT}
+
 xls_path="${XL_IDP_ROOT}/reference/reference_statistics/"
 #xls_path="/home/timur/docker_kitchen2/docker_kitchen2/import_xls-master/reference/reference_statistics/"
-echo $xls_path
+
 
 csv_path="${xls_path}"/csv
 if [ ! -d "$csv_path" ]; then

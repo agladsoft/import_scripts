@@ -1,8 +1,8 @@
 #!/bin/bash
-echo ${XL_IDP_ROOT}
+
 xls_path="${XL_IDP_ROOT}/reference/reference_morservice/"
 #xls_path="/home/timur/Anton_project/import_xls-master/reference_morservice/"
-echo $xls_path
+
 
 csv_path="${xls_path}"/csv
 if [ ! -d "$csv_path" ]; then
