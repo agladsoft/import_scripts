@@ -41,7 +41,7 @@ do
   then
     echo "Will convert XML '${file}' to CSV '${csv_name}'"
     # command here
-    python3 /mnt/xl_idp_root/scripts_for_bash_with_inheritance/convert_xml_to_csv.py "${file}" "${csv_name}"
+    python3 ${XL_IDP_ROOT}/scripts_for_bash_with_inheritance/convert_xml_to_csv.py "${file}" "${csv_name}"
     if [ $? -eq 0 ]
     then
       mv "${file}" "${done_path}"
@@ -74,7 +74,7 @@ do
 	  continue
 	fi
 
-	python3 /mnt/xl_idp_root/scripts_for_bash_with_inheritance/lider_line.py "${csv_name}" "${json_path}"
+	python3 ${XL_IDP_ROOT}/scripts_for_bash_with_inheritance/lider_line.py "${csv_name}" "${json_path}"
 
 	if [ $? -eq 0 ]
 	then
