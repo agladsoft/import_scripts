@@ -1,6 +1,6 @@
 #!/bin/bash
 
-xls_path="${XL_IDP_ROOT}/reference/reference_is_empty/"
+xls_path="${XL_IDP_PATH_IMPORT}/reference/reference_is_empty/"
 #xls_path=/home/timur/docker_kitchen2/docker_kitchen2/import_xls-master/reference/reference_is_empty
 
 

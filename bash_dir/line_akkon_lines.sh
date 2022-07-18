@@ -1,6 +1,6 @@
 #!/bin/bash
 
-xls_path="${XL_IDP_ROOT}/lines_${XL_IMPORT_TERMINAL}/akkon_lines/"
+xls_path="${XL_IDP_PATH_IMPORT}/lines_${XL_IMPORT_TERMINAL}/akkon_lines/"
 #xls_path=/home/timur/Anton_project/import_xls-master/lines_nutep/akkon_lines
 
 csv_path="${xls_path}"/csv

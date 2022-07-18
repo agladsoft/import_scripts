@@ -1,6 +1,6 @@
 #!/bin/bash
 
-xls_path="${XL_IDP_ROOT}/lines_${XL_IMPORT_TERMINAL}/flat_import_nle/"
+xls_path="${XL_IDP_PATH_IMPORT}/lines_${XL_IMPORT_TERMINAL}/flat_import_nle/"
 
 
 csv_path="${xls_path}"/csv

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-xls_path="${XL_IDP_ROOT}/reference/reference_region/"
+xls_path="${XL_IDP_PATH_IMPORT}/reference/reference_region/"
 #xls_path="/home/timur/Anton_project/import_xls-master/reference_region/"
 
 
