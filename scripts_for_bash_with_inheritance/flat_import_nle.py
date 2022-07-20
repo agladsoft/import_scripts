@@ -21,6 +21,8 @@ headers = ["ship", "date",
 ]
 parsed_data = []
 for line in lines:
+    if not "".join(line.values()):
+        continue
     parsed_record = {k: v for k, v in line.items() if k in headers}
     for key, value in parsed_record.items():
         if not value:
