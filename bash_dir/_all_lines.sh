@@ -14,3 +14,5 @@ ${XL_IDP_ROOT}/bash_dir/line_one.sh
 ${XL_IDP_ROOT}/bash_dir/line_oocl.sh
 ${XL_IDP_ROOT}/bash_dir/line_yang_ming.sh
 ${XL_IDP_ROOT}/bash_dir/line_zim.sh
+${XL_IDP_ROOT}/bash_dir/line_noe.sh
+${XL_IDP_ROOT}/bash_dir/line_tk.sh
