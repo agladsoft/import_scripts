@@ -70,7 +70,7 @@ class WriteDataFromCsvToJson:
     def add_value_from_data_to_list(self, line, ir_container_number,
                                     ir_weight_goods, ir_package_number, ir_goods_name_rus, ir_shipper, ir_consignee, ir_consignment, parsed_record, context):
         parsed_record['container_number'] = re.sub('(?<=\w) (?=\d)', '', line[ir_container_number].strip())
-        parsed_record['goods_weight'] = float(line[ir_weight_goods]) if line[ir_weight_goods] else None
+        parsed_record['goods_weight'] = float(re.sub(" +", "", line[ir_weight_goods]).replace(',', '.')) if line[ir_weight_goods] else None
         parsed_record['package_number'] = int(float(line[ir_package_number])) if line[ir_package_number] else None
         parsed_record['goods_name_rus'] = line[ir_goods_name_rus].strip()
         parsed_record['consignment'] = line[ir_consignment].strip()
