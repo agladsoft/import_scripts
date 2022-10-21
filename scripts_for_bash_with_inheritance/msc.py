@@ -129,4 +129,3 @@ class WriteDataFromCsvToJsonMsc(WriteDataFromCsvToJsonEconomou):
 if __name__ == '__main__':
     parsed_data = WriteDataFromCsvToJsonMsc(input_file_path, output_folder)
     print(parsed_data())
-
