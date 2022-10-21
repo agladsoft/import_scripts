@@ -37,7 +37,7 @@ class WriteDataFromCsvToJsonMsc(WriteDataFromCsvToJsonEconomou):
         for parsing_line in line:
             if re.findall('[A-Za-z0-9]', parsing_line) and re.findall('^((?!Телефоны).)*$', parsing_line):
                 logging.info(u"Will parse ship and trip in value '{}'...".format(parsing_line))
-                ship_and_voyage_str = parsing_line.replace('ПРИЛОЖЕНИЕ', "")
+                ship_and_voyage_str = parsing_line.replace('ПРИЛОЖЕНИЕ', "").replace('УВЕДОМЛЕНИЕ О ПРИБЫТИИ', "")
                 ship_and_voyage_list = ship_and_voyage_str.rsplit(' ', 1)
                 context['ship'] = ship_and_voyage_list[0].strip()
                 context['voyage'] = re.sub(r'[^\w\s]', '', ship_and_voyage_list[1])
@@ -111,7 +111,7 @@ class WriteDataFromCsvToJsonMsc(WriteDataFromCsvToJsonEconomou):
                 for name in line:
                     if re.findall('Название судна', name):
                         self.write_ship_and_voyage(line, context)
-                    elif re.findall('ПРИЛОЖЕНИЕ', name):
+                    elif re.findall('ПРИЛОЖЕНИЕ', name) or re.findall('УВЕДОМЛЕНИЕ', name):
                         self.write_ship_and_voyage_from_string_prilozhenie(line, context)
                     elif re.findall('Дата прихода', name):
                         self.write_date(line, context, False)
