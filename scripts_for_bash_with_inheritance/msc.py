@@ -28,7 +28,7 @@ class WriteDataFromCsvToJsonMsc(WriteDataFromCsvToJsonEconomou):
             if re.findall('[A-Za-z0-9]', parsing_line):
                 logging.info(u"Will parse ship and trip in value '{}'...".format(parsing_line))
                 if i == 0: context['ship'] = parsing_line.strip()
-                if i == 1: context['voyage'] = parsing_line.strip()
+                if i == 1: context['voyage'] = parsing_line.replace('рейс:', "").strip()
                 i += 1
                 logging.info(u"context now is {}".format(context))
 
