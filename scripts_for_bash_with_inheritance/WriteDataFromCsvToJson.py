@@ -70,7 +70,10 @@ class WriteDataFromCsvToJson:
     def add_value_from_data_to_list(self, line, ir_container_number,
                                     ir_weight_goods, ir_package_number, ir_goods_name_rus, ir_shipper, ir_consignee, ir_consignment, parsed_record, context):
         container_number = re.sub('(?<=\w) (?=\d)', '', line[ir_container_number].strip())
-        parsed_record['container_number'] = re.findall("\w{4}\d{7}", container_number)[0]
+        try:
+            parsed_record['container_number'] = re.findall("\w{4}\d{7}", container_number)[0]
+        except IndexError:
+            parsed_record['container_number'] = container_number
         parsed_record['goods_weight'] = float(re.sub(" +", "", line[ir_weight_goods]).replace(',', '.')) if line[ir_weight_goods] else None
         parsed_record['package_number'] = int(float(line[ir_package_number])) if line[ir_package_number] else None
         parsed_record['goods_name_rus'] = line[ir_goods_name_rus].strip()
