@@ -31,12 +31,16 @@ class WriteDataFromCsvToJsonTk(WriteDataFromCsvToJson):
                                                             'Отправитель', 'Получатель',
                                                             '№ п/п')
                 else:
-                    if self.isDigit(line[self.ir_number_pp].replace('/', '.')):
+                    if self.isDigit(line[self.ir_number_pp].replace('/', '.')) or line[self.ir_goods_name_rus]:
                         logging.info(u'line {} is {}'.format(ir, line))
-                        container_size = re.findall("\d{2}", line[self.ir_container_size_and_type].strip())[0]
-                        container_type = re.findall("[A-Z a-z]{1,4}", line[self.ir_container_size_and_type].strip())[0]
-                        parsed_record['container_size'] = int(container_size)
-                        parsed_record['container_type'] = container_type
+                        try:
+                            container_size = re.findall("\d{2}", line[self.ir_container_size_and_type].strip())[0]
+                            container_type = re.findall("[A-Z a-z]{1,4}", line[self.ir_container_size_and_type].strip())[0]
+                            parsed_record['container_size'] = int(container_size)
+                            parsed_record['container_type'] = container_type
+                        except IndexError:
+                            parsed_record['container_size'] = ''
+                            parsed_record['container_type'] = ''
                         parsed_record['shipper_country'] = line[self.ir_shipper_country].strip()
                         parsed_record['city'] = line[self.ir_city].strip()
                         record = self.add_value_from_data_to_list(line, self.ir_container_number,
@@ -52,6 +56,7 @@ class WriteDataFromCsvToJsonTk(WriteDataFromCsvToJson):
     def __call__(self, *args, **kwargs):
         file_name_save = self.remove_empty_columns_and_rows()
         parsed_data = self.read_file_name_save(file_name_save)
+        parsed_data = self.write_duplicate_containers_in_dict(parsed_data, '', 'reversed')
         # os.remove(file_name_save)
         return self.write_list_with_containers_in_file(parsed_data)
 
