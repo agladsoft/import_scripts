@@ -1,6 +1,6 @@
 #!/bin/bash
 
-xls_path="${XL_IDP_PATH_IMPORT}/lines_${XL_IMPORT_TERMINAL}/noe/"
+xls_path="${XL_IDP_PATH_IMPORT}/lines_${XL_IMPORT_TERMINAL}/reel_shipping/"
 
 csv_path="${xls_path}"/csv
 if [ ! -d "$csv_path" ]; then
@@ -60,7 +60,7 @@ do
 	fi
 
 	# Will convert csv to json
-	python3 ${XL_IDP_ROOT}/scripts_for_bash_with_inheritance/noe.py "${csv_name}" "${json_path}"
+	python3 ${XL_IDP_ROOT}/scripts_for_bash_with_inheritance/reel_shipping.py "${csv_name}" "${json_path}"
 
   if [ $? -eq 0 ]
 	then

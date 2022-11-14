@@ -5,7 +5,7 @@ import sys
 from economou import WriteDataFromCsvToJsonEconomou
 
 
-class WriteDataFromCsvToJsonHabShipping(WriteDataFromCsvToJsonEconomou):
+class WriteDataFromCsvToJsonReelShipping(WriteDataFromCsvToJsonEconomou):
 
     def read_file_name_save(self, file_name_save, line_file=__file__):
         lines, context, parsed_data = self.create_parsed_data_and_context(file_name_save, input_file_path, line_file)
@@ -87,5 +87,5 @@ class WriteDataFromCsvToJsonHabShipping(WriteDataFromCsvToJsonEconomou):
 if __name__ == '__main__':
     input_file_path = os.path.abspath(sys.argv[1])
     output_folder = sys.argv[2]
-    parsed_data = WriteDataFromCsvToJsonHabShipping(input_file_path, output_folder)
+    parsed_data = WriteDataFromCsvToJsonReelShipping(input_file_path, output_folder)
     print(parsed_data())

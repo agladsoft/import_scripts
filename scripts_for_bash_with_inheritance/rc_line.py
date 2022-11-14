@@ -11,8 +11,7 @@ input_file_path = os.path.abspath(sys.argv[1])
 output_folder = sys.argv[2]
 
 
-class WriteDataFromCsvToJsonNoe(WriteDataFromCsvToJson):
-
+class WriteDataFromCsvToJsonRcLine(WriteDataFromCsvToJson):
     def read_file_name_save(self, file_name_save, line_file=__file__):
         lines, context, parsed_data = self.create_parsed_data_and_context(file_name_save, input_file_path, line_file)
         for ir, line in enumerate(lines):
@@ -58,5 +57,5 @@ class WriteDataFromCsvToJsonNoe(WriteDataFromCsvToJson):
 
 
 if __name__ == '__main__':
-    parsed_data = WriteDataFromCsvToJsonNoe(input_file_path, output_folder)
+    parsed_data = WriteDataFromCsvToJsonRcLine(input_file_path, output_folder)
     print(parsed_data())
