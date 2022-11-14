@@ -14,8 +14,10 @@ ${XL_IDP_ROOT}/bash_dir/line_one.sh
 ${XL_IDP_ROOT}/bash_dir/line_oocl.sh
 ${XL_IDP_ROOT}/bash_dir/line_yang_ming.sh
 ${XL_IDP_ROOT}/bash_dir/line_zim.sh
-${XL_IDP_ROOT}/bash_dir/line_noe.sh
-${XL_IDP_ROOT}/bash_dir/line_tk.sh
+${XL_IDP_ROOT}/bash_dir/line_rc_line.sh
+${XL_IDP_ROOT}/bash_dir/line_verim.sh
 ${XL_IDP_ROOT}/bash_dir/line_major.sh
 ${XL_IDP_ROOT}/bash_dir/line_medkon.sh
-${XL_IDP_ROOT}/bash_dir/line_hab_shipping.sh
+${XL_IDP_ROOT}/bash_dir/line_reel_shipping.sh
+${XL_IDP_ROOT}/bash_dir/line_lam.sh
+${XL_IDP_ROOT}/bash_dir/line_pjsc_transcontainer.sh
