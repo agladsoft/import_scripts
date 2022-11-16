@@ -21,3 +21,4 @@ ${XL_IDP_ROOT}/bash_dir/line_medkon.sh
 ${XL_IDP_ROOT}/bash_dir/line_reel_shipping.sh
 ${XL_IDP_ROOT}/bash_dir/line_lam.sh
 ${XL_IDP_ROOT}/bash_dir/line_pjsc_transcontainer.sh
+${XL_IDP_ROOT}/bash_dir/line_silmar.sh
