@@ -35,6 +35,18 @@ class WriteDataFromCsvToJsonSilmar(WriteDataFromCsvToJson):
             else:
                 context['date'] = '1970-01-01'
 
+    def define_header_table_containers(self, ir, column_position, consignment, number_plomb, container_number,
+                                       weight_goods, package_number, goods_name_rus, shipper, consignee, number_pp):
+        if consignment == column_position: self.ir_consignment = ir
+        elif re.findall(number_plomb, column_position): self.ir_number_plomb = ir
+        elif re.findall(container_number, column_position): self.ir_container_number = ir
+        elif re.findall(weight_goods, column_position): self.ir_weight_goods = ir
+        elif re.findall(package_number, column_position): self.ir_package_number = ir
+        elif re.findall(goods_name_rus, column_position): self.ir_goods_name_rus = ir
+        elif re.findall(shipper, column_position): self.ir_shipper = ir
+        elif re.findall(consignee, column_position): self.ir_consignee = ir
+        elif re.findall(number_pp, column_position): self.ir_number_pp = ir
+
     def read_file_name_save(self, file_name_save, line_file=__file__):
         lines, context, parsed_data = self.create_parsed_data_and_context(file_name_save, input_file_path, line_file)
         for ir, line in enumerate(lines):
