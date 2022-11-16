@@ -43,8 +43,8 @@ class WriteDataFromCsvToJsonSilmar(WriteDataFromCsvToJson):
         elif re.findall(weight_goods, column_position): self.ir_weight_goods = ir
         elif re.findall(package_number, column_position): self.ir_package_number = ir
         elif re.findall(goods_name_rus, column_position): self.ir_goods_name_rus = ir
-        elif re.findall(shipper, column_position): self.ir_shipper = ir
-        elif re.findall(consignee, column_position): self.ir_consignee = ir
+        elif shipper == column_position: self.ir_shipper = ir
+        elif consignee == column_position: self.ir_consignee = ir
         elif re.findall(number_pp, column_position): self.ir_number_pp = ir
 
     def read_file_name_save(self, file_name_save, line_file=__file__):
