@@ -1,7 +1,5 @@
 #!/bin/bash
-export XL_IDP_PATH_IMPORT=/home/timur/import
-export XL_IMPORT_TERMINAL=nutep
-export XL_IDP_ROOT=/home/timur/PycharmWork/docker_project/import_scripts
+
 xls_path="${XL_IDP_PATH_IMPORT}/lines_${XL_IMPORT_TERMINAL}/silmar/"
 
 csv_path="${xls_path}"/csv
