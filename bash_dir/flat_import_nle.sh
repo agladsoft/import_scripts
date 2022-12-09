@@ -23,7 +23,7 @@ do
 
   if [[ "${file}" == *"error_"* ]];
   then
-    echo "Contains an error in ${file}"
+
     continue
   fi
 

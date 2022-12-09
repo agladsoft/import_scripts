@@ -27,7 +27,6 @@ do
 
   if [[ "${file}" == *"error_"* ]];
   then
-    echo "Contains an error in ${file}"
     continue
   fi
 
@@ -62,11 +61,19 @@ do
 	# Will convert csv to json
 	python3 ${XL_IDP_ROOT}/scripts_for_bash_with_inheritance/medkon.py "${csv_name}" "${json_path}"
 
-  if [ $? -eq 0 ]
+  exit_code=$?
+  echo "Exit code ${exit_code}"
+  if [ ${exit_code} == 0 ]
 	then
 	  mv "${csv_name}" "${done_path}"
 	else
-	  mv "${csv_name}" "${xls_path}/error_$(basename "${csv_name}")"
+    for error_code in {1..5}
+    do
+      if [ ${exit_code} == "${error_code}" ]
+      then
+        mv "${csv_name}" "${xls_path}/error_code_${error_code}_$(basename "${csv_name}")"
+      fi
+    done
 	fi
 
 done

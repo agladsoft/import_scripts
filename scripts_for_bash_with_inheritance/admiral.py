@@ -2,15 +2,11 @@ import os
 import logging
 import sys
 import re
+from __init__ import logger, month_list
 from WriteDataFromCsvToJson import WriteDataFromCsvToJson
-
-month_list = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября",
-              "ноября", "декабря"]
 
 input_file_path = os.path.abspath(sys.argv[1])
 output_folder = sys.argv[2]
-# input_file_path = '/home/timur/Anton_project/import_xls-master/lines_nutep/ADMIRAL/done/2021.11 ADMIRAL MOON от 25.11.21.XLS.csv'
-# output_folder = '/home/timur/Anton_project/import_xls-master/lines_nutep/ADMIRAL/json'
 
 
 class WriteDataFromCsvToJsonAdmiral(WriteDataFromCsvToJson):
@@ -20,10 +16,13 @@ class WriteDataFromCsvToJsonAdmiral(WriteDataFromCsvToJson):
         for ir, line in enumerate(lines):
             if (re.findall('№', line[0]) and re.findall('Статус', line[1]) and re.findall('Номер контейнера', line[2])) or self.activate_var:
                 self.activate_var = True
-                parsed_record = dict()
+                parsed_record = {}
                 if self.activate_row_headers:
+                    self.check_error_in_columns([context.get("ship", False), context.get("voyage", False),
+                                                 context.get("date", False)],
+                                                "Keys (ship or voyage or date) not in cells!", 3)
+                    self.activate_row_headers = False
                     for ir, column_position in enumerate(line):
-                        self.activate_row_headers = False
                         if re.findall('Статус', column_position): self.ir_container_size_and_type = ir
                         elif re.findall('Город', column_position): self.ir_city = ir
                         elif re.findall('Страна отправителя', column_position): self.ir_shipper_country = ir
@@ -32,10 +31,14 @@ class WriteDataFromCsvToJsonAdmiral(WriteDataFromCsvToJson):
                                                             'Вес брутто', 'мест', 'Наименование груза',
                                                             'Отправитель', 'Получатель',
                                                             '№ п/п')
-                else:
-                    if self.isDigit(line[self.ir_number_pp]) or (not self.isDigit(line[self.ir_number_pp]) and not line[
+                    self.check_error_in_columns([self.ir_city, self.ir_container_size_and_type, self.ir_shipper_country,
+                                self.ir_consignment, self.ir_number_plomb, self.ir_container_number,
+                                self.ir_weight_goods, self.ir_package_number, self.ir_goods_name_rus, self.ir_shipper,
+                                self.ir_consignee, self.ir_number_pp], "Column not in file or changed!", 2)
+                elif self.isDigit(line[self.ir_number_pp]) or (not self.isDigit(line[self.ir_number_pp]) and not line[
                          self.ir_container_size_and_type] and not line[self.ir_container_number] and line[self.ir_consignment]):
-                        logging.info(u'line {} is {}'.format(ir, line))
+                    try:
+                        logging.info(f'line {ir} is {line}')
                         if line[self.ir_container_size_and_type]:
                             container_size = re.findall("\d{2}", line[self.ir_container_size_and_type].strip())[0]
                             container_type = re.findall("[A-Z a-z]{1,4}", line[self.ir_container_size_and_type].strip())[0]
@@ -50,8 +53,11 @@ class WriteDataFromCsvToJsonAdmiral(WriteDataFromCsvToJson):
                                                                   self.ir_weight_goods, self.ir_package_number, self.ir_goods_name_rus,
                                                                   self.ir_shipper, self.ir_consignee,
                                                                   self.ir_consignment, parsed_record, context)
-                        logging.info(u"record is {}".format(record))
+                        logging.info(f"record is {record}")
                         parsed_data.append(record)
+                    except Exception:
+                        logger.info(f"Error processing in row {ir}!")
+                        sys.exit(5)
             else:
                 self.write_data_before_containers_in_one_column(line, context, month_list, "ВЫГРУЗКА ГРУЗА С")
         return parsed_data
@@ -60,7 +66,7 @@ class WriteDataFromCsvToJsonAdmiral(WriteDataFromCsvToJson):
         file_name_save = self.remove_empty_columns_and_rows()
         parsed_data = self.read_file_name_save(file_name_save)
         parsed_data = self.write_duplicate_containers_in_dict(parsed_data, '', 'reversed')
-        # os.remove(file_name_save)
+        os.remove(file_name_save)
         return self.write_list_with_containers_in_file(parsed_data)
 
 

@@ -1,17 +1,10 @@
 import os
-import logging
-import json
 import sys
-import re
 from admiral import WriteDataFromCsvToJsonAdmiral
 
-month_list = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября",
-              "ноября", "декабря"]
 
 input_file_path = os.path.abspath(sys.argv[1])
 output_folder = sys.argv[2]
-# input_file_path = '/home/timur/Anton_project/import_xls-master/lines_nutep/ZIM/2021.11 Копия УВЕДОМЛЕНИЕ AS723Е.xls.csv'
-# output_folder = '/home/timur/Anton_project/import_xls-master/lines_nutep/ZIM/json'
 
 
 class WriteDataFromCsvToJsonZim(WriteDataFromCsvToJsonAdmiral):

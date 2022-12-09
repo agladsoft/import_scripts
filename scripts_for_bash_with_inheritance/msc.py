@@ -3,6 +3,7 @@ import logging
 import re
 import sys
 import datetime
+from __init__ import logger
 from economou import WriteDataFromCsvToJsonEconomou
 
 input_file_path = os.path.abspath(sys.argv[1])
@@ -41,27 +42,34 @@ class WriteDataFromCsvToJsonMsc(WriteDataFromCsvToJsonEconomou):
     def write_ship_and_voyage_from_string_prilozhenie(line, context):
         for parsing_line in line:
             if re.findall('[A-Za-z0-9]', parsing_line) and re.findall('^((?!Телефоны).)*$', parsing_line):
-                logging.info(u"Will parse ship and trip in value '{}'...".format(parsing_line))
+                logging.info(f"Will parse ship and trip in value '{parsing_line}'...")
                 ship_and_voyage_str = parsing_line.replace('ПРИЛОЖЕНИЕ', "").replace('УВЕДОМЛЕНИЕ О ПРИБЫТИИ', "")
                 ship_and_voyage_list = ship_and_voyage_str.rsplit(' ', 1)
                 context['ship'] = ship_and_voyage_list[0].strip()
                 context['voyage'] = re.sub(r'[^\w\s]', '', ship_and_voyage_list[1])
-                logging.info(u"context now is {}".format(context))
+                logging.info(f"context now is {context}")
 
     def write_date(self, line, context, xlsx_data):
         for parsing_line in line:
-            if date_parse := re.findall('\d{2}.\d{2}.\d{2,4}', parsing_line):
-                try:
-                    logging.info("Will parse date in value {}...".format(parsing_line))
-                    date = datetime.datetime.strptime(date_parse[0], "%d.%m.%Y") if len(
-                        date_parse[0].split(".")[2]) == 4 else datetime.datetime.strptime(date_parse[0], "%d.%m.%y")
+            try:
+                if date_parse := re.findall('\d{2}[.]\d{2}[.]\d{2,4}', parsing_line):
+                    logging.info(f"Will parse date in value {parsing_line}...")
+                    date = datetime.datetime.strptime(date_parse[0], "%d.%m.%Y") if len(date_parse[0].split(".")[2]) == 4 \
+                        else datetime.datetime.strptime(date_parse[0], "%d.%m.%y")
                     context['date'] = str(date.date())
-                except IndexError:
-                    context['date'] = '1970-01-01'
-            elif re.findall('[0-9]', parsing_line):
-                date = self.xldate_to_datetime(float(parsing_line))
-                context['date'] = date or '1970-01-01'
-                break
+                    break
+                elif date_parse := re.findall('\d{4}-\d{1,2}-\d{1,2}', parsing_line):
+                    logging.info(f"Will parse date in value {parsing_line}...")
+                    date = datetime.datetime.strptime(date_parse[0], "%Y-%m-%d")
+                    context['date'] = str(date.date())
+                    break
+                elif re.findall('[0-9]', parsing_line):
+                    date = self.xldate_to_datetime(float(parsing_line))
+                    context['date'] = date
+                    break
+            except IndexError:
+                logger.info("Date not in cells!")
+                sys.exit(3)
 
     @staticmethod
     def max_numbers(s):
@@ -87,14 +95,16 @@ class WriteDataFromCsvToJsonMsc(WriteDataFromCsvToJsonEconomou):
 
     def read_file_name_save(self, file_name_save, line_file=__file__):
         lines, context, parsed_data = self.create_parsed_data_and_context(file_name_save, input_file_path, line_file)
-        context['date'] = '1970-01-01'
         for ir, line in enumerate(lines):
             if (re.findall('№', line[0]) and re.findall('№ контейнера', line[1]) and re.findall('Тип', line[2])) or self.activate_var:
                 self.activate_var = True
                 parsed_record = dict()
                 if self.activate_row_headers:
+                    self.check_error_in_columns([context.get("ship", False), context.get("voyage", False),
+                                                 context.get("date", False)],
+                                                "Keys (ship or voyage or date) not in cells!", 3)
+                    self.activate_row_headers = False
                     for ir, column_position in enumerate(line):
-                        self.activate_row_headers = False
                         if re.findall('Тип', column_position): self.ir_container_size_and_type = ir
                         elif re.findall('Город', column_position): self.ir_city = ir
                         elif re.findall('Страна порта погрузки', column_position) or re.findall('Страна затарки', column_position): self.ir_shipper_country = ir
@@ -105,25 +115,34 @@ class WriteDataFromCsvToJsonMsc(WriteDataFromCsvToJsonEconomou):
                                                             'Наименование заявленного груза',
                                                             'Грузоотправитель', 'Грузополучатель',
                                                             '№ пп.')
+                    self.check_error_in_columns(
+                        [self.ir_container_size_and_type,
+                         self.ir_consignment, self.ir_number_plomb, self.ir_container_number,
+                         self.ir_weight_goods, self.ir_package_number, self.ir_goods_name_rus, self.ir_shipper,
+                         self.ir_consignee, self.ir_number_pp], "Column not in file or changed!", 2)
                 else:
                     if self.isDigit(line[self.ir_number_pp]) or (not self.isDigit(line[self.ir_number_pp])
                                                                  and line[self.ir_goods_name_rus] and line[
                                                                      self.ir_weight_goods]) \
                             and line[self.ir_goods_tnved]:
-                        logging.info(u'line {} is {}'.format(ir, line))
-                        container_size_and_type = re.findall("\w{1,2}", line[self.ir_container_size_and_type].strip())
-                        parsed_record['container_size'] = int(float(container_size_and_type[0]))
-                        parsed_record['container_type'] = container_size_and_type[1]
-                        parsed_record['shipper_country'] = line[self.ir_shipper_country].strip() if self.ir_shipper_country else None
-                        parsed_record['goods_tnved'] = int(line[self.ir_goods_tnved]) if line[self.ir_goods_tnved] and self.ir_goods_tnved else None
-                        parsed_record['city'] = line[self.ir_city].strip() if self.ir_city else None
-                        record = self.add_value_from_data_to_list(line, self.ir_container_number,
-                                                                  self.ir_weight_goods, self.ir_package_number,
-                                                                  self.ir_goods_name_rus,
-                                                                  self.ir_shipper, self.ir_consignee,
-                                                                  self.ir_consignment, parsed_record, context)
-                        logging.info(u"record is {}".format(record))
-                        parsed_data.append(record)
+                        try:
+                            logging.info(u'line {} is {}'.format(ir, line))
+                            container_size_and_type = re.findall("\w{1,2}", line[self.ir_container_size_and_type].strip())
+                            parsed_record['container_size'] = int(float(container_size_and_type[0]))
+                            parsed_record['container_type'] = container_size_and_type[1]
+                            parsed_record['shipper_country'] = line[self.ir_shipper_country].strip() if self.ir_shipper_country else None
+                            parsed_record['goods_tnved'] = int(line[self.ir_goods_tnved]) if line[self.ir_goods_tnved] and self.ir_goods_tnved else None
+                            parsed_record['city'] = line[self.ir_city].strip() if self.ir_city else None
+                            record = self.add_value_from_data_to_list(line, self.ir_container_number,
+                                                                      self.ir_weight_goods, self.ir_package_number,
+                                                                      self.ir_goods_name_rus,
+                                                                      self.ir_shipper, self.ir_consignee,
+                                                                      self.ir_consignment, parsed_record, context)
+                            logging.info(u"record is {}".format(record))
+                            parsed_data.append(record)
+                        except Exception:
+                            logger.info(f"Error processing in row {ir}!")
+                            sys.exit(5)
             else:
                 for name in line:
                     if (re.findall('Название судна', name) or re.findall('Судно', name)) \
@@ -140,7 +159,7 @@ class WriteDataFromCsvToJsonMsc(WriteDataFromCsvToJsonEconomou):
         file_name_save = self.remove_empty_columns_and_rows()
         parsed_data = self.read_file_name_save(file_name_save)
         parsed_data = self.write_duplicate_containers_in_dict(parsed_data, '', 'not_reversed')
-        # os.remove(file_name_save)
+        os.remove(file_name_save)
         return self.write_list_with_containers_in_file(parsed_data)
 
 

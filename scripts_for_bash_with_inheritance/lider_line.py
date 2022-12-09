@@ -2,13 +2,11 @@ import os
 import logging
 import re
 import sys
-import datetime
+from __init__ import logger
 from WriteDataFromCsvToJson import WriteDataFromCsvToJson
 
 input_file_path = os.path.abspath(sys.argv[1])
 output_folder = sys.argv[2]
-# input_file_path = '/home/timur/Anton_project/import_xls-master/lines_nutep/lider_line/2021.11 абаноз от 17.11.2021.xlsx.csv'
-# output_folder = '/home/timur/Anton_project/import_xls-master/lines_nutep/lider_line/json'
 
 
 class WriteDataFromCsvToJsonLiderLine(WriteDataFromCsvToJson):
@@ -21,19 +19,21 @@ class WriteDataFromCsvToJsonLiderLine(WriteDataFromCsvToJson):
             if (re.findall('№ п/п', line[0]) and re.findall('№ контейнера', line[1]) and re.findall('Размер', line[2])) or \
                     self.activate_var:
                 self.activate_var = True
-                parsed_record = dict()
+                parsed_record = {}
                 if self.activate_row_headers or goods_name_rus_and_address:
+                    self.check_error_in_columns([context.get("ship", False), context.get("voyage", False),
+                                                 context.get("date", False)],
+                                                "Keys (ship or voyage or date) not in cells!", 3)
                     activate_address = False
+                    self.activate_row_headers = False
                     for ir, column_position in enumerate(line):
-                        self.activate_row_headers = False
                         if re.findall('Размер', column_position): self.ir_container_size = ir
                         elif re.findall('Тип', column_position): self.ir_container_type = ir
                         elif re.findall('Адрес', column_position) and activate_address: self.ir_city = ir
                         elif re.findall('Адрес', column_position):
                             activate_address = True
                             self.ir_shipper_country = ir
-                        elif re.findall('Дата коносамента', column_position):
-                            self.ir_date_consignment = ir
+                        elif re.findall('Дата коносамента', column_position): self.ir_date_consignment = ir
                         self.define_header_table_containers(ir, column_position, 'Номер К/с', '№ пломбы',
                                                             'контейнера',
                                                             'Вес брутто', 'Кол-во мест', 'Наименование товара',
@@ -41,19 +41,29 @@ class WriteDataFromCsvToJsonLiderLine(WriteDataFromCsvToJson):
                                                             '№ п/п')
                 else:
                     if self.isDigit(line[self.ir_number_pp]):
-                        logging.info(u'line {} is {}'.format(ir, line))
-                        parsed_record['container_type'] = line[self.ir_container_type].strip()
-                        parsed_record['container_size'] = int(float(line[self.ir_container_size]))
-                        parsed_record['shipper_country'] = line[self.ir_shipper_country].strip()
-                        parsed_record['city'] = line[self.ir_city].strip()
-                        if context['date'] == '1970-01-01':
-                            context['date'] = str(datetime.datetime.strptime(line[self.ir_date_consignment].strip(), "%d.%m.%Y").date())
-                        record = self.add_value_from_data_to_list(line, self.ir_container_number,
-                                                                  self.ir_weight_goods, self.ir_package_number, self.ir_goods_name_rus,
-                                                                  self.ir_shipper, self.ir_consignee,
-                                                                  self.ir_consignment, parsed_record, context)
-                        logging.info(u"record is {}".format(record))
-                        parsed_data.append(record)
+                        if activate_address:
+                            self.check_error_in_columns(
+                                [self.ir_city, self.ir_shipper_country, self.ir_container_size, self.ir_container_type,
+                                 self.ir_consignment, self.ir_number_plomb,
+                                 self.ir_container_number, self.ir_date_consignment, self.ir_weight_goods,
+                                 self.ir_package_number, self.ir_goods_name_rus, self.ir_shipper,
+                                 self.ir_consignee, self.ir_number_pp], "Column not in file or changed!", 2)
+                            activate_address = False
+                        try:
+                            logging.info(u'line {} is {}'.format(ir, line))
+                            parsed_record['container_type'] = line[self.ir_container_type].strip()
+                            parsed_record['container_size'] = int(float(line[self.ir_container_size]))
+                            parsed_record['shipper_country'] = line[self.ir_shipper_country].strip()
+                            parsed_record['city'] = line[self.ir_city].strip()
+                            record = self.add_value_from_data_to_list(line, self.ir_container_number,
+                                                                      self.ir_weight_goods, self.ir_package_number, self.ir_goods_name_rus,
+                                                                      self.ir_shipper, self.ir_consignee,
+                                                                      self.ir_consignment, parsed_record, context)
+                            logging.info(u"record is {}".format(record))
+                            parsed_data.append(record)
+                        except Exception:
+                            logger.info(f"Error processing in row {ir}!")
+                            sys.exit(5)
             else:
                 for name in line:
                     if re.findall('Название судна', name):
@@ -79,8 +89,6 @@ class WriteDataFromCsvToJsonLiderLine(WriteDataFromCsvToJson):
                 parsed_record['container_size'] = int(float(line[2]))
                 parsed_record['shipper_country'] = line[14].strip()
                 parsed_record['city'] = line[16].strip()
-                if context['date'] == '1970-01-01':
-                    context['date'] = str(datetime.datetime.strptime(line[12].strip(), "%d.%m.%Y").date())
                 record = self.add_value_from_data_to_list(line, ir_container_number=1, ir_weight_goods=10,
                                                           ir_package_number=9, ir_goods_name_rus=7, ir_shipper=13,
                                                           ir_consignee=15, ir_consignment=11,
@@ -92,13 +100,16 @@ class WriteDataFromCsvToJsonLiderLine(WriteDataFromCsvToJson):
                 parsed_record['container_size'] = int(float(line[2]))
                 parsed_record['shipper_country'] = line[13].strip()
                 parsed_record['city'] = line[15].strip()
-                if context['date'] == '1970-01-01':
-                    context['date'] = str(datetime.datetime.strptime(line[11].strip(), "%d.%m.%Y").date())
                 record = self.add_value_from_data_to_list(line, ir_container_number=1, ir_weight_goods=9,
                                                           ir_package_number=8, ir_goods_name_rus=7, ir_shipper=12,
                                                           ir_consignee=14, ir_consignment=10,
                                                           parsed_record=parsed_record, context=context)
                 parsed_data.append(record)
+            elif (re.findall('№ п/п', line[0]) and re.findall('№ контейнера', line[1]) and re.findall('Размер', line[2])) or \
+                    self.activate_var:
+                self.check_error_in_columns([context.get("ship", False), context.get("voyage", False),
+                                             context.get("date", False)], "Keys (ship or voyage or date) not in cells!",
+                                            3)
             else:
                 for name in line:
                     if re.findall('Название судна', name):
@@ -115,7 +126,7 @@ class WriteDataFromCsvToJsonLiderLine(WriteDataFromCsvToJson):
             parsed_data = self.read_file_name_save_from_xml(file_name_save)
         else:
             parsed_data = self.read_file_name_save(file_name_save)
-        # os.remove(file_name_save)
+        os.remove(file_name_save)
         return self.write_list_with_containers_in_file(parsed_data)
 
 

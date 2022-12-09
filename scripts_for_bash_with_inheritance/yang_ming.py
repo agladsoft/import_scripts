@@ -1,18 +1,13 @@
 import os
 import logging
-import json
 import sys
 import re
+from __init__ import logger, month_list
 from WriteDataFromCsvToJson import WriteDataFromCsvToJson
 
-month_list = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября",
-              "ноября", "декабря"]
-month_list = [month.upper() for month in month_list]
 
 input_file_path = os.path.abspath(sys.argv[1])
 output_folder = sys.argv[2]
-# input_file_path = '/home/timur/Anton_project/import_xls-master/lines_nutep/YANG MING/2021.12 Копия YML.Разнарядка._CONTSHIP SEA 144N ЯНГ МИНГ.xls.csv'
-# output_folder = '/home/timur/Anton_project/import_xls-master/lines_nutep/YANG MING/json'
 
 
 class WriteDataFromCsvToJsonYangMing(WriteDataFromCsvToJson):
@@ -24,8 +19,11 @@ class WriteDataFromCsvToJsonYangMing(WriteDataFromCsvToJson):
                 self.activate_var = True
                 parsed_record = dict()
                 if self.activate_row_headers:
+                    self.check_error_in_columns([context.get("ship", False), context.get("voyage", False),
+                                                 context.get("date", False)],
+                                                "Keys (ship or voyage or date) not in cells!", 3)
+                    self.activate_row_headers = False
                     for ir, column_position in enumerate(line):
-                        self.activate_row_headers = False
                         if re.findall('Статус', column_position): self.ir_container_size_and_type = ir
                         elif re.findall('Город', column_position): self.ir_city = ir
                         self.define_header_table_containers(ir, column_position, 'Коносамент', 'Пломба',
@@ -33,27 +31,36 @@ class WriteDataFromCsvToJsonYangMing(WriteDataFromCsvToJson):
                                                             'Вес брутто', 'мест', 'Наименование груза',
                                                             'Отправитель', 'Получатель',
                                                             '№ п/п')
+                    self.check_error_in_columns([self.ir_city, self.ir_container_size_and_type,
+                                                 self.ir_consignment, self.ir_number_plomb, self.ir_container_number,
+                                                 self.ir_weight_goods, self.ir_package_number, self.ir_goods_name_rus,
+                                                 self.ir_shipper, self.ir_consignee, self.ir_number_pp],
+                                                "Column not in file or changed!", 2)
                 else:
                     if self.isDigit(line[self.ir_number_pp].rsplit('(')[0]) or (not line[self.ir_number_pp] and
                                                                                 line[self.ir_container_size_and_type]
                                                                                 and line[self.ir_consignment]):
-                        logging.info(u'line {} is {}'.format(ir, line))
-                        container_size = re.findall("\d{2}", line[self.ir_container_size_and_type].strip())[0]
                         try:
-                            container_type = re.findall("[A-Z a-z]{1,4}", line[self.ir_container_size_and_type].strip())[0]
-                        except:
-                            container_type = None
-                        parsed_record['container_size'] = int(container_size)
-                        parsed_record['container_type'] = container_type
-                        shipper_country = [i for i in line[self.ir_shipper].split(', ')][-1:]
-                        parsed_record['shipper_country'] = shipper_country[0].strip()
-                        parsed_record['city'] = line[self.ir_city].strip()
-                        record = self.add_value_from_data_to_list(line, self.ir_container_number,
-                                                                  self.ir_weight_goods, self.ir_package_number, self.ir_goods_name_rus,
-                                                                  self.ir_shipper, self.ir_consignee,
-                                                                  self.ir_consignment, parsed_record, context)
-                        logging.info(u"record is {}".format(record))
-                        parsed_data.append(record)
+                            logging.info(u'line {} is {}'.format(ir, line))
+                            container_size = re.findall("\d{2}", line[self.ir_container_size_and_type].strip())[0]
+                            try:
+                                container_type = re.findall("[A-Z a-z]{1,4}", line[self.ir_container_size_and_type].strip())[0]
+                            except:
+                                container_type = None
+                            parsed_record['container_size'] = int(container_size)
+                            parsed_record['container_type'] = container_type
+                            shipper_country = [i for i in line[self.ir_shipper].split(', ')][-1:]
+                            parsed_record['shipper_country'] = shipper_country[0].strip()
+                            parsed_record['city'] = line[self.ir_city].strip()
+                            record = self.add_value_from_data_to_list(line, self.ir_container_number,
+                                                                      self.ir_weight_goods, self.ir_package_number, self.ir_goods_name_rus,
+                                                                      self.ir_shipper, self.ir_consignee,
+                                                                      self.ir_consignment, parsed_record, context)
+                            logging.info(u"record is {}".format(record))
+                            parsed_data.append(record)
+                        except Exception:
+                            logger.info(f"Error processing in row {ir}!")
+                            sys.exit(5)
             else:
                 self.write_data_before_containers_in_one_column(line, context, month_list, "ВЫГРУЗКА ГРУЗА С")
         return parsed_data
