@@ -164,7 +164,7 @@ class WriteDataFromCsvToJson:
             if re.findall('[0-9]', parsing_line):
                 logging.info("Will parse date in value {}...".format(parsing_line))
                 try:
-                    date = datetime.datetime.strptime(parsing_line, "%Y-%m-%d")
+                    date = datetime.datetime.strptime(parsing_line.replace("T00:00:00.000", ""), "%Y-%m-%d")
                     context['date'] = str(date.date()) if str(date.date()) else '1970-01-01'
                 except ValueError:
                     if xlsx_data:
