@@ -30,9 +30,9 @@ class WriteDataFromCsvToJsonReelShipping(WriteDataFromCsvToJsonEconomou):
                     if self.isDigit(line[self.ir_number_pp]) or (not self.isDigit(line[self.ir_number_pp])
                                                                  and line[self.ir_container_number] and line[self.ir_consignment]):
                         logging.info(u'line {} is {}'.format(ir, line))
-                        parsed_record['container_size'] = int(float(line[self.ir_container_size]))
-                        parsed_record['container_type'] = line[self.ir_container_type].strip()
-                        parsed_record['shipper_country'] = line[self.ir_shipper_country].strip()
+                        parsed_record['container_size'] = int(float(line[self.ir_container_size])) if line[self.ir_container_size] else '*'
+                        parsed_record['container_type'] = line[self.ir_container_type].strip() if line[self.ir_container_type] else '*'
+                        parsed_record['shipper_country'] = line[self.ir_shipper_country].strip() if line[self.ir_shipper_country] else '*'
                         city = [i for i in line[self.ir_consignee].split(', ')][1:]
                         parsed_record['city'] = " ".join(city).strip()
                         parsed_record['goods_tnved'] = int(line[self.ir_goods_tnved]) if line[self.ir_goods_tnved] else\
