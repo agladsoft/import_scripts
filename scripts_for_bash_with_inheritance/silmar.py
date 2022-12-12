@@ -70,7 +70,7 @@ class WriteDataFromCsvToJsonSilmar(WriteDataFromCsvToJson):
                 elif re.findall(r"\w{4}\d{7}", line[self.ir_container_number]):
                     logging.info(f'line {ir} is {line}')
                     parsed_record['container_size'] = int(float(line[self.ir_container_size]))
-                    parsed_record['container_type'] = line[self.ir_container_type]
+                    parsed_record['container_type'] = line[self.ir_container_type].strip()
                     parsed_record['shipper_country'] = line[self.ir_shipper_country].strip()
                     parsed_record['city'] = line[self.ir_city]
                     parsed_record['goods_tnved'] = line[self.ir_goods_tnved]
