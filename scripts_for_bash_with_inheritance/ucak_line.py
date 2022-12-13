@@ -11,7 +11,7 @@ class WriteDataFromCsvToJsonUcakLine(WriteDataFromCsvToJsonLiderLine):
     def __call__(self, *args, **kwargs):
         file_name_save = self.remove_empty_columns_and_rows()
         # if re.findall('xml', os.path.basename(file_name_save)):
-        parsed_data = self.read_file_name_save_from_xml(file_name_save)
+        parsed_data = self.read_file_name_save_from_xml(file_name_save, __file__)
         # else:
         #     parsed_data = self.read_file_name_save(file_name_save)
         # os.remove(file_name_save)
