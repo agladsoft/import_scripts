@@ -2,7 +2,7 @@ import os
 import logging
 import sys
 import re
-from __init__ import logger, month_list
+from __init__ import month_list
 from WriteDataFromCsvToJson import WriteDataFromCsvToJson
 
 input_file_path = os.path.abspath(sys.argv[1])
@@ -34,7 +34,7 @@ class WriteDataFromCsvToJsonAdmiral(WriteDataFromCsvToJson):
                     self.check_error_in_columns([self.ir_city, self.ir_container_size_and_type, self.ir_shipper_country,
                                 self.ir_consignment, self.ir_number_plomb, self.ir_container_number,
                                 self.ir_weight_goods, self.ir_package_number, self.ir_goods_name_rus, self.ir_shipper,
-                                self.ir_consignee, self.ir_number_pp], "Column not in file or changed!", 2)
+                                self.ir_consignee, self.ir_number_pp], "Column not in file or changed!", "2")
                 elif self.isDigit(line[self.ir_number_pp]) or (not self.isDigit(line[self.ir_number_pp]) and not line[
                          self.ir_container_size_and_type] and not line[self.ir_container_number] and line[self.ir_consignment]):
                     try:
@@ -56,7 +56,8 @@ class WriteDataFromCsvToJsonAdmiral(WriteDataFromCsvToJson):
                         logging.info(f"record is {record}")
                         parsed_data.append(record)
                     except Exception:
-                        logger.info(f"Error processing in row {ir}!")
+                        logging.info(f"Error processing in row {ir + 1}!")
+                        print(f"5_in_row_{ir + 1}", file=sys.stderr)
                         sys.exit(5)
             else:
                 self.write_data_before_containers_in_one_column(line, context, month_list, "ВЫГРУЗКА ГРУЗА С")

@@ -3,7 +3,6 @@ import logging
 import re
 import sys
 import datetime
-from __init__ import logger
 from economou import WriteDataFromCsvToJsonEconomou
 
 input_file_path = os.path.abspath(sys.argv[1])
@@ -68,7 +67,8 @@ class WriteDataFromCsvToJsonMsc(WriteDataFromCsvToJsonEconomou):
                     context['date'] = date
                     break
             except IndexError:
-                logger.info("Date not in cells!")
+                logging.info("Date not in cells!")
+                print("3", file=sys.stderr)
                 sys.exit(3)
 
     @staticmethod
@@ -141,7 +141,8 @@ class WriteDataFromCsvToJsonMsc(WriteDataFromCsvToJsonEconomou):
                             logging.info(u"record is {}".format(record))
                             parsed_data.append(record)
                         except Exception:
-                            logger.info(f"Error processing in row {ir}!")
+                            logging.info(f"Error processing in row {ir}!")
+                            print(f"5_in_row_{ir + 1}", file=sys.stderr)
                             sys.exit(5)
             else:
                 for name in line:

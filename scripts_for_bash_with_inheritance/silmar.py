@@ -2,7 +2,6 @@ import os
 import logging
 import re
 import sys
-from __init__ import logger
 from WriteDataFromCsvToJson import WriteDataFromCsvToJson
 
 input_file_path = os.path.abspath(sys.argv[1])
@@ -32,7 +31,8 @@ class WriteDataFromCsvToJsonSilmar(WriteDataFromCsvToJson):
                         date = self.xldate_to_datetime(float(parsing_line))
                         context['date'] = date
                     else:
-                        logger.info("Date not in cells!")
+                        logging.info("Date not in cells!")
+                        print("3", file=sys.stderr)
                         sys.exit(3)
 
     def define_header_table_containers_silmar(self, ir, column_position, consignment, number_plomb, container_number,
@@ -89,7 +89,8 @@ class WriteDataFromCsvToJsonSilmar(WriteDataFromCsvToJson):
                         logging.info(f"record is {record}")
                         parsed_data.append(record)
                     except Exception:
-                        logger.info(f"Error processing in row {ir}!")
+                        logging.info(f"Error processing in row {ir}!")
+                        print(f"5_in_row_{ir + 1}", file=sys.stderr)
                         sys.exit(5)
             else:
                 for name in line:

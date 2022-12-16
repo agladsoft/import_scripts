@@ -4,7 +4,6 @@ import re
 import sys
 import datetime
 import json
-from __init__ import logger
 from economou import WriteDataFromCsvToJsonEconomou
 
 input_file_path = os.path.abspath(sys.argv[1])
@@ -31,7 +30,8 @@ class WriteDataFromCsvToJsonMaersk(WriteDataFromCsvToJsonEconomou):
                     date = datetime.datetime.strptime(parsing_line.rsplit(' ')[0], "%d-%B-%Y")
                     context['date'] = str(date.date())
                 except Exception:
-                    logger.info("Date not in cells!")
+                    logging.info("Date not in cells!")
+                    print("3", file=sys.stderr)
                     sys.exit(3)
 
     def read_file_name_save(self, file_name_save, line_file=__file__):
@@ -97,7 +97,8 @@ class WriteDataFromCsvToJsonMaersk(WriteDataFromCsvToJsonEconomou):
                         context['original_file_name'] = os.path.basename(self.input_file_path)
                         context['original_file_parsed_on'] = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                     except Exception:
-                        logger.info(f"Error processing in row {ir}!")
+                        logging.info(f"Error processing in row {ir}!")
+                        print(f"5_in_row_{ir + 1}", file=sys.stderr)
                         sys.exit(5)
             else:
                 for name in line:
@@ -110,7 +111,8 @@ class WriteDataFromCsvToJsonMaersk(WriteDataFromCsvToJsonEconomou):
 
     def write_list_with_containers_in_file(self, parsed_data):
         if len(parsed_data) == 0:
-            logger.info("Length list equals 0!")
+            logging.info("Length list equals 0!")
+            print("4", file=sys.stderr)
             sys.exit(4)
         basename = os.path.basename(input_file_path)
         output_file_path = os.path.join(output_folder, f'{basename}.json')

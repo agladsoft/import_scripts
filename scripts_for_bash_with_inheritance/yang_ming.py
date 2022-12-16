@@ -2,7 +2,7 @@ import os
 import logging
 import sys
 import re
-from __init__ import logger, month_list
+from __init__ import month_list
 from WriteDataFromCsvToJson import WriteDataFromCsvToJson
 
 
@@ -59,7 +59,8 @@ class WriteDataFromCsvToJsonYangMing(WriteDataFromCsvToJson):
                             logging.info(u"record is {}".format(record))
                             parsed_data.append(record)
                         except Exception:
-                            logger.info(f"Error processing in row {ir}!")
+                            logging.info(f"Error processing in row {ir}!")
+                            print(f"5_in_row_{ir + 1}", file=sys.stderr)
                             sys.exit(5)
             else:
                 self.write_data_before_containers_in_one_column(line, context, month_list, "ВЫГРУЗКА ГРУЗА С")

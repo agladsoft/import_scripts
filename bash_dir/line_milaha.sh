@@ -60,19 +60,19 @@ do
 	fi
 
 	# Will convert csv to json
-	python3 ${XL_IDP_ROOT}/scripts_for_bash_with_inheritance/milaha.py "${csv_name}" "${json_path}"
+	exit_message=$(python3 ${XL_IDP_ROOT}/scripts_for_bash_with_inheritance/milaha.py "${csv_name}" "${json_path}" 2>&1 > /dev/null)
 
   exit_code=$?
   echo "Exit code ${exit_code}"
-  if [ ${exit_code} == 0 ]
+  if [[ ${exit_code} == 0 ]]
 	then
 	  mv "${csv_name}" "${done_path}"
 	else
     for error_code in {1..5}
     do
-      if [ ${exit_code} == "${error_code}" ]
+      if [[ ${exit_code} == "${error_code}" ]]
       then
-        mv "${csv_name}" "${xls_path}/error_code_${error_code}_$(basename "${csv_name}")"
+        mv "${csv_name}" "${xls_path}/error_code_${exit_message}_$(basename "${csv_name}")"
       fi
     done
 	fi

@@ -2,7 +2,6 @@ import os
 import logging
 import re
 import sys
-from __init__ import logger
 from economou import WriteDataFromCsvToJsonEconomou
 
 
@@ -53,7 +52,8 @@ class WriteDataFromCsvToJsonMajor(WriteDataFromCsvToJsonEconomou):
                             logging.info(u"record is {}".format(record))
                             parsed_data.append(record)
                         except Exception:
-                            logger.info(f"Error processing in row {ir}!")
+                            logging.info(f"Error processing in row {ir}!")
+                            print(f"5_in_row_{ir + 1}", file=sys.stderr)
                             sys.exit(5)
             else:
                 for name in line:

@@ -6,7 +6,6 @@ import csv
 import json
 import math
 import sys
-from __init__ import logger
 from pandas.io.parsers import read_csv
 
 
@@ -71,8 +70,9 @@ class WriteDataFromCsvToJson:
     @staticmethod
     def check_error_in_columns(list_columns, message, error_code):
         if not all(i for i in list_columns if i is False):
-            logger.info(message)
-            logger.info(list_columns)
+            logging.info(message)
+            logging.info(list_columns)
+            print(f"{error_code}", file=sys.stderr)
             sys.exit(error_code)
 
     def add_value_from_data_to_list(self, line, ir_container_number,
@@ -115,7 +115,8 @@ class WriteDataFromCsvToJson:
         date_previous = re.match('\d{2,4}.\d{1,2}', os.path.basename(file_name_save))
         date_previous = f'{date_previous.group()}.01' if date_previous else date_previous
         if date_previous is None:
-            logger.info("Date not in file name!")
+            logging.info("Date not in file name!")
+            print("1", file=sys.stderr)
             sys.exit(1)
         else:
             context['parsed_on'] = str(datetime.datetime.strptime(date_previous, "%Y.%m.%d").date())
@@ -145,7 +146,8 @@ class WriteDataFromCsvToJson:
                     context['voyage'] = re.sub(r'[^\w\s]', '', ship_and_voyage_list[1])
                     logging.info(f"context now is {context}")
         except Exception:
-            logger.info("Date or Ship or Voyage not in cells!")
+            logging.info("Date or Ship or Voyage not in cells!")
+            print("3", file=sys.stderr)
             sys.exit(3)
 
     @staticmethod
@@ -189,7 +191,8 @@ class WriteDataFromCsvToJson:
                 elif xlsx_data and re.findall('[0-9]', parsing_line):
                     context['date'] = self.xldate_to_datetime(float(parsing_line))
             except ValueError:
-                logger.info("Date not in cells!")
+                logging.info("Date not in cells!")
+                print("3", file=sys.stderr)
                 sys.exit(3)
 
     def define_header_table_containers(self, ir, column_position, consignment, number_plomb, container_number,
@@ -230,7 +233,8 @@ class WriteDataFromCsvToJson:
 
     def write_list_with_containers_in_file(self, parsed_data):
         if len(parsed_data) == 0:
-            logger.info("Length list equals 0!")
+            logging.info("Length list equals 0!")
+            print("4", file=sys.stderr)
             sys.exit(4)
         basename = os.path.basename(self.input_file_path)
         output_file_path = os.path.join(self.output_folder, f'{basename}.json')

@@ -2,7 +2,7 @@ import os
 import logging
 import sys
 import re
-from __init__ import logger, month_list
+from __init__ import month_list
 from WriteDataFromCsvToJson import WriteDataFromCsvToJson
 
 input_file_path = os.path.abspath(sys.argv[1])
@@ -30,7 +30,8 @@ class WriteDataFromCsvToJsonAkkonLines(WriteDataFromCsvToJson):
                         i += 1
                     logging.info(f"context now is {context}")
         except Exception:
-            logger.info("Date or Ship or Voyage not in cells!")
+            logging.info("Date or Ship or Voyage not in cells!")
+            print("3", file=sys.stderr)
             sys.exit(3)
 
     def read_file_name_save(self, file_name_save, line_file=__file__):
@@ -73,7 +74,8 @@ class WriteDataFromCsvToJsonAkkonLines(WriteDataFromCsvToJson):
                             logging.info(u"record is {}".format(record))
                             parsed_data.append(record)
                         except Exception:
-                            logger.info(f"Error processing in row {ir}!")
+                            logging.info(f"Error processing in row {ir}!")
+                            print(f"5_in_row_{ir + 1}", file=sys.stderr)
                             sys.exit(5)
             else:
                 if re.findall('ВЫГРУЗКА ГРУЗА С', line[0]) or re.findall('ДАТА ПРИХОДА', line[0]):
