@@ -1,2 +1,4 @@
 csvkit==1.0.7
 pandas==1.4.3
+fuzzywuzzy==0.18.0
+python-Levenshtein==0.20.8

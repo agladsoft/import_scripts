@@ -44,13 +44,13 @@ class BaseLine:
         z.update(y)  # modifies z with keys and values of y
         return z
 
-    def check_error_in_columns(self, list_columns: list, message: str, error_code: int) -> None:
+    def check_error_in_columns(self, list_columns: list, dict_columns: dict, message: str, error_code: int) -> None:
         """
         Checks for the presence of all columns in the header.
         """
-        if not all(i for i in list_columns if i is False):
-            self.logger_write.info(message)
-            self.logger_write.info(list_columns)
+        if not all(i for i in list_columns if i is None):
+            self.logger_write.error(message)
+            self.logger_write.error(dict_columns)
             print(f"{error_code}", file=sys.stderr)
             sys.exit(error_code)
 
@@ -100,7 +100,7 @@ class BaseLine:
         date_previous: Match[str] | None = re.match(r'\d{2,4}.\d{1,2}', os.path.basename(file_name_save))
         date_previous: str = f'{date_previous.group()}.01' if date_previous else date_previous
         if date_previous is None:
-            self.logger_write.info("Date not in file name!")
+            self.logger_write.error("Error code 1: date not in file name!")
             print("1", file=sys.stderr)
             sys.exit(1)
         else:
@@ -165,7 +165,7 @@ class BaseLine:
         Writing data to json.
         """
         if not list_data:
-            self.logger_write.info("Length list equals 0!")
+            self.logger_write.error("Error code 4: length list equals 0!")
             print("4", file=sys.stderr)
             sys.exit(4)
         basename = os.path.basename(self.input_file_path)

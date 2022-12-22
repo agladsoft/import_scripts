@@ -8,19 +8,19 @@ from admiral import Admiral
 class AkkonLines(Admiral):
 
     dict_columns_position: Dict[str, Union[bool, int]] = {
-        "number_pp": False,
-        "container_size": False,
-        "container_type": False,
-        "container_number": False,
-        "container_seal": False,
-        "goods_weight": False,
-        "package_number": False,
-        "goods_name_rus": False,
-        "shipper": False,
-        "shipper_country": False,
-        "consignee": False,
-        "consignment": False,
-        "city": False,
+        "number_pp": None,
+        "container_size": None,
+        "container_type": None,
+        "container_number": None,
+        "container_seal": None,
+        "goods_weight": None,
+        "package_number": None,
+        "goods_name_rus": None,
+        "shipper": None,
+        "shipper_country": None,
+        "consignee": None,
+        "consignment": None,
+        "city": None
     }
 
     def parse_content_before_table(self, column: str, columns: tuple, parsing_row: str, list_month: list,

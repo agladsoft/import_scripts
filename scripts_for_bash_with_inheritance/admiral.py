@@ -9,18 +9,18 @@ from BaseLine import BaseLine
 
 class Admiral(BaseLine):
     dict_columns_position: Dict[str, Union[bool, int]] = {
-        "number_pp": False,
-        "container_size_and_type": False,
-        "container_number": False,
-        "container_seal": False,
-        "goods_weight": False,
-        "package_number": False,
-        "goods_name_rus": False,
-        "shipper": False,
-        "shipper_country": False,
-        "consignee": False,
-        "consignment": False,
-        "city": False,
+        "number_pp": None,
+        "container_size_and_type": None,
+        "container_number": None,
+        "container_seal": None,
+        "goods_weight": None,
+        "package_number": None,
+        "goods_name_rus": None,
+        "shipper": None,
+        "shipper_country": None,
+        "consignee": None,
+        "consignment": None,
+        "city": None
     }
 
     def parse_date(self, parsing_row: str, month_list: list, context: dict, row: list) -> None:
@@ -62,7 +62,7 @@ class Admiral(BaseLine):
                     for column in columns:
                         self.parse_content_before_table(column, columns, parsing_row, list_month, context, row)
         except (IndexError, ValueError):
-            self.logger_write.info("Date or Ship or Voyage not in cells")
+            self.logger_write.error("Error code 3: Date or Ship or Voyage not in cells")
             print("3", file=sys.stderr)
             sys.exit(3)
 
@@ -110,7 +110,7 @@ class Admiral(BaseLine):
         try:
             self.parse_row(index, row, context, list_data)
         except (IndexError, ValueError):
-            self.logger_write.info(f"Error processing in row {index + 1}!")
+            self.logger_write.error(f"Error code 5: error processing in row {index + 1}!")
             print(f"5_in_row_{index + 1}", file=sys.stderr)
             sys.exit(5)
         finally:
@@ -138,14 +138,19 @@ class Admiral(BaseLine):
         for keys in list(DICT_HEADERS_COLUMN_ENG.keys()):
             list_columns.extend(iter(keys))
         for index, row in enumerate(rows):
-            if fuzz.partial_ratio(row, list_columns) > 50:
-                self.check_error_in_columns([context.get("ship", False), context.get("voyage", False),
-                                             context.get("date", False)], "Keys (ship, voyage or date) not in cells", 3)
-                self.get_column_position(row)
-                self.check_error_in_columns(list(self.dict_columns_position.keys()), "Column not in file or changed", 2)
-            elif self.is_table_starting(row):
-                list_data = self.get_content_in_table(row, index, list_data, context)
-            else:
+            try:
+                if fuzz.partial_ratio(row, list_columns) > 50:
+                    self.check_error_in_columns([context.get("ship", None), context.get("voyage", None),
+                                                 context.get("date", None)], context,
+                                                "Error code 3: Keys (ship, voyage or date) not in cells", 3)
+                    self.get_column_position(row)
+                    self.check_error_in_columns(list(self.dict_columns_position.values()), self.dict_columns_position,
+                                                "Error code 2: Column not in file or changed", 2)
+                elif self.is_table_starting(row):
+                    list_data = self.get_content_in_table(row, index, list_data, context)
+            except TypeError:
+                continue
+            finally:
                 self.get_content_before_table(row, context, LIST_MONTH)
         return list_data
 
