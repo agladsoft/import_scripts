@@ -1,95 +1,80 @@
-import os
-import logging
-import sys
 import re
-from __init__ import month_list
-from WriteDataFromCsvToJson import WriteDataFromCsvToJson
+import sys
+from __init__ import *
+from typing import Union
+from admiral import Admiral
 
-input_file_path = os.path.abspath(sys.argv[1])
-output_folder = sys.argv[2]
 
+class AkkonLines(Admiral):
 
-class WriteDataFromCsvToJsonAkkonLines(WriteDataFromCsvToJson):
+    dict_columns_position: Dict[str, Union[bool, int]] = {
+        "number_pp": False,
+        "container_size": False,
+        "container_type": False,
+        "container_number": False,
+        "container_seal": False,
+        "goods_weight": False,
+        "package_number": False,
+        "goods_name_rus": False,
+        "shipper": False,
+        "shipper_country": False,
+        "consignee": False,
+        "consignment": False,
+        "city": False,
+    }
 
-    def write_data_before_containers_in_one_column(self, line, context, month_list, var_name_ship):
-        try:
-            i = 0
-            for parsing_line in line:
-                if re.findall('ДАТА ПРИХОДА', parsing_line):
-                    self.parse_date(parsing_line, month_list, context)
-                elif re.findall(var_name_ship, parsing_line):
-                    logging.info(f"Will parse ship and trip in value '{parsing_line}'...")
-                    if var_name_ship == 'ВЫГРУЗКА ГРУЗА С': parsing_line = parsing_line.replace(var_name_ship, "").strip()
+    def parse_content_before_table(self, column: str, columns: tuple, parsing_row: str, list_month: list,
+                                   context: dict, row: list) -> None:
+        """
+        Parsing from row the date, ship name and voyage in the cells before the table.
+        """
+        if re.findall(column, parsing_row) and DICT_CONTENT_BEFORE_TABLE[columns] == "date":
+            self.parse_date(parsing_row, list_month, context)
+        elif re.findall(column, parsing_row) and DICT_CONTENT_BEFORE_TABLE[columns] == "ship_voyage":
+            self.logger_write.info(f"Will parse ship and trip in value '{parsing_row}'...")
+            index: int = 0
+            for ship_voyage in row:
+                position: int = list(DICT_CONTENT_BEFORE_TABLE.values()).index("ship_voyage_in_other_cells")
+                if re.findall(list(DICT_CONTENT_BEFORE_TABLE.keys())[position][0], ship_voyage):
+                    ship_voyage: str = ship_voyage.replace(column, "").strip()
+                    ship_and_voyage_list: list = ship_voyage.rsplit(' ', 1)
                     try:
-                        ship_and_voyage_list = parsing_line.rsplit(' ', 1)
-                        context['voyage'] = re.sub(r'[^\w\s]', '', ship_and_voyage_list[1])
-                        context['ship'] = ship_and_voyage_list[0].strip()
-                    except Exception:
-                        if i == 0: context['ship'] = parsing_line.strip()
-                        elif i == 1: context['voyage'] = parsing_line.strip()
-                        i += 1
-                    logging.info(f"context now is {context}")
-        except Exception:
-            logging.info("Date or Ship or Voyage not in cells!")
-            print("3", file=sys.stderr)
-            sys.exit(3)
+                        context["voyage"] = re.sub(r'[^\w\s]', '', ship_and_voyage_list[1])
+                        context["ship"] = ship_and_voyage_list[0].strip()
+                    except IndexError:
+                        context["ship"] = ship_voyage if index == 0 else context.get("ship")
+                        context["voyage"] = ship_voyage if index == 1 else context.get("voyage")
+                    finally:
+                        index += 1
+            self.logger_write.info(f"context now is {context}")
 
-    def read_file_name_save(self, file_name_save, line_file=__file__):
-        lines, context, parsed_data = self.create_parsed_data_and_context(file_name_save, input_file_path, line_file)
-        for ir, line in enumerate(lines):
-            if (re.findall('№', line[0]) and re.findall('Коносамент', line[1]) and re.findall('Номер контейнера', line[2])) or self.activate_var:
-                self.activate_var = True
-                parsed_record = dict()
-                if self.activate_row_headers:
-                    self.check_error_in_columns([context.get("ship", False), context.get("voyage", False),
-                                                 context.get("date", False)],
-                                                "Keys (ship or voyage or date) not in cells!", 3)
-                    self.activate_row_headers = False
-                    for ir, column_position in enumerate(line):
-                        if re.findall('Размер', column_position): self.ir_container_size = ir
-                        elif re.findall('Тип', column_position): self.ir_container_type = ir
-                        elif re.findall('Город', column_position): self.ir_city = ir
-                        elif re.findall('Страна отправителя', column_position): self.ir_shipper_country = ir
-                        self.define_header_table_containers(ir, column_position, 'Коносамент', 'Пломба',
-                                                            'Номер контейнера',
-                                                            'Вес брутто', 'мест', 'Наименование груза',
-                                                            'Отправитель', 'Получатель',
-                                                            '№ п/п')
-                    self.check_error_in_columns([self.ir_city, self.ir_container_size, self.ir_container_type, self.ir_shipper_country,
-                                self.ir_consignment, self.ir_number_plomb, self.ir_container_number,
-                                self.ir_weight_goods, self.ir_package_number, self.ir_goods_name_rus, self.ir_shipper,
-                                self.ir_consignee, self.ir_number_pp], "Column not in file or changed!", 2)
-                else:
-                    if self.isDigit(line[self.ir_number_pp]):
-                        try:
-                            logging.info(u'line {} is {}'.format(ir, line))
-                            parsed_record['container_size'] = int(float(line[self.ir_container_size]))
-                            parsed_record['container_type'] = line[self.ir_container_type].strip()
-                            parsed_record['shipper_country'] = line[self.ir_shipper_country].strip()
-                            parsed_record['city'] = line[self.ir_city].strip()
-                            record = self.add_value_from_data_to_list(line, self.ir_container_number,
-                                                                      self.ir_weight_goods, self.ir_package_number, self.ir_goods_name_rus,
-                                                                      self.ir_shipper, self.ir_consignee,
-                                                                      self.ir_consignment, parsed_record, context)
-                            logging.info(u"record is {}".format(record))
-                            parsed_data.append(record)
-                        except Exception:
-                            logging.info(f"Error processing in row {ir}!")
-                            print(f"5_in_row_{ir + 1}", file=sys.stderr)
-                            sys.exit(5)
-            else:
-                if re.findall('ВЫГРУЗКА ГРУЗА С', line[0]) or re.findall('ДАТА ПРИХОДА', line[0]):
-                    self.write_data_before_containers_in_one_column(line, context, month_list, "[A-Za-z0-9]")
+    def is_table_starting(self, row: list) -> bool:
+        """
+        Understanding when a headerless table starts.
+        """
+        return self.is_digit(row[self.dict_columns_position["number_pp"]])
 
-        return parsed_data
-
-    def __call__(self, *args, **kwargs):
-        file_name_save = self.remove_empty_columns_and_rows()
-        parsed_data = self.read_file_name_save(file_name_save)
-        os.remove(file_name_save)
-        return self.write_list_with_containers_in_file(parsed_data)
+    def parse_row(self, index: int, row: list, context: dict, list_data: list) -> None:
+        """
+        Getting values from columns in a table.
+        """
+        self.logger_write.info(f'line {index} is {row}')
+        parsed_record: dict = {'container_size': int(float(row[self.dict_columns_position["container_size"]].strip())),
+                               'container_type': row[self.dict_columns_position["container_type"]].strip(),
+                               'shipper_country': row[self.dict_columns_position["shipper_country"]].strip(),
+                               'city': row[self.dict_columns_position["city"]].strip()}
+        record: dict = self.add_value_from_data_to_list(row, self.dict_columns_position["container_number"],
+                                                        self.dict_columns_position["goods_weight"],
+                                                        self.dict_columns_position["package_number"],
+                                                        self.dict_columns_position["goods_name_rus"],
+                                                        self.dict_columns_position["shipper"],
+                                                        self.dict_columns_position["consignee"],
+                                                        self.dict_columns_position["consignment"], parsed_record,
+                                                        context)
+        self.logger_write.info(f"record is {record}")
+        list_data.append(record)
 
 
 if __name__ == '__main__':
-    parsed_data = WriteDataFromCsvToJsonAkkonLines(input_file_path, output_folder)
-    print(parsed_data())
+    parsed_data = AkkonLines(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
+    print(parsed_data.main(is_need_duplicate_containers=False))
