@@ -10,7 +10,7 @@ output_folder = sys.argv[2]
 
 
 class WriteDataFromCsvToJsonSilmar(WriteDataFromCsvToJson):
-
+    ir_city = None
     @staticmethod
     def write_ship_and_voyage_silmar(line, context, key):
         for parsing_line in line:
@@ -21,9 +21,13 @@ class WriteDataFromCsvToJsonSilmar(WriteDataFromCsvToJson):
 
     @staticmethod
     def write_date_from_filename(file_name_save, context):
+        date = None
         try:
-            date = re.findall('\d{1,2}[.]\d{1,2}[.]\d{2,4}', os.path.basename(file_name_save))[0]
+            date = re.findall(r'\d{1,2}[.]\d{1,2}[.]\d{2,4}', os.path.basename(file_name_save))[0]
             date = datetime.datetime.strptime(date, "%d.%m.%y")
+            context['date'] = str(date.date())
+        except ValueError:
+            date = datetime.datetime.strptime(date, "%d.%m.%Y")
             context['date'] = str(date.date())
         except IndexError:
             logging.info("There is no full date in the file name")
@@ -66,7 +70,7 @@ class WriteDataFromCsvToJsonSilmar(WriteDataFromCsvToJson):
                     parsed_record['container_size'] = int(float(line[self.ir_container_size]))
                     parsed_record['container_type'] = line[self.ir_container_type]
                     parsed_record['shipper_country'] = line[self.ir_shipper_country].strip()
-                    parsed_record['city'] = line[self.ir_city]
+                    parsed_record['city'] = line[self.ir_city] if self.ir_city else None
                     parsed_record['goods_tnved'] = line[self.ir_goods_tnved]
                     record = self.add_value_from_data_to_list(line, self.ir_container_number,
                                                               self.ir_weight_goods, self.ir_package_number,

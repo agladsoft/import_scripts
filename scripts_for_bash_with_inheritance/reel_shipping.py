@@ -63,7 +63,7 @@ class WriteDataFromCsvToJsonReelShipping(WriteDataFromCsvToJsonEconomou):
             values_list = list(line.values())
             parsed_record = dict()
             for key, value in zip(keys_list, values_list):
-                if value == values or (value == '' and key == 'city'):
+                if value == values or value == '' and key in ['container_size', 'container_type', 'city']:
                     try:
                         context[key] = list_last_value[key]
                     except KeyError:

@@ -55,11 +55,11 @@ class WriteDataFromCsvToJsonVerim(WriteDataFromCsvToJson):
         return parsed_data
 
     @staticmethod
-    def update_values_duplicate_containers(set_index, index, parsed_data, is_reversed):
+    def update_values_duplicate_containers(set_index, index, parsed_data, is_reversed, values):
         key_list = list(parsed_data[list(set_index)[0]].keys())
         val_list = list(parsed_data[list(set_index)[0]].values())
 
-        positions = [i for i, d in enumerate(val_list) if d == '']
+        positions = [i for i, d in enumerate(val_list) if d == values]
         for index_container in list(set_index):
             for position in positions:
                 parsed_data[index_container][key_list[position]] = parsed_data[index][key_list[position]] \
@@ -103,7 +103,7 @@ class WriteDataFromCsvToJsonVerim(WriteDataFromCsvToJson):
                                                values_list, values, parsed_record, context, set_index,
                                                list_last_value, index, last_container_seal_and_container_dict)
             if not is_duplicate_containers_in_line and set_index:
-                self.update_values_duplicate_containers(set_index, index, parsed_data, is_reversed)
+                self.update_values_duplicate_containers(set_index, index, parsed_data, is_reversed, values)
             last_container_seal_and_container_dict[line["container_number"]] = line["container_seal"]
         return parsed_data
 
