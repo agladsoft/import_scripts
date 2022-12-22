@@ -2,6 +2,7 @@ import os
 import logging
 import re
 import sys
+import datetime
 from WriteDataFromCsvToJson import WriteDataFromCsvToJson
 
 input_file_path = os.path.abspath(sys.argv[1])
@@ -18,22 +19,14 @@ class WriteDataFromCsvToJsonSilmar(WriteDataFromCsvToJson):
                 context[key] = parsing_line.strip()
                 logging.info(f"context now is {context}")
 
-    def write_date(self, line, context, xlsx_data):
-        for parsing_line in line:
-            if re.findall(r'\d{4}-\d{2}-\d{2}', parsing_line):
-                logging.info(f"Will parse date in value {parsing_line}...")
-                try:
-                    context['date'] = str(re.findall(r'\d{4}-\d{2}-\d{2}', parsing_line)[0])
-                    logging.info(f"context now is {context}")
-                    break
-                except ValueError:
-                    if xlsx_data:
-                        date = self.xldate_to_datetime(float(parsing_line))
-                        context['date'] = date
-                    else:
-                        logging.info("Date not in cells!")
-                        print("3", file=sys.stderr)
-                        sys.exit(3)
+    @staticmethod
+    def write_date_from_filename(file_name_save, context):
+        try:
+            date = re.findall('\d{1,2}[.]\d{1,2}[.]\d{2,4}', os.path.basename(file_name_save))[0]
+            date = datetime.datetime.strptime(date, "%d.%m.%y")
+            context['date'] = str(date.date())
+        except IndexError:
+            logging.info("There is no full date in the file name")
 
     def define_header_table_containers_silmar(self, ir, column_position, consignment, number_plomb, container_number,
                                        weight_goods, package_number, goods_name_rus, shipper, consignee):
@@ -48,6 +41,7 @@ class WriteDataFromCsvToJsonSilmar(WriteDataFromCsvToJson):
 
     def read_file_name_save(self, file_name_save, line_file=__file__):
         lines, context, parsed_data = self.create_parsed_data_and_context(file_name_save, input_file_path, line_file)
+        self.write_date_from_filename(file_name_save, context)
         for ir, line in enumerate(lines):
             if (re.findall('Номер Контейнера', line[0]) and re.findall('Тип', line[1]) and
                 re.findall('Размер', line[2])) or self.activate_var:
@@ -98,8 +92,6 @@ class WriteDataFromCsvToJsonSilmar(WriteDataFromCsvToJson):
                         self.write_ship_and_voyage_silmar(line, context, 'ship')
                     elif re.findall('Номер рейса', name):
                         self.write_ship_and_voyage_silmar(line, context, 'voyage')
-                    elif re.findall('Договор с портом', name):
-                        self.write_date(line, context, True)
 
         return parsed_data
 
