@@ -23,30 +23,26 @@ class AkkonLines(Admiral):
         "city": None
     }
 
-    def parse_content_before_table(self, column: str, columns: tuple, parsing_row: str, list_month: list,
-                                   context: dict, row: list) -> None:
+    def parse_ship_and_voyage(self, parsing_row: str, row: list, column: str, context: dict, key: str):
         """
-        Parsing from row the date, ship name and voyage in the cells before the table.
+        Parsing ship name and voyage in the cells before the table.
         """
-        if re.findall(column, parsing_row) and DICT_CONTENT_BEFORE_TABLE[columns] == "date":
-            self.parse_date(parsing_row, list_month, context, row)
-        elif re.findall(column, parsing_row) and DICT_CONTENT_BEFORE_TABLE[columns] == "ship_voyage":
-            self.logger_write.info(f"Will parse ship and trip in value '{parsing_row}'...")
-            index: int = 0
-            for ship_voyage in row:
-                position: int = list(DICT_CONTENT_BEFORE_TABLE.values()).index("ship_voyage_in_other_cells")
-                if re.findall(list(DICT_CONTENT_BEFORE_TABLE.keys())[position][0], ship_voyage):
-                    ship_voyage: str = ship_voyage.replace(column, "").strip()
-                    ship_and_voyage_list: list = ship_voyage.rsplit(' ', 1)
-                    try:
-                        context["voyage"] = re.sub(r'[^\w\s]', '', ship_and_voyage_list[1])
-                        context["ship"] = ship_and_voyage_list[0].strip()
-                    except IndexError:
-                        context["ship"] = ship_voyage if index == 0 else context.get("ship")
-                        context["voyage"] = ship_voyage if index == 1 else context.get("voyage")
-                    finally:
-                        index += 1
-            self.logger_write.info(f"context now is {context}")
+        self.logger_write.info(f"Will parse ship and trip in value '{parsing_row}'...")
+        index: int = 0
+        for ship_voyage in row:
+            position: int = list(DICT_CONTENT_BEFORE_TABLE.values()).index("ship_voyage_in_other_cells")
+            if re.findall(list(DICT_CONTENT_BEFORE_TABLE.keys())[position][0], ship_voyage):
+                ship_voyage: str = ship_voyage.replace(column, "").strip()
+                ship_and_voyage_list: list = ship_voyage.rsplit(' ', 1)
+                try:
+                    context["voyage"] = re.sub(r'[^\w\s]', '', ship_and_voyage_list[1])
+                    context["ship"] = ship_and_voyage_list[0].strip()
+                except IndexError:
+                    context["ship"] = ship_voyage if index == 0 else context.get("ship")
+                    context["voyage"] = ship_voyage if index == 1 else context.get("voyage")
+                finally:
+                    index += 1
+        self.logger_write.info(f"context now is {context}")
 
     def is_table_starting(self, row: list) -> bool:
         """

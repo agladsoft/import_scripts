@@ -34,25 +34,26 @@ LIST_MONTH: List[str] = ["января", "февраля", "марта", "апр
                          'ДЕКАБРЬ']
 
 DICT_HEADERS_COLUMN_ENG: Dict[Tuple, str] = {
-    ("№ п/п",): "number_pp",
+    ("№ п/п", "№"): "number_pp",
     ("Статус",): "container_size_and_type",
     ("Тип",): "container_type",
     ("Размер",): "container_size",
-    ("Номер контейнера",): "container_number",
-    ("Пломба",): "container_seal",
-    ("Вес брутто (кг)",): "goods_weight",
-    ("Количество мест", "Кол-во мест"): "package_number",
-    ("Наименование груза",): "goods_name_rus",
+    ("Номер контейнера", "№контейнера", "№ контейнера"): "container_number",
+    ("Пломба", "№ пломбы"): "container_seal",
+    ("Вес брутто (кг)", "Вес груза         брт, кг ", "Вес груза"): "goods_weight",
+    ("Количество мест", "Кол-во мест", "мест", "Кол-во"): "package_number",
+    ("Наименование груза", "Наименование заявленного груза"): "goods_name_rus",
     ("ТНВЭД",): "goods_tnved",
-    ("Отправитель",): "shipper",
-    ("Страна отправителя",): "shipper_country",
-    ("Получатель",): "consignee",
-    ("Коносамент",): "consignment",
+    ("Отправитель", "Грузоотправитель"): "shipper",
+    ("Страна отправителя", "Страна грузоотправителя", "Страна отправления"): "shipper_country",
+    ("Получатель", "Грузополучатель"): "consignee",
+    ("Коносамент", "№ к/с", "№ Коносамента"): "consignment",
     ("Город",): "city"
 }
 
 DICT_CONTENT_BEFORE_TABLE: Dict[Tuple, str] = {
     ("ДАТА ПРИХОДА", "дата прихода", "Дата прихода"): "date",
     ("ВЫГРУЗКА ГРУЗА С", "Название судна",): "ship_voyage",
-    ("[A-Z0-9]",): "ship_voyage_in_other_cells"
+    ("[A-Z0-9]",): "ship_voyage_in_other_cells",
+    ("Рейс",): "voyage"
 }

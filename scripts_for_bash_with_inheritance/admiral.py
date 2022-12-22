@@ -44,14 +44,21 @@ class Admiral(BaseLine):
         """
         Parsing from row the date, ship name and voyage in the cells before the table.
         """
-        if re.findall(column, parsing_row) and DICT_CONTENT_BEFORE_TABLE[columns] == 'date':
-            self.parse_date(parsing_row, list_month, context, row)
-        elif re.findall(column, parsing_row) and DICT_CONTENT_BEFORE_TABLE[columns] == 'ship_voyage':
-            self.logger_write.info(f"Will parse ship and trip in value '{parsing_row}'...")
-            ship_and_voyage_list: list = parsing_row.replace(column, "").strip().rsplit(' ', 1)
-            context["ship"] = ship_and_voyage_list[0].strip()
-            context["voyage"] = re.sub(r'[^\w\s]', '', ship_and_voyage_list[1])
-            self.logger_write.info(f"context now is {context}")
+        if re.findall(column, parsing_row):
+            if DICT_CONTENT_BEFORE_TABLE[columns] == "date":
+                self.parse_date(parsing_row, list_month, context, row)
+            elif DICT_CONTENT_BEFORE_TABLE[columns] == "ship_voyage":
+                self.parse_ship_and_voyage(parsing_row, row, column, context, "ship_voyage")
+
+    def parse_ship_and_voyage(self, parsing_row: str, row: list, column: str, context: dict, key: str):
+        """
+        Parsing ship name and voyage in the cells before the table.
+        """
+        self.logger_write.info(f"Will parse ship and trip in value '{parsing_row}'...")
+        ship_and_voyage_list: list = parsing_row.replace(column, "").strip().rsplit(' ', 1)
+        context["ship"] = ship_and_voyage_list[0].strip()
+        context["voyage"] = re.sub(r'[^\w\s]', '', ship_and_voyage_list[1])
+        self.logger_write.info(f"context now is {context}")
 
     def get_content_before_table(self, row, context, list_month) -> None:
         """

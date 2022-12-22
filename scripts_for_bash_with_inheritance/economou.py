@@ -1,84 +1,28 @@
-import os
-import logging
 import re
 import sys
-from WriteDataFromCsvToJson import WriteDataFromCsvToJson
+from __init__ import *
+from arkas import Arkas
 
 
-class WriteDataFromCsvToJsonEconomou(WriteDataFromCsvToJson):
+class Economou(Arkas):
 
-    def write_ship_and_voyage(self, line, context):
-        i = 0
-        for parsing_line in line:
-            if re.findall('[A-Za-z0-9]', parsing_line):
-                logging.info(f"Will parse ship and trip in value '{parsing_line}'...")
-                if i == 0: context['ship'] = parsing_line.strip()
-                elif i == 1: context['voyage'] = parsing_line.strip()
-                i += 1
-                logging.info(f"context now is {context}")
-
-    def read_file_name_save(self, file_name_save, line_file=__file__):
-        lines, context, parsed_data = self.create_parsed_data_and_context(file_name_save, input_file_path, line_file)
-        for ir, line in enumerate(lines):
-            if (re.findall('№', line[0]) and re.findall('№контейнера', line[1]) and re.findall('Размер', line[2])) or self.activate_var:
-                self.activate_var = True
-                parsed_record = dict()
-                if self.activate_row_headers:
-                    self.check_error_in_columns([context.get("ship", False), context.get("voyage", False),
-                                                 context.get("date", False)],
-                                                "Keys (ship or voyage or date) not in cells!", 3)
-                    self.activate_row_headers = False
-                    for ir, column_position in enumerate(line):
-                        if re.findall('Размер', column_position): self.ir_container_size = ir
-                        elif re.findall('Тип', column_position): self.ir_container_type = ir
-                        elif re.findall('Город', column_position): self.ir_city = ir
-                        elif re.findall('Страна отправителя', column_position) or re.findall('Страна отправления', column_position): self.ir_shipper_country = ir
-                        self.define_header_table_containers(ir, column_position, '№ к/с', '№ пломбы',
-                                                            'контейнера',
-                                                            'Вес груза', 'Кол-во', 'Наименование заявленного груза',
-                                                            'Грузоотправитель', 'Грузополучатель',
-                                                            '№')
-                    self.check_error_in_columns(
-                        [self.ir_container_size, self.ir_container_type, self.ir_city, self.ir_shipper_country,
-                         self.ir_consignment, self.ir_number_plomb, self.ir_container_number,
-                         self.ir_weight_goods, self.ir_package_number, self.ir_goods_name_rus, self.ir_shipper,
-                         self.ir_consignee, self.ir_number_pp], "Column not in file or changed!", 2)
-                else:
-                    if self.isDigit(line[self.ir_number_pp]):
-                        try:
-                            logging.info(u'line {} is {}'.format(ir, line))
-                            parsed_record['container_size'] = int(float(line[self.ir_container_size]))
-                            parsed_record['container_type'] = line[self.ir_container_type].strip()
-                            parsed_record['shipper_country'] = line[self.ir_shipper_country].strip()
-                            parsed_record['city'] = line[self.ir_city].strip()
-                            record = self.add_value_from_data_to_list(line, self.ir_container_number,
-                                                                      self.ir_weight_goods, self.ir_package_number, self.ir_goods_name_rus,
-                                                                      self.ir_shipper, self.ir_consignee,
-                                                                      self.ir_consignment, parsed_record, context)
-                            logging.info(u"record is {}".format(record))
-                            parsed_data.append(record)
-                        except Exception:
-                            logging.info(f"Error processing in row {ir}!")
-                            print(f"5_in_row_{ir + 1}", file=sys.stderr)
-                            sys.exit(5)
-            else:
-                for name in line:
-                    if re.findall('Название судна', name):
-                        self.write_ship_and_voyage(line, context)
-                    elif re.findall('Дата прихода', name):
-                        self.write_date(line, context, True)
-
-        return parsed_data
-
-    def __call__(self, *args, **kwargs):
-        file_name_save = self.remove_empty_columns_and_rows()
-        parsed_data = self.read_file_name_save(file_name_save)
-        os.remove(file_name_save)
-        return self.write_list_with_containers_in_file(parsed_data)
+    def parse_ship_and_voyage(self, parsing_row: str, row: list, column: str, context: dict, key: str):
+        """
+        Parsing ship name and voyage in the cells before the table.
+        """
+        self.logger_write.info(f"Will parse ship and trip in value '{parsing_row}'...")
+        index: int = 0
+        for ship_voyage in row:
+            position: int = list(DICT_CONTENT_BEFORE_TABLE.values()).index("ship_voyage_in_other_cells")
+            if re.findall(list(DICT_CONTENT_BEFORE_TABLE.keys())[position][0], ship_voyage):
+                if index == 0:
+                    context['ship'] = ship_voyage.strip()
+                elif index == 1:
+                    context['voyage'] = ship_voyage.strip()
+                index += 1
+        self.logger_write.info(f"context now is {context}")
 
 
 if __name__ == '__main__':
-    input_file_path = os.path.abspath(sys.argv[1])
-    output_folder = sys.argv[2]
-    parsed_data = WriteDataFromCsvToJsonEconomou(input_file_path, output_folder)
-    print(parsed_data())
+    parsed_data = Economou(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
+    print(parsed_data.main(is_need_duplicate_containers=False))
