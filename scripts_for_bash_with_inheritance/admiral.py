@@ -23,7 +23,7 @@ class Admiral(BaseLine):
         "city": False,
     }
 
-    def parse_date(self, parsing_row: str, month_list: list, context: dict) -> None:
+    def parse_date(self, parsing_row: str, month_list: list, context: dict, row: list) -> None:
         """
         Getting the date in "%Y-%m-%d" format.
         """
@@ -44,7 +44,7 @@ class Admiral(BaseLine):
         Parsing from row the date, ship name and voyage in the cells before the table.
         """
         if re.findall(column, parsing_row) and DICT_CONTENT_BEFORE_TABLE[columns] == 'date':
-            self.parse_date(parsing_row, list_month, context)
+            self.parse_date(parsing_row, list_month, context, row)
         elif re.findall(column, parsing_row) and DICT_CONTENT_BEFORE_TABLE[columns] == 'ship_voyage':
             self.logger_write.info(f"Will parse ship and trip in value '{parsing_row}'...")
             ship_and_voyage_list: list = parsing_row.replace(column, "").strip().rsplit(' ', 1)

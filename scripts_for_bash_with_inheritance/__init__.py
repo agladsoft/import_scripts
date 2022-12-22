@@ -52,7 +52,8 @@ DICT_HEADERS_COLUMN_ENG: Dict[Tuple, str] = {
 }
 
 DICT_CONTENT_BEFORE_TABLE: Dict[Tuple, str] = {
-    ("ДАТА ПРИХОДА", "дата прихода"): "date",
-    ("ВЫГРУЗКА ГРУЗА С",): "ship_voyage",
-    ("[A-Z0-9]",): "ship_voyage_in_other_cells"
+    ("ДАТА ПРИХОДА", "дата прихода", "Дата прихода"): "date",
+    ("ВЫГРУЗКА ГРУЗА С", "Название судна",): "ship_voyage",
+    ("[A-Z0-9]",): "ship_voyage_in_other_cells",
+    # ("Название судна",): "ship_voyage"
 }

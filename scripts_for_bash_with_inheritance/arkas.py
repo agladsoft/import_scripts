@@ -1,89 +1,81 @@
-import os
-import logging
 import re
 import sys
-from WriteDataFromCsvToJson import WriteDataFromCsvToJson
+import math
+from __init__ import *
+from typing import Union
+from akkon_lines import AkkonLines
+from datetime import datetime, timedelta
 
-input_file_path = os.path.abspath(sys.argv[1])
-output_folder = sys.argv[2]
 
+class Arkas(AkkonLines):
 
-class WriteDataFromCsvToJsonArkas(WriteDataFromCsvToJson):
+    dict_columns_position: Dict[str, Union[bool, int]] = {
+        "number_pp": False,
+        "container_size": False,
+        "container_type": False,
+        "container_number": False,
+        "container_seal": False,
+        "goods_weight": False,
+        "package_number": False,
+        "goods_name_rus": False,
+        "shipper": False,
+        "shipper_country": False,
+        "consignee": False,
+        "consignment": False
+    }
 
-    def define_header_table_containers_arkas(self, ir, column_position, consignment, number_plomb, container_number,
-                                       weight_goods, package_number, goods_name_rus, shipper, consignee):
-        if re.findall(consignment, column_position): self.ir_consignment = ir
-        elif re.findall(number_plomb, column_position): self.ir_number_plomb = ir
-        elif re.findall(container_number, column_position): self.ir_container_number = ir
-        elif re.findall(weight_goods, column_position): self.ir_weight_goods = ir
-        elif re.findall(package_number, column_position): self.ir_package_number = ir
-        elif re.findall(goods_name_rus, column_position): self.ir_goods_name_rus = ir
-        elif re.findall(shipper, column_position): self.ir_shipper = ir
-        elif re.findall(consignee, column_position): self.ir_consignee = ir
+    @staticmethod
+    def convert_xlsx_datetime_to_date(xlsx_datetime):
+        temp_date = datetime(1899, 12, 30)
+        (days, portion) = math.modf(xlsx_datetime)
+        delta_days = timedelta(days=days)
+        secs = int(24 * 60 * 60 * portion)
+        delta_seconds = timedelta(seconds=secs)
+        time = (temp_date + delta_days + delta_seconds)
+        return time.strftime("%Y-%m-%d")
 
-    def read_file_name_save(self, file_name_save, line_file=__file__):
-        lines, context, parsed_data = self.create_parsed_data_and_context(file_name_save, input_file_path, line_file)
-        for ir, line in enumerate(lines):
-            if (re.findall('№', line[0]) and re.findall('контейнера', line[1]) and re.findall('Размер', line[2])) or self.activate_var:
-                self.activate_var = True
-                parsed_record = dict()
-                if self.activate_row_headers:
-                    self.check_error_in_columns([context.get("ship", False), context.get("voyage", False),
-                                                 context.get("date", False)],
-                                                "Keys (ship or voyage or date) not in cells!", 3)
-                    self.activate_row_headers = False
-                    for ir, column_position in enumerate(line):
-                        if re.findall('Размер', column_position): self.ir_container_size = ir
-                        elif re.findall('Тип', column_position): self.ir_container_type = ir
-                        elif re.findall('Страна грузоотправителя', column_position) or re.findall('Страна отправителя', column_position): self.ir_shipper_country = ir
-                        elif re.findall('№ к/с', column_position): self.ir_consignment = ir
-                        elif re.findall('мест', column_position): self.ir_package_number = ir
-                        elif re.findall('Получатель', column_position): self.ir_consignee = ir
-                        elif ('№ п/п' == column_position) or ('№' == column_position): self.ir_number_pp = ir
-                        self.define_header_table_containers_arkas(ir, column_position, '№ Коносамента', '№ пломбы',
-                                                            'контейнера',
-                                                            'Вес груза', 'Кол-во', 'Наименование заявленного груза',
-                                                            'Грузоотправитель', 'Грузополучатель')
-                    self.check_error_in_columns(
-                        [self.ir_container_size, self.ir_container_type, self.ir_shipper_country,
-                         self.ir_consignment, self.ir_number_plomb, self.ir_container_number,
-                         self.ir_weight_goods, self.ir_package_number, self.ir_goods_name_rus, self.ir_shipper,
-                         self.ir_consignee, self.ir_number_pp], "Column not in file or changed!", 2)
-                else:
-                    if self.isDigit(line[self.ir_number_pp]):
-                        try:
-                            logging.info(u'line {} is {}'.format(ir, line))
-                            parsed_record['container_size'] = int(float(line[self.ir_container_size]))
-                            parsed_record['container_type'] = line[self.ir_container_type].strip()
-                            parsed_record['shipper_country'] = line[self.ir_shipper_country].strip()
-                            city = [i for i in line[self.ir_consignee].split(', ')][1:]
-                            parsed_record['city'] = " ".join(city).strip()
-                            record = self.add_value_from_data_to_list(line, self.ir_container_number,
-                                                                      self.ir_weight_goods, self.ir_package_number, self.ir_goods_name_rus,
-                                                                      self.ir_shipper, self.ir_consignee,
-                                                                      self.ir_consignment, parsed_record, context)
-                            logging.info(u"record is {}".format(record))
-                            parsed_data.append(record)
-                        except Exception:
-                            logging.info(f"Error processing in row {ir}!")
-                            print(f"5_in_row_{ir + 1}", file=sys.stderr)
-                            sys.exit(5)
-            else:
-                for name in line:
-                    if re.findall('Название судна', name):
-                        self.write_ship_and_voyage(line, context)
-                    elif re.findall('Дата прихода', name):
-                        self.write_date(line, context, True)
+    def parse_date(self, parsing_row: str, month_list: list, context: dict, row: list) -> None:
+        """
+        Getting the date in "%Y-%m-%d" format.
+        """
+        for parsing_row in row:
+            if re.findall(r'\d{4}-\d{1,2}-\d{1,2}', parsing_row):
+                self.logger_write.info(f"Will parse date in value {parsing_row}...")
+                date = datetime.strptime(parsing_row.replace("T00:00:00.000", ""), "%Y-%m-%d")
+                context['date'] = str(date.date())
+                self.logger_write.info(f"context now is {context}")
+                break
+            elif re.findall(r'\d{1,2}.\d{1,2}.\d{2,4}', parsing_row):
+                self.logger_write.info(f"Will parse date in value {parsing_row}...")
+                date = datetime.strptime(parsing_row, "%d.%m.%Y")
+                context['date'] = str(date.date())
+                self.logger_write.info(f"context now is {context}")
+                break
+            elif re.findall(r'[0-9]', parsing_row):
+                context['date'] = self.convert_xlsx_datetime_to_date(float(parsing_row))
 
-        return parsed_data
-
-    def __call__(self, *args, **kwargs):
-        file_name_save = self.remove_empty_columns_and_rows()
-        parsed_data = self.read_file_name_save(file_name_save)
-        os.remove(file_name_save)
-        return self.write_list_with_containers_in_file(parsed_data)
+    def parse_row(self, index: int, row: list, context: dict, list_data: list) -> None:
+        """
+        Getting values from columns in a table.
+        """
+        self.logger_write.info(f'line {index} is {row}')
+        parsed_record: dict = {'container_size': int(float(row[self.dict_columns_position["container_size"]].strip())),
+                               'container_type': row[self.dict_columns_position["container_type"]].strip(),
+                               'shipper_country': row[self.dict_columns_position["shipper_country"]].strip()}
+        city: list = list(row[self.dict_columns_position["consignee"]].split(', '))[1:]
+        parsed_record['city'] = " ".join(city).strip()
+        record: dict = self.add_value_from_data_to_list(row, self.dict_columns_position["container_number"],
+                                                        self.dict_columns_position["goods_weight"],
+                                                        self.dict_columns_position["package_number"],
+                                                        self.dict_columns_position["goods_name_rus"],
+                                                        self.dict_columns_position["shipper"],
+                                                        self.dict_columns_position["consignee"],
+                                                        self.dict_columns_position["consignment"], parsed_record,
+                                                        context)
+        self.logger_write.info(f"record is {record}")
+        list_data.append(record)
 
 
 if __name__ == '__main__':
-    parsed_data = WriteDataFromCsvToJsonArkas(input_file_path, output_folder)
-    print(parsed_data())
+    parsed_data = Arkas(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
+    print(parsed_data.main(is_need_duplicate_containers=False))

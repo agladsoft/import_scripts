@@ -29,7 +29,7 @@ class AkkonLines(Admiral):
         Parsing from row the date, ship name and voyage in the cells before the table.
         """
         if re.findall(column, parsing_row) and DICT_CONTENT_BEFORE_TABLE[columns] == "date":
-            self.parse_date(parsing_row, list_month, context)
+            self.parse_date(parsing_row, list_month, context, row)
         elif re.findall(column, parsing_row) and DICT_CONTENT_BEFORE_TABLE[columns] == "ship_voyage":
             self.logger_write.info(f"Will parse ship and trip in value '{parsing_row}'...")
             index: int = 0
