@@ -25,13 +25,15 @@ class Arkas(AkkonLines):
     }
 
     @staticmethod
-    def convert_xlsx_datetime_to_date(xlsx_datetime):
-        temp_date = datetime(1899, 12, 30)
+    def convert_xlsx_datetime_to_date(xlsx_datetime: float) -> str:
+        days: float
+        portion: float
+        temp_date: datetime = datetime(1899, 12, 30)
         (days, portion) = math.modf(xlsx_datetime)
-        delta_days = timedelta(days=days)
-        secs = int(24 * 60 * 60 * portion)
-        delta_seconds = timedelta(seconds=secs)
-        time = (temp_date + delta_days + delta_seconds)
+        delta_days: timedelta = timedelta(days=days)
+        secs: int = int(24 * 60 * 60 * portion)
+        delta_seconds: timedelta = timedelta(seconds=secs)
+        time: datetime = (temp_date + delta_days + delta_seconds)
         return time.strftime("%Y-%m-%d")
 
     def parse_date(self, parsing_row: str, month_list: list, context: dict, row: list) -> None:
@@ -41,13 +43,13 @@ class Arkas(AkkonLines):
         for parsing_row in row:
             if re.findall(r'\d{4}-\d{1,2}-\d{1,2}', parsing_row):
                 self.logger_write.info(f"Will parse date in value {parsing_row}...")
-                date = datetime.strptime(parsing_row.replace("T00:00:00.000", ""), "%Y-%m-%d")
+                date: datetime = datetime.strptime(parsing_row.replace("T00:00:00.000", ""), "%Y-%m-%d")
                 context['date'] = str(date.date())
                 self.logger_write.info(f"context now is {context}")
                 break
             elif re.findall(r'\d{1,2}.\d{1,2}.\d{2,4}', parsing_row):
                 self.logger_write.info(f"Will parse date in value {parsing_row}...")
-                date = datetime.strptime(parsing_row, "%d.%m.%Y")
+                date: datetime = datetime.strptime(parsing_row, "%d.%m.%Y")
                 context['date'] = str(date.date())
                 self.logger_write.info(f"context now is {context}")
                 break
