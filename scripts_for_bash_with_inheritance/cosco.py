@@ -4,6 +4,7 @@ from admiral import Admiral
 
 
 class Cosco(Admiral):
+
     def is_table_starting(self, row: list) -> bool:
         """
         Understanding when a headerless table starts.

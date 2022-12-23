@@ -11,6 +11,7 @@ from pandas.io.parsers import read_csv
 
 
 class WriteDataFromCsvToJsonEncoder(json.JSONEncoder):
+
     def default(self, obj):
         if isinstance(obj, BaseLine):
             return obj.__dict__
@@ -18,6 +19,7 @@ class WriteDataFromCsvToJsonEncoder(json.JSONEncoder):
 
 
 class BaseLine:
+
     def __init__(self, input_file_path, output_folder, line_file):
         self.input_file_path: str = input_file_path
         self.output_folder: str = output_folder
