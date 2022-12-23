@@ -1,6 +1,6 @@
 import os
 from typing import Dict, Tuple, List
-from logging import Logger, getLogger, StreamHandler, INFO, FileHandler
+from logging import Logger, getLogger, INFO, FileHandler
 
 
 def write_log(line_file: str) -> Logger:
@@ -44,8 +44,8 @@ DICT_HEADERS_COLUMN_ENG: Dict[Tuple, str] = {
 }
 
 DICT_CONTENT_BEFORE_TABLE: Dict[Tuple, str] = {
-    ("ДАТА ПРИХОДА", "дата прихода", "Дата прихода", "Дата подхода"): "date",
-    ("ВЫГРУЗКА ГРУЗА С", "Название судна", "Наименование судна"): "ship_voyage",
+    ("ДАТА ПРИХОДА", "дата прихода", "Дата прихода", "Дата подхода", "Port of Loading"): "date",
+    ("ВЫГРУЗКА ГРУЗА С", "Название судна", "Наименование судна", "MANIFEST"): "ship_voyage",
     ("[A-Z0-9]",): "ship_voyage_in_other_cells",
     ("Рейс",): "voyage"
 }

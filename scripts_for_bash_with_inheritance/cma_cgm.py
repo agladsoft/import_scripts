@@ -19,7 +19,8 @@ class CmaCgm(Arkas):
             elif DICT_CONTENT_BEFORE_TABLE[columns] == "ship_voyage":
                 self.parse_ship_and_voyage(parsing_row, row, column, context, "ship")
 
-    def parse_ship_and_voyage(self, parsing_row: str, row: list, column: str, context: dict, key: str):
+    def parse_ship_and_voyage(self, parsing_row: str, row: list, column: str, context: dict, key: str,
+                              index_ship: int = 0, index_voyage: int = 1) -> None:
         """
         Parsing ship name and voyage in the cells before the table.
         """

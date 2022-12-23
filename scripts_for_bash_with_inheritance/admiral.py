@@ -50,7 +50,7 @@ class Admiral(BaseLine):
             elif DICT_CONTENT_BEFORE_TABLE[columns] == "ship_voyage":
                 self.parse_ship_and_voyage(parsing_row, row, column, context, "ship_voyage")
 
-    def parse_ship_and_voyage(self, parsing_row: str, row: list, column: str, context: dict, key: str):
+    def parse_ship_and_voyage(self, parsing_row: str, row: list, column: str, context: dict, key: str) -> None:
         """
         Parsing ship name and voyage in the cells before the table.
         """
@@ -151,7 +151,30 @@ class Admiral(BaseLine):
         self.check_errors_in_columns(list(self.dict_columns_position.values()), self.dict_columns_position,
                                      "Error code 2: Column not in file or changed", 2)
 
-    def get_content_from_file(self, file_name_save: str) -> List[dict]:
+    def process_row(self, row: list, index: int, list_data: List[dict], context: dict, list_columns: list,
+                    coefficient_of_header: int) -> None:
+        """
+        # ToDo:
+        """
+        try:
+            if fuzz.partial_ratio(row, list_columns) > coefficient_of_header:
+                self.check_errors_in_header(row, context)
+            elif self.is_table_starting(row):
+                self.get_content_in_table(row, index, list_data, context)
+        except TypeError:
+            self.get_content_before_table(row, context, LIST_MONTH)
+
+    @staticmethod
+    def get_list_columns() -> List[str]:
+        """
+        # ToDo:
+        """
+        list_columns = []
+        for keys in list(DICT_HEADERS_COLUMN_ENG.keys()):
+            list_columns.extend(iter(keys))
+        return list_columns
+
+    def get_content_from_file(self, file_name_save: str, coefficient_of_header: int) -> List[dict]:
         """
         Complete processing of the file.
         """
@@ -159,28 +182,19 @@ class Admiral(BaseLine):
         context: dict
         rows, context = self.create_parsed_data_and_context(file_name_save, self.input_file_path)
         list_data: List[dict] = []
-        list_columns: List[str] = []
-        for keys in list(DICT_HEADERS_COLUMN_ENG.keys()):
-            list_columns.extend(iter(keys))
+        list_columns: List[str] = self.get_list_columns()
         for index, row in enumerate(rows):
-            try:
-                if fuzz.partial_ratio(row, list_columns) > 50:
-                    self.check_errors_in_header(row, context)
-                elif self.is_table_starting(row):
-                    list_data = self.get_content_in_table(row, index, list_data, context)
-            except TypeError:
-                continue
-            finally:
-                self.get_content_before_table(row, context, LIST_MONTH)
+            self.process_row(row, index, list_data, context, list_columns, coefficient_of_header)
         return list_data
 
-    def main(self, is_need_duplicate_containers: bool = True, is_reversed: bool = False, sign: str = '') -> int:
+    def main(self, is_need_duplicate_containers: bool = True, is_reversed: bool = False, sign: str = '',
+             coefficient_of_header: int = 50) -> int:
         """
         Complete processing of the file. As well as deleting empty columns, rows and filling repeating containers
         with data, followed by saving the file in json.
         """
         file_name_save: str = self.remove_empty_columns_and_rows()
-        list_data = self.get_content_from_file(file_name_save)
+        list_data = self.get_content_from_file(file_name_save, coefficient_of_header)
         if is_need_duplicate_containers:
             list_data = self.fill_data_with_duplicate_containers(list_data, sign, is_reversed=is_reversed)
         os.remove(file_name_save)

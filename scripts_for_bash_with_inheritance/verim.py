@@ -7,6 +7,9 @@ from admiral import Admiral
 class Verim(Admiral):
 
     def is_table_starting(self, row: list) -> bool:
+        """
+        # ToDo:
+        """
         return self.is_digit(row[self.dict_columns_position["number_pp"]].replace('/', '.')) \
             or row[self.dict_columns_position["goods_name_rus"]]
 
@@ -17,6 +20,9 @@ class Verim(Admiral):
     @staticmethod
     def update_values_duplicate_containers(set_index: set, index: int, list_data: list, is_reversed: bool,
                                            sign_repeat_container: str) -> None:
+        """
+        # ToDo:
+        """
         key_list: list = list(list_data[list(set_index)[0]].keys())
         val_list: list = list(list_data[list(set_index)[0]].values())
         positions: list = [i for i, d in enumerate(val_list) if d == sign_repeat_container]
@@ -29,6 +35,9 @@ class Verim(Admiral):
     @staticmethod
     def find_duplicate_containers(is_duplicate_containers_in_line: bool, is_reversed: bool, *args: any) \
             -> Tuple[bool, bool]:
+        """
+        # ToDo:
+        """
         for key, value in zip(args[1], args[2]):
             if value == args[3]:
                 try:
@@ -46,6 +55,9 @@ class Verim(Admiral):
         return is_duplicate_containers_in_line, is_reversed
 
     def is_empty_values_in_keys(self, row: dict, index: int) -> None:
+        """
+        # ToDo:
+        """
         if row["container_number"] == '' and row["container_seal"] == '' and row['container_type'] == '' \
                 and row['container_size'] == '':
             self.logger_write.error(f'Container_seal is empty on row {index}')
@@ -53,6 +65,9 @@ class Verim(Admiral):
             sys.exit(5)
 
     def fill_data_with_duplicate_containers(self, list_data: list, sign_repeat_container: str, **kwargs) -> list:
+        """
+        Filling empty cells with data in repeating containers.
+        """
         context: dict = {}
         dict_last_value: dict = {}
         set_index: set = set()
