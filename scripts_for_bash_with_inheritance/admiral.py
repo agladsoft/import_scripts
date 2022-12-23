@@ -74,7 +74,7 @@ class Admiral(BaseLine):
             print("3", file=sys.stderr)
             sys.exit(3)
 
-    def get_column_position(self, row: list) -> None:
+    def get_columns_position(self, row: list) -> None:
         """
         Get the position of each column in the file to process the row related to that column.
         """
@@ -84,12 +84,10 @@ class Admiral(BaseLine):
                     if column == column_eng:
                         self.dict_columns_position[DICT_HEADERS_COLUMN_ENG[columns]] = index
 
-    def parse_row(self, index: int, row: list, context: dict, list_data: list) -> None:
+    def add_frequently_changing_keys(self, row: list, parsed_record: dict) -> None:
         """
-        Getting values from columns in a table.
+        # ToDo:
         """
-        self.logger_write.info(f'row {index} is {row}')
-        parsed_record: dict = {}
         if row[self.dict_columns_position["container_size_and_type"]]:
             parsed_record['container_size'] = \
                 int(re.findall(r"\d{2}", row[self.dict_columns_position["container_size_and_type"]].strip())[0])
@@ -98,8 +96,16 @@ class Admiral(BaseLine):
         else:
             parsed_record['container_size'] = row[self.dict_columns_position["shipper_country"]].strip()
             parsed_record['container_type'] = row[self.dict_columns_position["shipper_country"]].strip()
-        parsed_record['shipper_country'] = row[self.dict_columns_position["shipper_country"]].strip()
         parsed_record['city'] = row[self.dict_columns_position["city"]].strip()
+
+    def parse_row(self, index: int, row: list, context: dict, list_data: list) -> None:
+        """
+        Getting values from columns in a table.
+        """
+        self.logger_write.info(f'row {index} is {row}')
+        parsed_record: dict = {}
+        self.add_frequently_changing_keys(row, parsed_record)
+        parsed_record['shipper_country'] = row[self.dict_columns_position["shipper_country"]].strip()
         record: dict = self.add_value_from_data_to_list(row, self.dict_columns_position["container_number"],
                                                         self.dict_columns_position["goods_weight"],
                                                         self.dict_columns_position["package_number"],
@@ -134,6 +140,17 @@ class Admiral(BaseLine):
              not row[self.dict_columns_position["container_number"]] and
              row[self.dict_columns_position["consignment"]])
 
+    def check_errors_in_header(self, row: list, context: dict) -> None:
+        """
+        # ToDo: Writing
+        """
+        self.check_errors_in_columns([context.get("ship", None), context.get("voyage", None),
+                                      context.get("date", None)], context,
+                                     "Error code 3: Keys (ship, voyage or date) not in cells", 3)
+        self.get_columns_position(row)
+        self.check_errors_in_columns(list(self.dict_columns_position.values()), self.dict_columns_position,
+                                     "Error code 2: Column not in file or changed", 2)
+
     def get_content_from_file(self, file_name_save: str) -> List[dict]:
         """
         Complete processing of the file.
@@ -148,12 +165,7 @@ class Admiral(BaseLine):
         for index, row in enumerate(rows):
             try:
                 if fuzz.partial_ratio(row, list_columns) > 50:
-                    self.check_error_in_columns([context.get("ship", None), context.get("voyage", None),
-                                                 context.get("date", None)], context,
-                                                "Error code 3: Keys (ship, voyage or date) not in cells", 3)
-                    self.get_column_position(row)
-                    self.check_error_in_columns(list(self.dict_columns_position.values()), self.dict_columns_position,
-                                                "Error code 2: Column not in file or changed", 2)
+                    self.check_errors_in_header(row, context)
                 elif self.is_table_starting(row):
                     list_data = self.get_content_in_table(row, index, list_data, context)
             except TypeError:
@@ -162,7 +174,7 @@ class Admiral(BaseLine):
                 self.get_content_before_table(row, context, LIST_MONTH)
         return list_data
 
-    def main(self, is_need_duplicate_containers: bool = True, is_reversed: bool = False) -> int:
+    def main(self, is_need_duplicate_containers: bool = True, is_reversed: bool = False, sign: str = '') -> int:
         """
         Complete processing of the file. As well as deleting empty columns, rows and filling repeating containers
         with data, followed by saving the file in json.
@@ -170,7 +182,7 @@ class Admiral(BaseLine):
         file_name_save: str = self.remove_empty_columns_and_rows()
         list_data = self.get_content_from_file(file_name_save)
         if is_need_duplicate_containers:
-            list_data = self.fill_data_with_duplicate_containers(list_data, '', is_reversed=is_reversed)
+            list_data = self.fill_data_with_duplicate_containers(list_data, sign, is_reversed=is_reversed)
         os.remove(file_name_save)
         self.write_data_in_file(list_data)
         return len(self.count_unique_containers(list_data))

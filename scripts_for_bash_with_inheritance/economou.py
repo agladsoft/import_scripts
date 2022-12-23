@@ -2,6 +2,7 @@ import re
 import sys
 from __init__ import *
 from arkas import Arkas
+from akkon_lines import AkkonLines
 
 
 class Economou(Arkas):
@@ -21,6 +22,9 @@ class Economou(Arkas):
                     context['voyage'] = ship_voyage.strip()
                 index += 1
         self.logger_write.info(f"context now is {context}")
+
+    def add_frequently_changing_keys(self, row: list, parsed_record: dict) -> None:
+        AkkonLines.add_frequently_changing_keys(self, row, parsed_record)
 
 
 if __name__ == '__main__':

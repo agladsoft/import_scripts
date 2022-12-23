@@ -56,26 +56,14 @@ class Arkas(AkkonLines):
             elif re.findall(r'[0-9]', parsing_row):
                 context['date'] = self.convert_xlsx_datetime_to_date(float(parsing_row))
 
-    def parse_row(self, index: int, row: list, context: dict, list_data: list) -> None:
+    def add_frequently_changing_keys(self, row: list, parsed_record: dict) -> None:
         """
-        Getting values from columns in a table.
+        # ToDo:
         """
-        self.logger_write.info(f'line {index} is {row}')
-        parsed_record: dict = {'container_size': int(float(row[self.dict_columns_position["container_size"]].strip())),
-                               'container_type': row[self.dict_columns_position["container_type"]].strip(),
-                               'shipper_country': row[self.dict_columns_position["shipper_country"]].strip()}
+        parsed_record['container_size'] = int(float(row[self.dict_columns_position["container_size"]].strip()))
+        parsed_record['container_type'] = row[self.dict_columns_position["container_type"]].strip()
         city: list = list(row[self.dict_columns_position["consignee"]].split(', '))[1:]
         parsed_record['city'] = " ".join(city).strip()
-        record: dict = self.add_value_from_data_to_list(row, self.dict_columns_position["container_number"],
-                                                        self.dict_columns_position["goods_weight"],
-                                                        self.dict_columns_position["package_number"],
-                                                        self.dict_columns_position["goods_name_rus"],
-                                                        self.dict_columns_position["shipper"],
-                                                        self.dict_columns_position["consignee"],
-                                                        self.dict_columns_position["consignment"], parsed_record,
-                                                        context)
-        self.logger_write.info(f"record is {record}")
-        list_data.append(record)
 
 
 if __name__ == '__main__':

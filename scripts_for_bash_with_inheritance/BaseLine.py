@@ -44,7 +44,7 @@ class BaseLine:
         z.update(y)  # modifies z with keys and values of y
         return z
 
-    def check_error_in_columns(self, list_columns: list, dict_columns: dict, message: str, error_code: int) -> None:
+    def check_errors_in_columns(self, list_columns: list, dict_columns: dict, message: str, error_code: int) -> None:
         """
         Checks for the presence of all columns in the header.
         """
@@ -109,6 +109,20 @@ class BaseLine:
             rows: list = list(csv.reader(csvfile))
         return rows, context
 
+    @staticmethod
+    def is_duplicate_container_in_row(value: str, sign_repeat_container: str, key: str) -> bool:
+        """
+        # ToDo: Writing
+        """
+        return value == sign_repeat_container
+
+    @staticmethod
+    def is_not_duplicate_container_in_row(value: str, sign_repeat_container: str) -> bool:
+        """
+        # ToDo: Writing
+        """
+        return value != sign_repeat_container
+
     def define_is_equal_value_with_sign(self, keys_list: list, values_list: list, context: dict,
                                         list_last_value: dict, parsed_record: dict, sign_repeat_container: str,
                                         record: Union[None, dict] = None) -> Union[None, dict]:
@@ -116,7 +130,7 @@ class BaseLine:
         Defining the current cell's signed equality defining a repeating container.
         """
         for key, value in zip(keys_list, values_list):
-            if value == sign_repeat_container:
+            if self.is_duplicate_container_in_row(value, sign_repeat_container, key):
                 try:
                     context[key] = list_last_value[key]
                 except KeyError:
@@ -124,7 +138,7 @@ class BaseLine:
             else:
                 parsed_record[key] = value
             record: Union[None, dict] = self.merge_two_dicts(context, parsed_record)
-            if value != sign_repeat_container:
+            if self.is_not_duplicate_container_in_row(value, sign_repeat_container):
                 list_last_value[key] = value
         return record
 
