@@ -30,10 +30,9 @@ class WriteDataFromCsvToJsonReelShipping(WriteDataFromCsvToJsonEconomou):
                     if self.isDigit(line[self.ir_number_pp]) or (not self.isDigit(line[self.ir_number_pp])
                                                                  and line[self.ir_container_number] and line[self.ir_consignment]):
                         logging.info(u'line {} is {}'.format(ir, line))
-                        parsed_record['container_size'] = int(float(line[self.ir_container_size])) if \
-                            line[self.ir_container_size].isdigit() else line[self.ir_container_size]
-                        parsed_record['container_type'] = line[self.ir_container_type].strip()
-                        parsed_record['shipper_country'] = line[self.ir_shipper_country].strip()
+                        parsed_record['container_size'] = int(float(line[self.ir_container_size])) if line[self.ir_container_size] else '*'
+                        parsed_record['container_type'] = line[self.ir_container_type].strip() if line[self.ir_container_type] else '*'
+                        parsed_record['shipper_country'] = line[self.ir_shipper_country].strip() if line[self.ir_shipper_country] else '*'
                         city = [i for i in line[self.ir_consignee].split(', ')][1:]
                         parsed_record['city'] = " ".join(city).strip()
                         parsed_record['goods_tnved'] = int(line[self.ir_goods_tnved]) if line[self.ir_goods_tnved] else\
@@ -54,16 +53,16 @@ class WriteDataFromCsvToJsonReelShipping(WriteDataFromCsvToJsonEconomou):
         return parsed_data
 
     def write_duplicate_containers_in_dict(self, parsed_data, values, is_reversed):
-        parsed_data_with_duplicate_containers = list()
-        context = dict()
-        list_last_value = dict()
+        parsed_data_with_duplicate_containers = []
+        context = {}
+        list_last_value = {}
         if is_reversed == 'reversed': parsed_data = reversed(parsed_data)
         for line in parsed_data:
             keys_list = list(line.keys())
             values_list = list(line.values())
-            parsed_record = dict()
+            parsed_record = {}
             for key, value in zip(keys_list, values_list):
-                if value == values or value == '' and key in ['container_size', 'container_type', 'city']:
+                if value == values or (value == '' and key == 'city'):
                     try:
                         context[key] = list_last_value[key]
                     except KeyError:
