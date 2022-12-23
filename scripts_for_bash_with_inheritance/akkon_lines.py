@@ -7,23 +7,12 @@ from admiral import Admiral
 
 class AkkonLines(Admiral):
 
-    dict_columns_position: Dict[str, Union[bool, int]] = {
-        "number_pp": None,
-        "container_size": None,
-        "container_type": None,
-        "container_number": None,
-        "container_seal": None,
-        "goods_weight": None,
-        "package_number": None,
-        "goods_name_rus": None,
-        "shipper": None,
-        "shipper_country": None,
-        "consignee": None,
-        "consignment": None,
-        "city": None
-    }
+    dict_columns_position: Dict[str, Union[None, int]] = Admiral.dict_columns_position
+    del dict_columns_position["container_size_and_type"]
+    dict_columns_position["container_size"] = None
+    dict_columns_position["container_type"] = None
 
-    def parse_ship_and_voyage(self, parsing_row: str, row: list, column: str, context: dict, key: str):
+    def parse_ship_and_voyage(self, parsing_row: str, row: list, column: str, context: dict, key: str) -> None:
         """
         Parsing ship name and voyage in the cells before the table.
         """

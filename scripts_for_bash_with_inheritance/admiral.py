@@ -9,7 +9,7 @@ from BaseLine import BaseLine
 
 class Admiral(BaseLine):
 
-    dict_columns_position: Dict[str, Union[bool, int]] = {
+    dict_columns_position: Dict[str, Union[None, int]] = {
         "number_pp": None,
         "container_size_and_type": None,
         "container_number": None,

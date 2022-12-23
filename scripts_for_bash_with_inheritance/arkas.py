@@ -9,20 +9,8 @@ from datetime import datetime, timedelta
 
 class Arkas(AkkonLines):
 
-    dict_columns_position: Dict[str, Union[bool, int]] = {
-        "number_pp": None,
-        "container_size": None,
-        "container_type": None,
-        "container_number": None,
-        "container_seal": None,
-        "goods_weight": None,
-        "package_number": None,
-        "goods_name_rus": None,
-        "shipper": None,
-        "shipper_country": None,
-        "consignee": None,
-        "consignment": None
-    }
+    dict_columns_position: Dict[str, Union[None, int]] = AkkonLines.dict_columns_position
+    del dict_columns_position["city"]
 
     @staticmethod
     def convert_xlsx_datetime_to_date(xlsx_datetime: float) -> str:
@@ -55,6 +43,22 @@ class Arkas(AkkonLines):
                 break
             elif re.findall(r'[0-9]', parsing_row):
                 context['date'] = self.convert_xlsx_datetime_to_date(float(parsing_row))
+
+    def parse_ship_and_voyage(self, parsing_row: str, row: list, column: str, context: dict, key: str):
+        """
+        Parsing ship name and voyage in the cells before the table.
+        """
+        self.logger_write.info(f"Will parse ship and trip in value '{parsing_row}'...")
+        index: int = 0
+        for ship_voyage in row:
+            position: int = list(DICT_CONTENT_BEFORE_TABLE.values()).index("ship_voyage_in_other_cells")
+            if re.findall(list(DICT_CONTENT_BEFORE_TABLE.keys())[position][0], ship_voyage):
+                if index == 0:
+                    context['ship'] = ship_voyage.strip()
+                elif index == 1:
+                    context['voyage'] = ship_voyage.strip()
+                index += 1
+        self.logger_write.info(f"context now is {context}")
 
     def add_frequently_changing_keys(self, row: list, parsed_record: dict) -> None:
         """

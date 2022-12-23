@@ -6,21 +6,8 @@ from typing import Union, Dict
 
 class Evergreen(Arkas):
 
-    dict_columns_position: Dict[str, Union[bool, int]] = {
-        "number_pp": None,
-        "container_size": None,
-        "container_type": None,
-        "container_number": None,
-        "container_seal": None,
-        "goods_weight": None,
-        "package_number": None,
-        "goods_name_rus": None,
-        "shipper": None,
-        "shipper_country": None,
-        "consignee": None,
-        "consignment": None,
-        "goods_tnved": None
-    }
+    dict_columns_position: Dict[str, Union[None, int]] = Arkas.dict_columns_position
+    dict_columns_position["goods_tnved"] = None
 
     def check_errors_in_header(self, row: list, context: dict) -> None:
         """
@@ -62,7 +49,7 @@ class Evergreen(Arkas):
         """
         Arkas.add_frequently_changing_keys(self, row, parsed_record)
         parsed_record['goods_tnved'] = int(row[self.dict_columns_position["goods_tnved"]]) \
-            if row[self.dict_columns_position["goods_tnved"]] else None
+            if self.dict_columns_position["goods_tnved"] else None
 
 
 if __name__ == '__main__':
