@@ -2,7 +2,6 @@ import re
 import sys
 from __init__ import *
 from typing import Union
-from fuzzywuzzy import fuzz
 from datetime import datetime
 from BaseLine import BaseLine
 
@@ -151,13 +150,18 @@ class Admiral(BaseLine):
         self.check_errors_in_columns(list(self.dict_columns_position.values()), self.dict_columns_position,
                                      "Error code 2: Column not in file or changed", 2)
 
+    @staticmethod
+    def get_probability_of_header(row: list, list_columns: list) -> int:
+        count = sum(element in list_columns for element in row)
+        return int(count / len(row) * 100)
+
     def process_row(self, row: list, index: int, list_data: List[dict], context: dict, list_columns: list,
                     coefficient_of_header: int) -> None:
         """
         # ToDo:
         """
         try:
-            if fuzz.partial_ratio(row, list_columns) > coefficient_of_header:
+            if self.get_probability_of_header(row, list_columns) > coefficient_of_header:
                 self.check_errors_in_header(row, context)
             elif self.is_table_starting(row):
                 self.get_content_in_table(row, index, list_data, context)
@@ -188,7 +192,7 @@ class Admiral(BaseLine):
         return list_data
 
     def main(self, is_need_duplicate_containers: bool = True, is_reversed: bool = False, sign: str = '',
-             coefficient_of_header: int = 50) -> int:
+             coefficient_of_header: int = 30) -> int:
         """
         Complete processing of the file. As well as deleting empty columns, rows and filling repeating containers
         with data, followed by saving the file in json.

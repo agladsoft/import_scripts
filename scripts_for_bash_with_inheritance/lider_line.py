@@ -3,7 +3,6 @@ from __init__ import *
 from typing import Union
 from cma_cgm import CmaCgm
 from akkon_lines import AkkonLines
-from fuzzywuzzy import fuzz
 
 
 class LiderLine(CmaCgm):
@@ -29,7 +28,7 @@ class LiderLine(CmaCgm):
         """
         # ToDo:
         """
-        if fuzz.partial_ratio(row, list_columns) > 50:
+        if self.get_probability_of_header(row, list_columns) > coefficient_of_header:
             self.check_errors_in_header(row, context)
         elif self.is_table_starting(row):
             self.get_content_in_table(row, index, list_data, context)
