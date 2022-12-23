@@ -94,8 +94,8 @@ class Admiral(BaseLine):
             parsed_record['container_type'] = \
                 re.findall("[A-Z a-z]{1,4}", row[self.dict_columns_position["container_size_and_type"]].strip())[0]
         else:
-            parsed_record['container_size'] = row[self.dict_columns_position["shipper_country"]].strip()
-            parsed_record['container_type'] = row[self.dict_columns_position["shipper_country"]].strip()
+            parsed_record['container_size'] = row[self.dict_columns_position["container_size_and_type"]].strip()
+            parsed_record['container_type'] = row[self.dict_columns_position["container_size_and_type"]].strip()
         parsed_record['city'] = row[self.dict_columns_position["city"]].strip()
 
     def parse_row(self, index: int, row: list, context: dict, list_data: list) -> None:
