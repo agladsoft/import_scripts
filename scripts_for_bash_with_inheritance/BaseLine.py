@@ -69,7 +69,8 @@ class BaseLine:
             parsed_record['container_number'] = container_number
         parsed_record['goods_weight'] = float(re.sub(" +", "", row[ir_weight_goods]).replace(',', '.')) if row[
             ir_weight_goods] else None
-        parsed_record['package_number'] = int(float(re.sub(" +", "", row[ir_package_number]))) if row[ir_package_number] else None
+        parsed_record['package_number'] = int(float(re.sub(" +", "", row[ir_package_number]))) \
+            if row[ir_package_number] else None
         parsed_record['goods_name_rus'] = row[ir_goods_name_rus].strip()
         parsed_record['consignment'] = row[ir_consignment].strip()
         parsed_record['shipper'] = row[ir_shipper].strip()

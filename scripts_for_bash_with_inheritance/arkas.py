@@ -24,6 +24,15 @@ class Arkas(AkkonLines):
         time: datetime = (temp_date + delta_days + delta_seconds)
         return time.strftime("%Y-%m-%d")
 
+    def parse_date_format_russia(self, parsing_row, context):
+        self.logger_write.info(f"Will parse date in value {parsing_row}...")
+        try:
+            date: datetime = datetime.strptime(parsing_row, "%d.%m.%Y")
+        except ValueError:
+            date: datetime = datetime.strptime(parsing_row, "%d.%m.%y")
+        context['date'] = str(date.date())
+        self.logger_write.info(f"context now is {context}")
+
     def parse_date(self, parsing_row: str, month_list: list, context: dict, row: list) -> None:
         """
         Getting the date in "%Y-%m-%d" format.
@@ -35,14 +44,12 @@ class Arkas(AkkonLines):
                 context['date'] = str(date.date())
                 self.logger_write.info(f"context now is {context}")
                 break
-            elif re.findall(r'\d{1,2}.\d{1,2}.\d{2,4}', parsing_row):
-                self.logger_write.info(f"Will parse date in value {parsing_row}...")
-                date: datetime = datetime.strptime(parsing_row, "%d.%m.%Y")
-                context['date'] = str(date.date())
-                self.logger_write.info(f"context now is {context}")
+            elif re.findall(r'\d{1,2}[.]\d{1,2}[.]\d{2,4}', parsing_row):
+                self.parse_date_format_russia(parsing_row, context)
                 break
             elif re.findall(r'[0-9]', parsing_row):
                 context['date'] = self.convert_xlsx_datetime_to_date(float(parsing_row))
+                break
 
     def parse_ship_and_voyage(self, parsing_row: str, row: list, column: str, context: dict, key: str,
                               index_ship: int = 0, index_voyage: int = 1) -> None:
