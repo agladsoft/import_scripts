@@ -16,8 +16,8 @@ class Msc(CmaCgm, Evergreen):
     del dict_columns_position["container_type"]
     dict_columns_position["container_size_and_type"] = None
 
-    def check_errors_in_header(self, row: list, context: dict, no_need_column: str = "goods_tnved") -> None:
-        Evergreen.check_errors_in_header(self, row, context)
+    def check_errors_in_header(self, row: list, context: dict, no_need_columns: list = None) -> None:
+        Evergreen.check_errors_in_header(self, row, context, no_need_columns=["goods_tnved"])
 
     def parse_ship_and_voyage2(self, row: list, context: dict) -> None:
         index: int = 0
@@ -75,6 +75,7 @@ class Msc(CmaCgm, Evergreen):
             re.findall("[A-Z a-z]{1,4}", row[self.dict_columns_position["container_size_and_type"]].strip())[0]
         city: list = list(row[self.dict_columns_position["consignee"]].split(', '))[1:]
         parsed_record['city'] = " ".join(city).strip()
+        parsed_record['shipper_country'] = row[self.dict_columns_position["shipper_country"]].strip()
         parsed_record['goods_tnved'] = row[self.dict_columns_position["goods_tnved"]] \
             if self.dict_columns_position["goods_tnved"] else None
 

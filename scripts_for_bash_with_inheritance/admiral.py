@@ -96,6 +96,7 @@ class Admiral(BaseLine):
             parsed_record['container_size'] = row[self.dict_columns_position["container_size_and_type"]].strip()
             parsed_record['container_type'] = row[self.dict_columns_position["container_size_and_type"]].strip()
         parsed_record['city'] = row[self.dict_columns_position["city"]].strip()
+        parsed_record['shipper_country'] = row[self.dict_columns_position["shipper_country"]].strip()
 
     def parse_row(self, index: int, row: list, context: dict, list_data: list) -> None:
         """
@@ -104,7 +105,6 @@ class Admiral(BaseLine):
         self.logger_write.info(f'row {index} is {row}')
         parsed_record: dict = {}
         self.add_frequently_changing_keys(row, parsed_record)
-        parsed_record['shipper_country'] = row[self.dict_columns_position["shipper_country"]].strip()
         record: dict = self.add_value_from_data_to_list(row, self.dict_columns_position["container_number"],
                                                         self.dict_columns_position["goods_weight"],
                                                         self.dict_columns_position["package_number"],

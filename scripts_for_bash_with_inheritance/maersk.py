@@ -35,8 +35,8 @@ class Maersk(Evergreen):
                                    context: dict, row: list, ship_voyage: str = "ship_voyage") -> None:
         Admiral.parse_content_before_table(self, column, columns, parsing_row, list_month, context, row)
 
-    def check_errors_in_header(self, row: list, context: dict, no_need_column: str = "goods_tnved") -> None:
-        Evergreen.check_errors_in_header(self, row, context, "goods_name_rus")
+    def check_errors_in_header(self, row: list, context: dict, no_need_column: list = None) -> None:
+        Evergreen.check_errors_in_header(self, row, context, no_need_columns=["goods_name_rus"])
 
     def is_table_starting(self, row: list) -> tuple:
         """

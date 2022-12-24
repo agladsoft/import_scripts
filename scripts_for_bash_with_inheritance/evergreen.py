@@ -9,7 +9,7 @@ class Evergreen(Arkas):
     dict_columns_position: Dict[str, Union[None, int]] = Arkas.dict_columns_position
     dict_columns_position["goods_tnved"] = None
 
-    def check_errors_in_header(self, row: list, context: dict, no_need_column: str = "goods_tnved") -> None:
+    def check_errors_in_header(self, row: list, context: dict, no_need_columns: list = None) -> None:
         """
         # ToDo: Writing
         """
@@ -18,7 +18,8 @@ class Evergreen(Arkas):
                                      "Error code 3: Keys (ship, voyage or date) not in cells", 3)
         self.get_columns_position(row)
         dict_columns_position = self.dict_columns_position.copy()
-        del dict_columns_position[no_need_column]
+        for delete_column in no_need_columns:
+            del dict_columns_position[delete_column]
         self.check_errors_in_columns(list(dict_columns_position.values()), dict_columns_position,
                                      "Error code 2: Column not in file or changed", 2)
 
