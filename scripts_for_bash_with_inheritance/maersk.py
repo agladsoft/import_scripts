@@ -11,11 +11,11 @@ from datetime import datetime
 class Maersk(Evergreen):
     dict_columns_position: Dict[str, Union[None, int]] = Arkas.dict_columns_position
     del dict_columns_position["number_pp"]
+    del dict_columns_position["goods_tnved"]
     del dict_columns_position["container_size"]
     del dict_columns_position["container_type"]
     del dict_columns_position["container_seal"]
     del dict_columns_position["shipper_country"]
-    del dict_columns_position["goods_tnved"]
     dict_columns_position["container_size_and_type"] = None
 
     def parse_ship_and_voyage(self, parsing_row: str, row: list, column: str, context: dict, key: str,
@@ -32,7 +32,7 @@ class Maersk(Evergreen):
         self.logger_write.info(f"context now is {context}")
 
     def parse_content_before_table(self, column: str, columns: tuple, parsing_row: str, list_month: list,
-                                   context: dict, row: list) -> None:
+                                   context: dict, row: list, ship_voyage: str = "ship_voyage") -> None:
         Admiral.parse_content_before_table(self, column, columns, parsing_row, list_month, context, row)
 
     def check_errors_in_header(self, row: list, context: dict, no_need_column: str = "goods_tnved") -> None:

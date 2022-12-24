@@ -39,14 +39,14 @@ class Admiral(BaseLine):
         self.logger_write.info(f"context now is {context}")
 
     def parse_content_before_table(self, column: str, columns: tuple, parsing_row: str, list_month: list,
-                                   context: dict, row: list) -> None:
+                                   context: dict, row: list, ship_voyage: str = "ship_voyage") -> None:
         """
         Parsing from row the date, ship name and voyage in the cells before the table.
         """
         if re.findall(column, parsing_row):
             if DICT_CONTENT_BEFORE_TABLE[columns] == "date":
                 self.parse_date(parsing_row, list_month, context, row)
-            elif DICT_CONTENT_BEFORE_TABLE[columns] == "ship_voyage":
+            elif DICT_CONTENT_BEFORE_TABLE[columns] == ship_voyage:
                 self.parse_ship_and_voyage(parsing_row, row, column, context, "ship_voyage")
 
     def parse_ship_and_voyage(self, parsing_row: str, row: list, column: str, context: dict, key: str) -> None:
@@ -116,7 +116,7 @@ class Admiral(BaseLine):
         self.logger_write.info(f"record is {record}")
         list_data.append(record)
 
-    def get_content_in_table(self, row: list, index: int, list_data: list, context: dict) -> list:
+    def get_content_in_table(self, row: list, index: int, list_data: list, context: dict) -> None:
         """
         Getting values from columns in a table. And also catching the error.
         """
@@ -126,8 +126,6 @@ class Admiral(BaseLine):
             self.logger_write.error(f"Error code 5: error processing in row {index + 1}!")
             print(f"5_in_row_{index + 1}", file=sys.stderr)
             sys.exit(5)
-        finally:
-            return list_data
 
     def is_table_starting(self, row: list) -> bool:
         """

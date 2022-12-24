@@ -29,7 +29,7 @@ class Evergreen(Arkas):
         return self.is_digit(row[self.dict_columns_position["number_pp"]]) or (
             not self.is_digit(row[self.dict_columns_position["number_pp"]])
             and row[self.dict_columns_position["container_number"]]
-            and row[self.dict_columns_position["consignment"]])
+            and row[self.dict_columns_position["goods_name_rus"]])
 
     def is_duplicate_container_in_row(self, value: str, sign_repeat_container: str, key: str) -> bool:
         """
@@ -48,7 +48,7 @@ class Evergreen(Arkas):
         # ToDo: Writing
         """
         Arkas.add_frequently_changing_keys(self, row, parsed_record)
-        parsed_record['goods_tnved'] = int(row[self.dict_columns_position["goods_tnved"]]) \
+        parsed_record['goods_tnved'] = row[self.dict_columns_position["goods_tnved"]] \
             if self.dict_columns_position["goods_tnved"] else None
 
 

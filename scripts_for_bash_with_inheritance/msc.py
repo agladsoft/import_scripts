@@ -1,169 +1,51 @@
-import os
-import logging
 import re
+import os
 import sys
-import datetime
-from economou import WriteDataFromCsvToJsonEconomou
-
-input_file_path = os.path.abspath(sys.argv[1])
-output_folder = sys.argv[2]
+from admiral import Admiral
+from typing import Union, Dict
+from evergreen import Evergreen
 
 
-class WriteDataFromCsvToJsonMsc(WriteDataFromCsvToJsonEconomou):
+class Msc(Evergreen):
 
-    @staticmethod
-    def is_digit(x):
-        try:
-            x = re.sub('(?<=\d) (?=\d)', '', x)
-            float(x)
-            return True, float(x)
-        except ValueError:
-            return False, x
+    dict_columns_position: Dict[str, Union[None, int]] = Evergreen.dict_columns_position
+    del dict_columns_position["container_size"]
+    del dict_columns_position["container_type"]
+    dict_columns_position["container_size_and_type"] = None
 
-    def write_ship_and_voyage(self, line, context):
-        i = 0
-        for parsing_line in line:
-            if re.findall('[A-Za-z0-9]', parsing_line):
-                logging.info(f"Will parse ship and trip in value '{parsing_line}'...")
-                if i == 0:
-                    if "рейс" in parsing_line:
-                        ship_and_voyage = parsing_line.split("рейс")
-                        context['ship'] = ship_and_voyage[0].replace("Судно:", "").strip()
-                        context['voyage'] = ship_and_voyage[1].replace(":", "").strip()
-                    else:
-                        context['ship'] = parsing_line.strip()
-                elif i == 1:
-                    context['voyage'] = parsing_line.replace('рейс', "").replace(':', "").strip()
-                i += 1
-                logging.info(f"context now is {context}")
+    def parse_ship_and_voyage(self, parsing_row: str, row: list, column: str, context: dict, key: str,
+                              index_ship: int = 0, index_voyage: int = 1) -> None:
+        Admiral.parse_ship_and_voyage(self, parsing_row, row, column, context, key)
 
-    @staticmethod
-    def write_ship_and_voyage_from_string_prilozhenie(line, context):
-        for parsing_line in line:
-            if re.findall('[A-Za-z0-9]', parsing_line) and re.findall('^((?!Телефоны).)*$', parsing_line):
-                logging.info(f"Will parse ship and trip in value '{parsing_line}'...")
-                ship_and_voyage_str = parsing_line.replace('ПРИЛОЖЕНИЕ', "").replace('УВЕДОМЛЕНИЕ О ПРИБЫТИИ', "")
-                ship_and_voyage_list = ship_and_voyage_str.rsplit(' ', 1)
-                context['ship'] = ship_and_voyage_list[0].strip()
-                context['voyage'] = re.sub(r'[^\w\s]', '', ship_and_voyage_list[1])
-                logging.info(f"context now is {context}")
+    def parse_content_before_table(self, column: str, columns: tuple, parsing_row: str, list_month: list,
+                                   context: dict, row: list, ship_voyage: str = "ship_voyage") -> None:
+        Admiral.parse_content_before_table(self, column, columns, parsing_row, list_month, context, row,
+                                           "ship_voyage_msc")
 
-    def write_date(self, line, context, xlsx_data):
-        for parsing_line in line:
-            try:
-                if date_parse := re.findall('\d{2}[.]\d{2}[.]\d{2,4}', parsing_line):
-                    logging.info(f"Will parse date in value {parsing_line}...")
-                    date = datetime.datetime.strptime(date_parse[0], "%d.%m.%Y") if len(date_parse[0].split(".")[2]) == 4 \
-                        else datetime.datetime.strptime(date_parse[0], "%d.%m.%y")
-                    context['date'] = str(date.date())
-                    break
-                elif date_parse := re.findall('\d{4}-\d{1,2}-\d{1,2}', parsing_line):
-                    logging.info(f"Will parse date in value {parsing_line}...")
-                    date = datetime.datetime.strptime(date_parse[0], "%Y-%m-%d")
-                    context['date'] = str(date.date())
-                    break
-                elif re.findall('[0-9]', parsing_line):
-                    date = self.xldate_to_datetime(float(parsing_line))
-                    context['date'] = date
-                    break
-            except IndexError:
-                logging.info("Date not in cells!")
-                print("3", file=sys.stderr)
-                sys.exit(3)
+    def is_table_starting(self, row: list) -> bool:
+        """
+        Understanding when a headerless table starts.
+        """
+        container_number = re.sub(r'(?<=\w) (?=\d)', '', row[self.dict_columns_position["container_number"]].strip())
+        return self.is_digit(row[self.dict_columns_position["number_pp"]]) or (
+            not self.is_digit(row[self.dict_columns_position["number_pp"]])
+            and bool(re.findall(r"\w{4}\d{7}", container_number))
+            and row[self.dict_columns_position["container_size_and_type"]])
 
-    @staticmethod
-    def max_numbers(s):
-        return max(float(i) for i in s.replace(',', '.').split())
-
-    def add_value_from_data_to_list(self, line, ir_container_number, ir_weight_goods, ir_package_number,
-                                    ir_goods_name_rus, ir_shipper, ir_consignee, ir_consignment, parsed_record,
-                                    context):
-        container_number = re.sub('(?<=\w) (?=\d)', '', line[ir_container_number].strip())
-        try:
-            parsed_record['container_number'] = re.findall("\w{4}\d{7}", container_number)[0]
-        except IndexError:
-            parsed_record['container_number'] = container_number
-        parsed_record['goods_weight'] = self.max_numbers(line[ir_weight_goods].replace(' ', '')) if line[ir_weight_goods] else None
-        parsed_record['package_number'] = int(self.is_digit(line[ir_package_number])[1]) if line[ir_package_number] else None
-        parsed_record['goods_name_rus'] = line[ir_goods_name_rus].strip()
-        parsed_record['consignment'] = line[ir_consignment].strip()
-        parsed_record['shipper'] = line[ir_shipper].strip()
-        parsed_record['consignee'] = line[ir_consignee].strip()
-        parsed_record['original_file_name'] = os.path.basename(self.input_file_path)
-        parsed_record['original_file_parsed_on'] = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-        return self.merge_two_dicts(context, parsed_record)
-
-    def read_file_name_save(self, file_name_save, line_file=__file__):
-        lines, context, parsed_data = self.create_parsed_data_and_context(file_name_save, input_file_path, line_file)
-        for ir, line in enumerate(lines):
-            if (re.findall('№', line[0]) and re.findall('№ контейнера', line[1]) and re.findall('Тип', line[2])) or self.activate_var:
-                self.activate_var = True
-                parsed_record = dict()
-                if self.activate_row_headers:
-                    self.check_error_in_columns([context.get("ship", False), context.get("voyage", False),
-                                                 context.get("date", False)],
-                                                "Keys (ship or voyage or date) not in cells!", 3)
-                    self.activate_row_headers = False
-                    for ir, column_position in enumerate(line):
-                        if re.findall('Тип', column_position): self.ir_container_size_and_type = ir
-                        elif re.findall('Город', column_position): self.ir_city = ir
-                        elif re.findall('Страна порта погрузки', column_position) or re.findall('Страна затарки', column_position): self.ir_shipper_country = ir
-                        elif re.findall('Код Тн ВЭД', column_position): self.ir_goods_tnved = ir
-                        self.define_header_table_containers(ir, column_position, '№ к/с', '№ пломбы',
-                                                            'контейнера',
-                                                            'Вес, бр. груза', 'К-во мест',
-                                                            'Наименование заявленного груза',
-                                                            'Грузоотправитель', 'Грузополучатель',
-                                                            '№ пп.')
-                    self.check_error_in_columns(
-                        [self.ir_container_size_and_type,
-                         self.ir_consignment, self.ir_number_plomb, self.ir_container_number,
-                         self.ir_weight_goods, self.ir_package_number, self.ir_goods_name_rus, self.ir_shipper,
-                         self.ir_consignee, self.ir_number_pp], "Column not in file or changed!", 2)
-                else:
-                    if self.isDigit(line[self.ir_number_pp]) or (not self.isDigit(line[self.ir_number_pp])
-                                                                 and line[self.ir_goods_name_rus] and line[
-                                                                     self.ir_weight_goods]) \
-                            and line[self.ir_goods_tnved]:
-                        try:
-                            logging.info(u'line {} is {}'.format(ir, line))
-                            container_size_and_type = re.findall("\w{1,2}", line[self.ir_container_size_and_type].strip())
-                            parsed_record['container_size'] = int(float(container_size_and_type[0]))
-                            parsed_record['container_type'] = container_size_and_type[1]
-                            parsed_record['shipper_country'] = line[self.ir_shipper_country].strip() if self.ir_shipper_country else None
-                            parsed_record['goods_tnved'] = int(line[self.ir_goods_tnved]) if line[self.ir_goods_tnved] and self.ir_goods_tnved else None
-                            parsed_record['city'] = line[self.ir_city].strip() if self.ir_city else None
-                            record = self.add_value_from_data_to_list(line, self.ir_container_number,
-                                                                      self.ir_weight_goods, self.ir_package_number,
-                                                                      self.ir_goods_name_rus,
-                                                                      self.ir_shipper, self.ir_consignee,
-                                                                      self.ir_consignment, parsed_record, context)
-                            logging.info(u"record is {}".format(record))
-                            parsed_data.append(record)
-                        except Exception:
-                            logging.info(f"Error processing in row {ir}!")
-                            print(f"5_in_row_{ir + 1}", file=sys.stderr)
-                            sys.exit(5)
-            else:
-                for name in line:
-                    if (re.findall('Название судна', name) or re.findall('Судно', name)) \
-                            and (not context.get('ship') and not context.get('voyage')):
-                        self.write_ship_and_voyage(line, context)
-                    elif re.findall('Телефоны', name):
-                        self.write_ship_and_voyage_from_string_prilozhenie(line, context)
-                    elif re.findall('Дата прихода', name) or re.findall('Дата прибытия', name):
-                        self.write_date(line, context, False)
-
-        return parsed_data
-
-    def __call__(self, *args, **kwargs):
-        file_name_save = self.remove_empty_columns_and_rows()
-        parsed_data = self.read_file_name_save(file_name_save)
-        parsed_data = self.write_duplicate_containers_in_dict(parsed_data, '', 'not_reversed')
-        os.remove(file_name_save)
-        return self.write_list_with_containers_in_file(parsed_data)
+    def add_frequently_changing_keys(self, row: list, parsed_record: dict) -> None:
+        """
+        # ToDo:
+        """
+        parsed_record['container_size'] = \
+            int(re.findall(r"\d{2}", row[self.dict_columns_position["container_size_and_type"]].strip())[0])
+        parsed_record['container_type'] = \
+            re.findall("[A-Z a-z]{1,4}", row[self.dict_columns_position["container_size_and_type"]].strip())[0]
+        city: list = list(row[self.dict_columns_position["consignee"]].split(', '))[1:]
+        parsed_record['city'] = " ".join(city).strip()
+        parsed_record['goods_tnved'] = row[self.dict_columns_position["goods_tnved"]] \
+            if self.dict_columns_position["goods_tnved"] else None
 
 
 if __name__ == '__main__':
-    parsed_data = WriteDataFromCsvToJsonMsc(input_file_path, output_folder)
-    print(parsed_data())
+    parsed_data = Msc(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
+    print(parsed_data.main())

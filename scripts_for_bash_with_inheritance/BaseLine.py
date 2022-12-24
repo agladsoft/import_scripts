@@ -56,24 +56,24 @@ class BaseLine:
             print(f"{error_code}", file=sys.stderr)
             sys.exit(error_code)
 
-    def add_value_from_data_to_list(self, line: list, ir_container_number: int, ir_weight_goods: int,
+    def add_value_from_data_to_list(self, row: list, ir_container_number: int, ir_weight_goods: int,
                                     ir_package_number: int, ir_goods_name_rus: int, ir_shipper: int, ir_consignee: int,
                                     ir_consignment: int, parsed_record: dict, context: dict) -> dict:
         """
         Adding values from a table to a dictionary.
         """
-        container_number: str = re.sub(r'(?<=\w) (?=\d)', '', line[ir_container_number].strip())
+        container_number: str = re.sub(r'(?<=\w) (?=\d)', '', row[ir_container_number].strip())
         try:
             parsed_record['container_number'] = re.findall(r"\w{4}\d{7}", container_number)[0]
         except IndexError:
             parsed_record['container_number'] = container_number
-        parsed_record['goods_weight'] = float(re.sub(" +", "", line[ir_weight_goods]).replace(',', '.')) if line[
+        parsed_record['goods_weight'] = float(re.sub(" +", "", row[ir_weight_goods]).replace(',', '.')) if row[
             ir_weight_goods] else None
-        parsed_record['package_number'] = int(float(line[ir_package_number])) if line[ir_package_number] else None
-        parsed_record['goods_name_rus'] = line[ir_goods_name_rus].strip()
-        parsed_record['consignment'] = line[ir_consignment].strip()
-        parsed_record['shipper'] = line[ir_shipper].strip()
-        parsed_record['consignee'] = line[ir_consignee].strip()
+        parsed_record['package_number'] = int(float(re.sub(" +", "", row[ir_package_number]))) if row[ir_package_number] else None
+        parsed_record['goods_name_rus'] = row[ir_goods_name_rus].strip()
+        parsed_record['consignment'] = row[ir_consignment].strip()
+        parsed_record['shipper'] = row[ir_shipper].strip()
+        parsed_record['consignee'] = row[ir_consignee].strip()
         parsed_record['original_file_name'] = os.path.basename(self.input_file_path)
         parsed_record['original_file_parsed_on'] = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         return self.merge_two_dicts(context, parsed_record)
