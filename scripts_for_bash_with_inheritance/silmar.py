@@ -23,6 +23,9 @@ class Silmar(CmaCgm, Evergreen):
         self.parse_date_format_russia(date, context)
 
     def is_table_starting(self, row: list) -> bool:
+        """
+        # ToDo:
+        """
         return bool(re.findall(r"\w{4}\d{7}", row[self.dict_columns_position["container_number"]]))
 
     def add_frequently_changing_keys(self, row: list, parsed_record: dict) -> None:
@@ -39,5 +42,5 @@ class Silmar(CmaCgm, Evergreen):
 
 
 if __name__ == '__main__':
-    parsed_data = Silmar(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
+    parsed_data: Silmar = Silmar(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
     print(parsed_data.main(is_need_duplicate_containers=False))

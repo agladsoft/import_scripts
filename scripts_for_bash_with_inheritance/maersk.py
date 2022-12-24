@@ -4,11 +4,12 @@ from __init__ import *
 from arkas import Arkas
 from typing import Union
 from admiral import Admiral
-from evergreen import Evergreen
 from datetime import datetime
+from evergreen import Evergreen
 
 
 class Maersk(Evergreen):
+
     dict_columns_position: Dict[str, Union[None, int]] = Arkas.dict_columns_position
     del dict_columns_position["number_pp"]
     del dict_columns_position["goods_tnved"]
@@ -20,6 +21,9 @@ class Maersk(Evergreen):
 
     def parse_ship_and_voyage(self, parsing_row: str, row: list, column: str, context: dict, key: str,
                               index_ship: int = 0, index_voyage: int = 1) -> None:
+        """
+        # ToDo:
+        """
         Arkas.parse_ship_and_voyage(self, parsing_row, row, column, context, key, 1, 2)
 
     def parse_date(self, parsing_row: str, month_list: list, context: dict, row: list) -> None:
@@ -33,9 +37,15 @@ class Maersk(Evergreen):
 
     def parse_content_before_table(self, column: str, columns: tuple, parsing_row: str, list_month: list,
                                    context: dict, row: list, ship_voyage: str = "ship_voyage") -> None:
+        """
+        # ToDo:
+        """
         Admiral.parse_content_before_table(self, column, columns, parsing_row, list_month, context, row)
 
     def check_errors_in_header(self, row: list, context: dict, no_need_column: list = None) -> None:
+        """
+        # ToDo:
+        """
         Evergreen.check_errors_in_header(self, row, context, no_need_columns=["goods_name_rus"])
 
     def is_table_starting(self, row: list) -> tuple:
@@ -107,5 +117,5 @@ class Maersk(Evergreen):
 
 
 if __name__ == '__main__':
-    parsed_data = Maersk(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
+    parsed_data: Maersk = Maersk(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
     print(parsed_data.main())

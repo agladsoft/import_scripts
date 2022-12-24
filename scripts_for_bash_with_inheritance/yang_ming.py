@@ -1,78 +1,40 @@
-import os
-import logging
-import sys
 import re
-from __init__ import month_list
-from WriteDataFromCsvToJson import WriteDataFromCsvToJson
+import os
+import sys
+from admiral import Admiral
+from typing import Union, Dict
 
 
-input_file_path = os.path.abspath(sys.argv[1])
-output_folder = sys.argv[2]
+class YangMing(Admiral):
 
+    dict_columns_position: Dict[str, Union[None, int]] = Admiral.dict_columns_position
+    del dict_columns_position["shipper_country"]
 
-class WriteDataFromCsvToJsonYangMing(WriteDataFromCsvToJson):
+    def is_table_starting(self, row: list) -> bool:
+        """
+        # ToDo:
+        """
+        return self.is_digit(row[self.dict_columns_position["number_pp"]].rsplit('(')[0]) or \
+            (not row[self.dict_columns_position["number_pp"]] and row[self.dict_columns_position["container_seal"]] and
+             row[self.dict_columns_position["goods_name_rus"]])
 
-    def read_file_name_save(self, file_name_save, line_file=__file__):
-        lines, context, parsed_data = self.create_parsed_data_and_context(file_name_save, input_file_path, line_file)
-        for ir, line in enumerate(lines):
-            if (re.findall('№', line[0]) and re.findall('Статус', line[1]) and re.findall('Номер контейнера', line[2])) or self.activate_var:
-                self.activate_var = True
-                parsed_record = dict()
-                if self.activate_row_headers:
-                    self.check_error_in_columns([context.get("ship", False), context.get("voyage", False),
-                                                 context.get("date", False)],
-                                                "Keys (ship or voyage or date) not in cells!", 3)
-                    self.activate_row_headers = False
-                    for ir, column_position in enumerate(line):
-                        if re.findall('Статус', column_position): self.ir_container_size_and_type = ir
-                        elif re.findall('Город', column_position): self.ir_city = ir
-                        self.define_header_table_containers(ir, column_position, 'Коносамент', 'Пломба',
-                                                            'Номер контейнера',
-                                                            'Вес брутто', 'мест', 'Наименование груза',
-                                                            'Отправитель', 'Получатель',
-                                                            '№ п/п')
-                    self.check_error_in_columns([self.ir_city, self.ir_container_size_and_type,
-                                                 self.ir_consignment, self.ir_number_plomb, self.ir_container_number,
-                                                 self.ir_weight_goods, self.ir_package_number, self.ir_goods_name_rus,
-                                                 self.ir_shipper, self.ir_consignee, self.ir_number_pp],
-                                                "Column not in file or changed!", 2)
-                else:
-                    if self.isDigit(line[self.ir_number_pp].rsplit('(')[0]) or (not line[self.ir_number_pp] and
-                                                                                line[self.ir_container_size_and_type]
-                                                                                and line[self.ir_consignment]):
-                        try:
-                            logging.info(u'line {} is {}'.format(ir, line))
-                            container_size = re.findall("\d{2}", line[self.ir_container_size_and_type].strip())[0]
-                            try:
-                                container_type = re.findall("[A-Z a-z]{1,4}", line[self.ir_container_size_and_type].strip())[0]
-                            except:
-                                container_type = None
-                            parsed_record['container_size'] = int(container_size)
-                            parsed_record['container_type'] = container_type
-                            shipper_country = [i for i in line[self.ir_shipper].split(', ')][-1:]
-                            parsed_record['shipper_country'] = shipper_country[0].strip()
-                            parsed_record['city'] = line[self.ir_city].strip()
-                            record = self.add_value_from_data_to_list(line, self.ir_container_number,
-                                                                      self.ir_weight_goods, self.ir_package_number, self.ir_goods_name_rus,
-                                                                      self.ir_shipper, self.ir_consignee,
-                                                                      self.ir_consignment, parsed_record, context)
-                            logging.info(u"record is {}".format(record))
-                            parsed_data.append(record)
-                        except Exception:
-                            logging.info(f"Error processing in row {ir}!")
-                            print(f"5_in_row_{ir + 1}", file=sys.stderr)
-                            sys.exit(5)
-            else:
-                self.write_data_before_containers_in_one_column(line, context, month_list, "ВЫГРУЗКА ГРУЗА С")
-        return parsed_data
-
-    def __call__(self, *args, **kwargs):
-        file_name_save = self.remove_empty_columns_and_rows()
-        parsed_data = self.read_file_name_save(file_name_save)
-        # os.remove(file_name_save)
-        return self.write_list_with_containers_in_file(parsed_data)
+    def add_frequently_changing_keys(self, row: list, parsed_record: dict) -> None:
+        """
+        # ToDo:
+        """
+        container_size: str = re.findall(r"\d{2}", row[self.dict_columns_position["container_size_and_type"]].strip())[0]
+        try:
+            container_type: Union[str, None] = \
+                re.findall("[A-Z a-z]{1,4}", row[self.dict_columns_position["container_size_and_type"]].strip())[0]
+        except IndexError:
+            container_type = None
+        parsed_record['container_size'] = int(container_size)
+        parsed_record['container_type'] = container_type
+        shipper_country: list = list(row[self.dict_columns_position["shipper"]].split(', '))[-1:]
+        parsed_record['shipper_country'] = shipper_country[0].strip()
+        parsed_record['city'] = row[self.dict_columns_position["city"]].strip()
 
 
 if __name__ == '__main__':
-    parsed_data = WriteDataFromCsvToJsonYangMing(input_file_path, output_folder)
-    print(parsed_data())
+    parsed_data: YangMing = YangMing(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
+    print(parsed_data.main(is_need_duplicate_containers=False))

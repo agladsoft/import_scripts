@@ -14,6 +14,9 @@ class Arkas(AkkonLines):
 
     @staticmethod
     def convert_xlsx_datetime_to_date(xlsx_datetime: float) -> str:
+        """
+        # ToDo:
+        """
         days: float
         portion: float
         temp_date: datetime = datetime(1899, 12, 30)
@@ -25,6 +28,9 @@ class Arkas(AkkonLines):
         return time.strftime("%Y-%m-%d")
 
     def parse_date_format_russia(self, parsing_row, context):
+        """
+        # ToDo:
+        """
         self.logger_write.info(f"Will parse date in value {parsing_row}...")
         try:
             date: datetime = datetime.strptime(parsing_row, "%d.%m.%Y")
@@ -80,5 +86,5 @@ class Arkas(AkkonLines):
 
 
 if __name__ == '__main__':
-    parsed_data = Arkas(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
+    parsed_data: Arkas = Arkas(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
     print(parsed_data.main(is_need_duplicate_containers=False))

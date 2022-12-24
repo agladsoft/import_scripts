@@ -17,9 +17,15 @@ class Msc(CmaCgm, Evergreen):
     dict_columns_position["container_size_and_type"] = None
 
     def check_errors_in_header(self, row: list, context: dict, no_need_columns: list = None) -> None:
+        """
+        # ToDo:
+        """
         Evergreen.check_errors_in_header(self, row, context, no_need_columns=["goods_tnved"])
 
     def parse_ship_and_voyage2(self, row: list, context: dict) -> None:
+        """
+        # ToDo:
+        """
         index: int = 0
         for parsing_row in row:
             if re.findall('[A-Za-z0-9]', parsing_row):
@@ -52,6 +58,9 @@ class Msc(CmaCgm, Evergreen):
 
     def parse_ship_and_voyage(self, parsing_row: str, row: list, column: str, context: dict, key: str,
                               index_ship: int = 0, index_voyage: int = 1) -> None:
+        """
+        # ToDo:
+        """
         with contextlib.suppress(IndexError):
             Admiral.parse_ship_and_voyage(self, parsing_row, row, column, context, key)
 
@@ -80,12 +89,18 @@ class Msc(CmaCgm, Evergreen):
             if self.dict_columns_position["goods_tnved"] else None
 
     def is_duplicate_container_in_row(self, value: str, sign_repeat_container: str, key: str) -> bool:
+        """
+        # ToDo:
+        """
         return BaseLine.is_duplicate_container_in_row(value, sign_repeat_container, key)
 
     def is_not_duplicate_container_in_row(self, value: str, sign_repeat_container: str) -> bool:
+        """
+        # ToDo:
+        """
         return BaseLine.is_not_duplicate_container_in_row(value, sign_repeat_container)
 
 
 if __name__ == '__main__':
-    parsed_data = Msc(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
+    parsed_data: Msc = Msc(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
     print(parsed_data.main())

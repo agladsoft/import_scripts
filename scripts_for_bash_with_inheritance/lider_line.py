@@ -40,6 +40,9 @@ class LiderLine(CmaCgm):
             self.get_content_before_table(row, context, LIST_MONTH)
 
     def add_frequently_changing_keys(self, row: list, parsed_record: dict) -> None:
+        """
+        # ToDo:
+        """
         AkkonLines.add_frequently_changing_keys(self, row, parsed_record)
 
     def change_index_of_column(self, package_number: int, goods_weight: int, consignment: int, shipper: int,
@@ -57,5 +60,5 @@ class LiderLine(CmaCgm):
 
 
 if __name__ == '__main__':
-    parsed_data = LiderLine(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
+    parsed_data: LiderLine = LiderLine(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
     print(parsed_data.main())

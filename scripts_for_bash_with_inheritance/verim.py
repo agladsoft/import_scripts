@@ -14,6 +14,9 @@ class Verim(Admiral):
             or row[self.dict_columns_position["goods_name_rus"]]
 
     def add_frequently_changing_keys(self, row: list, parsed_record: dict) -> None:
+        """
+        # ToDo:
+        """
         Admiral.add_frequently_changing_keys(self, row, parsed_record)
         parsed_record['container_seal'] = row[self.dict_columns_position["container_seal"]].strip()
 
@@ -90,5 +93,5 @@ class Verim(Admiral):
 
 
 if __name__ == '__main__':
-    parsed_data = Verim(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
+    parsed_data: Verim = Verim(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
     print(parsed_data.main())

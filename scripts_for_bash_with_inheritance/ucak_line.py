@@ -8,5 +8,5 @@ class UcakLine(LiderLine):
 
 
 if __name__ == '__main__':
-    parsed_data = UcakLine(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
+    parsed_data: UcakLine = UcakLine(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
     print(parsed_data.main())

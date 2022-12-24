@@ -8,5 +8,5 @@ class Zim(Admiral):
 
 
 if __name__ == '__main__':
-    parsed_data = Zim(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
-    print(parsed_data.main())
+    parsed_data: Zim = Zim(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
+    print(parsed_data.main(is_reversed=True))

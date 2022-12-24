@@ -14,6 +14,9 @@ class Oocl(Msc):
     dict_columns_position["container_type"] = None
 
     def add_frequently_changing_keys(self, row: list, parsed_record: dict) -> None:
+        """
+        # ToDo:
+        """
         Arkas.add_frequently_changing_keys(self, row, parsed_record)
 
     def parse_content_before_table(self, column: str, columns: tuple, parsing_row: str, list_month: list,
@@ -29,5 +32,5 @@ class Oocl(Msc):
 
 
 if __name__ == '__main__':
-    parsed_data = Oocl(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
+    parsed_data: Oocl = Oocl(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
     print(parsed_data.main())
