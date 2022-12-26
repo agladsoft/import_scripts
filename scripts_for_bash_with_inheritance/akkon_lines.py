@@ -58,7 +58,7 @@ class WriteDataFromCsvToJsonAkkonLines(WriteDataFromCsvToJson):
                     if self.isDigit(line[self.ir_number_pp]):
                         logging.info(u'line {} is {}'.format(ir, line))
                         parsed_record['container_size'] = int(float(line[self.ir_container_size]))
-                        parsed_record['container_type'] = line[self.ir_container_type]
+                        parsed_record['container_type'] = line[self.ir_container_type].strip()
                         parsed_record['shipper_country'] = line[self.ir_shipper_country].strip()
                         parsed_record['city'] = line[self.ir_city].strip()
                         record = self.add_value_from_data_to_list(line, self.ir_container_number,
