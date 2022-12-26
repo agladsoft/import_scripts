@@ -67,14 +67,14 @@ class Verim(Admiral):
             print(f"5_in_row_{index + 1}", file=sys.stderr)
             sys.exit(5)
 
-    def fill_data_with_duplicate_containers(self, list_data: list, sign_repeat_container: str, **kwargs) -> list:
+    def fill_data_with_duplicate_containers(self, list_data: list, sign_repeat_container: str,
+                                            is_reversed: bool) -> list:
         """
         Filling empty cells with data in repeating containers.
         """
         context: dict = {}
         dict_last_value: dict = {}
         set_index: set = set()
-        is_reversed: bool = True
         last_container_seal_and_container_dict: dict = {}
         for index, row in enumerate(list_data):
             self.is_empty_values_in_keys(row, index)
@@ -94,5 +94,5 @@ class Verim(Admiral):
 
 if __name__ == '__main__':
     parsed_data: Verim = Verim(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
-    print(parsed_data.main())
+    print(parsed_data.main(is_reversed=True))
     del parsed_data
