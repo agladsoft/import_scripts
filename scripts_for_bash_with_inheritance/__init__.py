@@ -4,7 +4,7 @@ from logging import Logger, getLogger, INFO, FileHandler
 
 
 def write_log(line_file: str) -> Logger:
-    full_dir_name_logging = f'{os.environ.get("XL_IDP_ROOT")}/logging'
+    full_dir_name_logging: str = f'{os.environ.get("XL_IDP_ROOT")}/logging'
     if not os.path.exists(full_dir_name_logging):
         os.mkdir(full_dir_name_logging)
     logger_handler: FileHandler = FileHandler(filename=f'{full_dir_name_logging}/'
