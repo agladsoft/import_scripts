@@ -6,7 +6,16 @@ from datetime import datetime
 from BaseLine import BaseLine
 
 
-class Admiral(BaseLine):
+class Singleton(object):
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not isinstance(cls._instance, cls):
+            cls._instance = object.__new__(cls)
+        return cls._instance
+
+
+class Admiral(Singleton, BaseLine):
 
     dict_columns_position: Dict[str, Union[None, int]] = {
         "number_pp": None,
@@ -167,7 +176,7 @@ class Admiral(BaseLine):
             self.get_content_before_table(row, context, LIST_MONTH)
 
     @staticmethod
-    def get_list_columns() -> List[str]:
+    def __get_list_columns() -> List[str]:
         """
         # ToDo:
         """
@@ -176,7 +185,7 @@ class Admiral(BaseLine):
             list_columns.extend(iter(keys))
         return list_columns
 
-    def get_content_from_file(self, file_name_save: str, coefficient_of_header: int) -> List[dict]:
+    def __get_content_from_file(self, file_name_save: str, coefficient_of_header: int) -> List[dict]:
         """
         Complete processing of the file.
         """
@@ -184,7 +193,7 @@ class Admiral(BaseLine):
         context: dict
         rows, context = self.create_parsed_data_and_context(file_name_save, self.input_file_path)
         list_data: List[dict] = []
-        list_columns: List[str] = self.get_list_columns()
+        list_columns: List[str] = self.__get_list_columns()
         for index, row in enumerate(rows):
             self.process_row(row, index, list_data, context, list_columns, coefficient_of_header)
         return list_data
@@ -196,7 +205,7 @@ class Admiral(BaseLine):
         with data, followed by saving the file in json.
         """
         file_name_save: str = self.remove_empty_columns_and_rows()
-        list_data = self.get_content_from_file(file_name_save, coefficient_of_header)
+        list_data = self.__get_content_from_file(file_name_save, coefficient_of_header)
         if is_need_duplicate_containers:
             list_data = self.fill_data_with_duplicate_containers(list_data, sign, is_reversed=is_reversed)
         os.remove(file_name_save)
@@ -207,3 +216,4 @@ class Admiral(BaseLine):
 if __name__ == '__main__':
     parsed_data: Admiral = Admiral(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
     print(parsed_data.main(is_reversed=True))
+    del parsed_data

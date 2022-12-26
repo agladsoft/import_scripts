@@ -36,3 +36,4 @@ class CmaCgm(Arkas):
 if __name__ == '__main__':
     parsed_data: CmaCgm = CmaCgm(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
     print(parsed_data.main(is_reversed=True))
+    del parsed_data

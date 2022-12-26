@@ -24,3 +24,4 @@ class ReelShipping(Evergreen):
 if __name__ == '__main__':
     parsed_data: ReelShipping = ReelShipping(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
     print(parsed_data.main(sign="*"))
+    del parsed_data

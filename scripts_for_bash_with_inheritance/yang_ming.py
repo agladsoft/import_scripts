@@ -22,7 +22,8 @@ class YangMing(Admiral):
         """
         # ToDo:
         """
-        container_size: str = re.findall(r"\d{2}", row[self.dict_columns_position["container_size_and_type"]].strip())[0]
+        container_size: str = re.findall(r"\d{2}",
+                                         row[self.dict_columns_position["container_size_and_type"]].strip())[0]
         try:
             container_type: Union[str, None] = \
                 re.findall("[A-Z a-z]{1,4}", row[self.dict_columns_position["container_size_and_type"]].strip())[0]
@@ -38,3 +39,4 @@ class YangMing(Admiral):
 if __name__ == '__main__':
     parsed_data: YangMing = YangMing(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
     print(parsed_data.main(is_need_duplicate_containers=False))
+    del parsed_data

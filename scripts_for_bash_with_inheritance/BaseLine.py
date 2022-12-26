@@ -19,6 +19,9 @@ class WriteDataFromCsvToJsonEncoder(json.JSONEncoder):
 
 
 class BaseLine:
+    """
+    Base class for all lines
+    """
 
     def __init__(self, input_file_path, output_folder, line_file):
         self.input_file_path: str = input_file_path
@@ -126,9 +129,9 @@ class BaseLine:
         """
         return value != sign_repeat_container
 
-    def define_is_equal_value_with_sign(self, keys_list: list, values_list: list, context: dict,
-                                        list_last_value: dict, parsed_record: dict, sign_repeat_container: str,
-                                        record: Union[None, dict] = None) -> Union[None, dict]:
+    def __define_is_equal_value_with_sign(self, keys_list: list, values_list: list, context: dict,
+                                          list_last_value: dict, parsed_record: dict, sign_repeat_container: str,
+                                          record: Union[None, dict] = None) -> Union[None, dict]:
         """
         Defining the current cell's signed equality defining a repeating container.
         """
@@ -158,8 +161,8 @@ class BaseLine:
             keys_list: list = list(line.keys())
             values_list: list = list(line.values())
             parsed_record: dict = {}
-            record = self.define_is_equal_value_with_sign(keys_list, values_list, context, list_last_value,
-                                                          parsed_record, sign_repeat_container)
+            record = self.__define_is_equal_value_with_sign(keys_list, values_list, context, list_last_value,
+                                                            parsed_record, sign_repeat_container)
             parsed_data_with_duplicate_containers.append(record)
         return parsed_data_with_duplicate_containers
 
@@ -189,3 +192,7 @@ class BaseLine:
         output_file_path = os.path.join(self.output_folder, f'{basename}.json')
         with open(output_file_path, 'w', encoding='utf-8') as f:
             json.dump(list_data, f, ensure_ascii=False, indent=4, cls=WriteDataFromCsvToJsonEncoder)
+
+    def __del__(self):
+        class_name = self.__class__.__name__
+        print(f"{class_name} deleted")
