@@ -49,6 +49,15 @@ class BaseLine:
         z.update(y)  # modifies z with keys and values of y
         return z
 
+    @staticmethod
+    def remove_symbols_in_columns(row: str) -> str:
+        """
+        Bringing the header column to a unified form.
+        """
+        row: str = re.sub(r" +", " ", row).strip()
+        row: str = re.sub(r"\n", " ", row).strip()
+        return row
+
     def check_errors_in_columns(self, list_columns: list, dict_columns: dict, message: str, error_code: int) -> None:
         """
         Checks for the presence of all columns in the header.
@@ -182,7 +191,7 @@ class BaseLine:
         self.logger_write.info(f"Length is unique containers {len(set_container)}")
         return set_container
 
-    def __write_data_in_file(self, list_data: List[dict]) -> None:
+    def write_data_in_file(self, list_data: List[dict]) -> None:
         """
         Writing data to json.
         """

@@ -82,20 +82,11 @@ class Admiral(Singleton, BaseLine):
             print("3", file=sys.stderr)
             sys.exit(3)
 
-    @staticmethod
-    def __remove_symbols_in_columns(row: str) -> str:
-        """
-        Bringing the header column to a unified form.
-        """
-        row: str = re.sub(r" +", " ", row).strip()
-        row: str = re.sub(r"\n", " ", row).strip()
-        return row
-
     def get_columns_position(self, row: list) -> None:
         """
         Get the position of each column in the file to process the row related to that column.
         """
-        row: list = list(map(self.__remove_symbols_in_columns, row))
+        row: list = list(map(self.remove_symbols_in_columns, row))
         for index, column in enumerate(row):
             for columns in DICT_HEADERS_COLUMN_ENG:
                 for column_eng in columns:
@@ -171,7 +162,7 @@ class Admiral(Singleton, BaseLine):
         """
         Getting the probability of a row as a header.
         """
-        row: list = list(map(self.__remove_symbols_in_columns, row))
+        row: list = list(map(self.remove_symbols_in_columns, row))
         count: int = sum(element in list_columns for element in row)
         return int(count / len(row) * 100)
 
@@ -218,11 +209,11 @@ class Admiral(Singleton, BaseLine):
         with data, followed by saving the file in json.
         """
         file_name_save: str = self.remove_empty_columns_and_rows()
-        list_data = self.__get_content_from_file(file_name_save, coefficient_of_header)
+        list_data: List[dict] = self.__get_content_from_file(file_name_save, coefficient_of_header)
         if is_need_duplicate_containers:
             list_data = self.fill_data_with_duplicate_containers(list_data, sign, is_reversed=is_reversed)
         os.remove(file_name_save)
-        self.__write_data_in_file(list_data)
+        self.write_data_in_file(list_data)
         return len(self.count_unique_containers(list_data))
 
 
