@@ -22,7 +22,7 @@ class Maersk(Evergreen):
     def parse_ship_and_voyage(self, parsing_row: str, row: list, column: str, context: dict, key: str,
                               index_ship: int = 0, index_voyage: int = 1) -> None:
         """
-        # ToDo:
+        Method inheritance from Arkas.
         """
         Arkas.parse_ship_and_voyage(self, parsing_row, row, column, context, key, 1, 2)
 
@@ -38,13 +38,13 @@ class Maersk(Evergreen):
     def parse_content_before_table(self, column: str, columns: tuple, parsing_row: str, list_month: list,
                                    context: dict, row: list, ship_voyage: str = "ship_voyage") -> None:
         """
-        # ToDo:
+        Method inheritance from Admiral.
         """
         Admiral.parse_content_before_table(self, column, columns, parsing_row, list_month, context, row)
 
     def check_errors_in_header(self, row: list, context: dict, no_need_column: list = None) -> None:
         """
-        # ToDo:
+        Method inheritance from Evergreen.
         """
         Evergreen.check_errors_in_header(self, row, context, no_need_columns=["goods_name_rus"])
 
@@ -82,7 +82,7 @@ class Maersk(Evergreen):
 
     def get_container_data(self, row: list, context: dict, parsed_record: dict, list_data: list) -> None:
         """
-        # ToDo:
+        Getting data associated with containers.
         """
         context['container_number'] = row[self.dict_columns_position["container_number"]].strip()
         container_size: list = re.findall(r"\d{2}", row[self.dict_columns_position["container_size_and_type"]].strip())
@@ -98,7 +98,7 @@ class Maersk(Evergreen):
 
     def get_participants(self, row: list, context: dict) -> None:
         """
-        # ToDo:
+        Getting data related to participants.
         """
         context['consignment'] = row[self.dict_columns_position["consignment"]].strip()
         context['shipper'] = row[self.dict_columns_position["shipper"]].strip()
@@ -109,7 +109,7 @@ class Maersk(Evergreen):
 
     def merge_data(self, context: dict, parsed_record: dict, list_data: list) -> None:
         """
-        # ToDo:
+        Merging auxiliary dictionary data with the main one.
         """
         record: dict = self.merge_two_dicts(context, parsed_record)
         self.logger_write.info(f"record is {record}")

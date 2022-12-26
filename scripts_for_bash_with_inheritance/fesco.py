@@ -12,19 +12,19 @@ class Fesco(Economou):
     def parse_ship_and_voyage(self, parsing_row: str, row: list, column: str, context: dict, key: str,
                               index_ship: int = 0, index_voyage: int = 1) -> None:
         """
-        # ToDo:
+        Method inheritance from Economou.
         """
         Economou.parse_ship_and_voyage(self, parsing_row, row, column, context, key)
 
     def is_table_starting(self, row: list) -> bool:
         """
-        # ToDo:
+        Method inheritance from Admiral.
         """
         return Admiral.is_table_starting(self, row)
 
     def add_frequently_changing_keys(self, row: list, parsed_record: dict) -> None:
         """
-        # ToDo:
+        Method inheritance from Admiral.
         """
         Admiral.add_frequently_changing_keys(self, row, parsed_record)
 

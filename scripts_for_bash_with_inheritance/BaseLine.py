@@ -10,7 +10,7 @@ from typing import Union
 from pandas.io.parsers import read_csv
 
 
-class WriteDataFromCsvToJsonEncoder(json.JSONEncoder):
+class JsonEncoder(json.JSONEncoder):
 
     def default(self, obj):
         if isinstance(obj, BaseLine):
@@ -23,11 +23,11 @@ class BaseLine:
     Base class for all lines
     """
 
-    def __init__(self, input_file_path, output_folder, line_file):
+    def __init__(self, input_file_path: str, output_folder: str, line_file: str):
         self.input_file_path: str = input_file_path
         self.output_folder: str = output_folder
         self.logger_write: Logger = write_log(line_file)
-        self.line_file = line_file
+        self.line_file: str = line_file
 
     @staticmethod
     def is_digit(x: str) -> bool:
@@ -118,14 +118,16 @@ class BaseLine:
     @staticmethod
     def is_duplicate_container_in_row(value: str, sign_repeat_container: str, key: str) -> bool:
         """
-        # ToDo: Writing
+        Getting a boolean value to confirm that this column needs to be replaced with
+        the value of the column of the previous row.
         """
         return value == sign_repeat_container
 
     @staticmethod
     def is_not_duplicate_container_in_row(value: str, sign_repeat_container: str) -> bool:
         """
-        # ToDo: Writing
+        Getting a boolean value to confirm that this column does not need to be replaced with
+        the value of the column of the previous row.
         """
         return value != sign_repeat_container
 
@@ -180,7 +182,7 @@ class BaseLine:
         self.logger_write.info(f"Length is unique containers {len(set_container)}")
         return set_container
 
-    def write_data_in_file(self, list_data: List[dict]) -> None:
+    def __write_data_in_file(self, list_data: List[dict]) -> None:
         """
         Writing data to json.
         """
@@ -191,8 +193,8 @@ class BaseLine:
         basename = os.path.basename(self.input_file_path)
         output_file_path = os.path.join(self.output_folder, f'{basename}.json')
         with open(output_file_path, 'w', encoding='utf-8') as f:
-            json.dump(list_data, f, ensure_ascii=False, indent=4, cls=WriteDataFromCsvToJsonEncoder)
+            json.dump(list_data, f, ensure_ascii=False, indent=4, cls=JsonEncoder)
 
     def __del__(self):
-        class_name = self.__class__.__name__
+        class_name: str = self.__class__.__name__
         print(f"{class_name} deleted")

@@ -41,7 +41,7 @@ class AkkonLines(Admiral):
 
     def add_frequently_changing_keys(self, row: list, parsed_record: dict) -> None:
         """
-        # ToDo:
+        Entry in the dictionary of those keys that are often subject to change.
         """
         parsed_record['container_size'] = int(float(row[self.dict_columns_position["container_size"]].strip()))
         parsed_record['container_type'] = row[self.dict_columns_position["container_type"]].strip()

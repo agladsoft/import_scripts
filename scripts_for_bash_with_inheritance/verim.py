@@ -8,14 +8,14 @@ class Verim(Admiral):
 
     def is_table_starting(self, row: list) -> bool:
         """
-        # ToDo:
+        Understanding when a headerless table starts.
         """
         return self.is_digit(row[self.dict_columns_position["number_pp"]].replace('/', '.')) \
             or row[self.dict_columns_position["goods_name_rus"]]
 
     def add_frequently_changing_keys(self, row: list, parsed_record: dict) -> None:
         """
-        # ToDo:
+        Method inheritance from Admiral.
         """
         Admiral.add_frequently_changing_keys(self, row, parsed_record)
         parsed_record['container_seal'] = row[self.dict_columns_position["container_seal"]].strip()
@@ -24,7 +24,7 @@ class Verim(Admiral):
     def update_values_duplicate_containers(set_index: set, index: int, list_data: list, is_reversed: bool,
                                            sign_repeat_container: str) -> None:
         """
-        # ToDo:
+        Update values if the given column is duplicate from the previous row.
         """
         key_list: list = list(list_data[list(set_index)[0]].keys())
         val_list: list = list(list_data[list(set_index)[0]].values())
@@ -39,7 +39,7 @@ class Verim(Admiral):
     def find_duplicate_containers(is_duplicate_containers_in_line: bool, is_reversed: bool, *args: any) \
             -> Tuple[bool, bool]:
         """
-        # ToDo:
+        Find columns that are duplicate from previous row.
         """
         for key, value in zip(args[1], args[2]):
             if value == args[3]:
@@ -59,7 +59,7 @@ class Verim(Admiral):
 
     def is_empty_values_in_keys(self, row: dict, index: int) -> None:
         """
-        # ToDo:
+        If the data for these fields is empty, then we will not be able to determine where the containers are repeated.
         """
         if row["container_number"] == '' and row["container_seal"] == '' and row['container_type'] == '' \
                 and row['container_size'] == '':

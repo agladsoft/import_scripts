@@ -11,7 +11,7 @@ class Evergreen(Arkas):
 
     def check_errors_in_header(self, row: list, context: dict, no_need_columns: list = None) -> None:
         """
-        # ToDo: Writing
+        Checking for columns in the entire document, counting more than just columns on the same line.
         """
         self.check_errors_in_columns([context.get("ship", None), context.get("voyage", None),
                                       context.get("date", None)], context,
@@ -34,19 +34,21 @@ class Evergreen(Arkas):
 
     def is_duplicate_container_in_row(self, value: str, sign_repeat_container: str, key: str) -> bool:
         """
-        # ToDo: Writing
+        Getting a boolean value to confirm that this column needs to be replaced with
+        the value of the column of the previous row.
         """
         return value == sign_repeat_container or not value and key == 'city'
 
     def is_not_duplicate_container_in_row(self, value: str, sign_repeat_container: str) -> bool:
         """
-        # ToDo: Writing
+        Getting a boolean value to confirm that this column does not need to be replaced with
+        the value of the column of the previous row.
         """
         return value not in [sign_repeat_container, '']
 
     def add_frequently_changing_keys(self, row: list, parsed_record: dict) -> None:
         """
-        # ToDo: Writing
+        Method inheritance from Arkas.
         """
         Arkas.add_frequently_changing_keys(self, row, parsed_record)
         parsed_record['goods_tnved'] = row[self.dict_columns_position["goods_tnved"]] \

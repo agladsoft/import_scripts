@@ -26,7 +26,7 @@ class LiderLine(CmaCgm):
     def process_row(self, row: list, index: int, list_data: List[dict], context: dict, list_columns: list,
                     coefficient_of_header: int) -> None:
         """
-        # ToDo:
+        The process of processing each line.
         """
         if self.get_probability_of_header(row, list_columns) > coefficient_of_header:
             self.check_errors_in_header(row, context)
@@ -41,14 +41,14 @@ class LiderLine(CmaCgm):
 
     def add_frequently_changing_keys(self, row: list, parsed_record: dict) -> None:
         """
-        # ToDo:
+        Method inheritance from AkkonLines.
         """
         AkkonLines.add_frequently_changing_keys(self, row, parsed_record)
 
     def change_index_of_column(self, package_number: int, goods_weight: int, consignment: int, shipper: int,
                                shipper_country: int, consignee: int, city: int) -> None:
         """
-        # ToDo:
+        Changing the indexes of columns in the header.
         """
         self.dict_columns_position["package_number"] = package_number
         self.dict_columns_position["goods_weight"] = goods_weight

@@ -12,7 +12,7 @@ class Economou(Arkas):
 
     def add_frequently_changing_keys(self, row: list, parsed_record: dict) -> None:
         """
-        # ToDo:
+        Method inheritance from AkkonLines.
         """
         AkkonLines.add_frequently_changing_keys(self, row, parsed_record)
 

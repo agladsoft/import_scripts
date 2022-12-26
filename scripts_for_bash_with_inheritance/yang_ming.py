@@ -12,7 +12,7 @@ class YangMing(Admiral):
 
     def is_table_starting(self, row: list) -> bool:
         """
-        # ToDo:
+        Understanding when a headerless table starts.
         """
         return self.is_digit(row[self.dict_columns_position["number_pp"]].rsplit('(')[0]) or \
             (not row[self.dict_columns_position["number_pp"]] and row[self.dict_columns_position["container_seal"]] and
@@ -20,7 +20,7 @@ class YangMing(Admiral):
 
     def add_frequently_changing_keys(self, row: list, parsed_record: dict) -> None:
         """
-        # ToDo:
+        Entry in the dictionary of those keys that are often subject to change.
         """
         container_size: str = re.findall(r"\d{2}",
                                          row[self.dict_columns_position["container_size_and_type"]].strip())[0]

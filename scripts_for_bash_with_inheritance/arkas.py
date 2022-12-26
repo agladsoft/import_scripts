@@ -15,7 +15,7 @@ class Arkas(AkkonLines):
     @staticmethod
     def convert_xlsx_datetime_to_date(xlsx_datetime: float) -> str:
         """
-        # ToDo:
+        Convert date to %Y-%m-%d from xlsx value.
         """
         days: float
         portion: float
@@ -29,7 +29,7 @@ class Arkas(AkkonLines):
 
     def parse_date_format_russia(self, parsing_row, context):
         """
-        # ToDo:
+        Getting the date in "%d.%m-%y" format.
         """
         self.logger_write.info(f"Will parse date in value {parsing_row}...")
         try:
@@ -76,7 +76,7 @@ class Arkas(AkkonLines):
 
     def add_frequently_changing_keys(self, row: list, parsed_record: dict) -> None:
         """
-        # ToDo:
+        Entry in the dictionary of those keys that are often subject to change.
         """
         parsed_record['container_size'] = int(float(row[self.dict_columns_position["container_size"]].strip()))
         parsed_record['container_type'] = row[self.dict_columns_position["container_type"]].strip()

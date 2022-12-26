@@ -82,10 +82,20 @@ class Admiral(Singleton, BaseLine):
             print("3", file=sys.stderr)
             sys.exit(3)
 
+    @staticmethod
+    def __remove_symbols_in_columns(row: str) -> str:
+        """
+        Bringing the header column to a unified form.
+        """
+        row: str = re.sub(r" +", " ", row).strip()
+        row: str = re.sub(r"\n", " ", row).strip()
+        return row
+
     def get_columns_position(self, row: list) -> None:
         """
         Get the position of each column in the file to process the row related to that column.
         """
+        row: list = list(map(self.__remove_symbols_in_columns, row))
         for index, column in enumerate(row):
             for columns in DICT_HEADERS_COLUMN_ENG:
                 for column_eng in columns:
@@ -94,7 +104,7 @@ class Admiral(Singleton, BaseLine):
 
     def add_frequently_changing_keys(self, row: list, parsed_record: dict) -> None:
         """
-        # ToDo:
+        Entry in the dictionary of those keys that are often subject to change.
         """
         if row[self.dict_columns_position["container_size_and_type"]]:
             parsed_record['container_size'] = \
@@ -148,7 +158,7 @@ class Admiral(Singleton, BaseLine):
 
     def check_errors_in_header(self, row: list, context: dict) -> None:
         """
-        # ToDo: Writing
+        Checking for columns in the entire document, counting more than just columns on the same line.
         """
         self.check_errors_in_columns([context.get("ship", None), context.get("voyage", None),
                                       context.get("date", None)], context,
@@ -157,15 +167,18 @@ class Admiral(Singleton, BaseLine):
         self.check_errors_in_columns(list(self.dict_columns_position.values()), self.dict_columns_position,
                                      "Error code 2: Column not in file or changed", 2)
 
-    @staticmethod
-    def get_probability_of_header(row: list, list_columns: list) -> int:
-        count = sum(element in list_columns for element in row)
+    def get_probability_of_header(self, row: list, list_columns: list) -> int:
+        """
+        Getting the probability of a row as a header.
+        """
+        row: list = list(map(self.__remove_symbols_in_columns, row))
+        count: int = sum(element in list_columns for element in row)
         return int(count / len(row) * 100)
 
     def process_row(self, row: list, index: int, list_data: List[dict], context: dict, list_columns: list,
                     coefficient_of_header: int) -> None:
         """
-        # ToDo:
+        The process of processing each line.
         """
         try:
             if self.get_probability_of_header(row, list_columns) > coefficient_of_header:
@@ -178,7 +191,7 @@ class Admiral(Singleton, BaseLine):
     @staticmethod
     def __get_list_columns() -> List[str]:
         """
-        # ToDo:
+        Getting all column names for all lines in the __init__.py file.
         """
         list_columns = []
         for keys in list(DICT_HEADERS_COLUMN_ENG.keys()):
@@ -209,7 +222,7 @@ class Admiral(Singleton, BaseLine):
         if is_need_duplicate_containers:
             list_data = self.fill_data_with_duplicate_containers(list_data, sign, is_reversed=is_reversed)
         os.remove(file_name_save)
-        self.write_data_in_file(list_data)
+        self.__write_data_in_file(list_data)
         return len(self.count_unique_containers(list_data))
 
 

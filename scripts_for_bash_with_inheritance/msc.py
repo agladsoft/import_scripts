@@ -18,13 +18,13 @@ class Msc(CmaCgm, Evergreen):
 
     def check_errors_in_header(self, row: list, context: dict, no_need_columns: list = None) -> None:
         """
-        # ToDo:
+        Checking for columns in the entire document, counting more than just columns on the same line.
         """
         Evergreen.check_errors_in_header(self, row, context, no_need_columns=["goods_tnved"])
 
     def parse_ship_and_voyage2(self, row: list, context: dict) -> None:
         """
-        # ToDo:
+        Parsing ship name and voyage in the cells before the table.
         """
         index: int = 0
         for parsing_row in row:
@@ -59,7 +59,7 @@ class Msc(CmaCgm, Evergreen):
     def parse_ship_and_voyage(self, parsing_row: str, row: list, column: str, context: dict, key: str,
                               index_ship: int = 0, index_voyage: int = 1) -> None:
         """
-        # ToDo:
+        Parsing ship name and voyage in the cells before the table.
         """
         with contextlib.suppress(IndexError):
             Admiral.parse_ship_and_voyage(self, parsing_row, row, column, context, key)
@@ -68,7 +68,8 @@ class Msc(CmaCgm, Evergreen):
         """
         Understanding when a headerless table starts.
         """
-        container_number = re.sub(r'(?<=\w) (?=\d)', '', row[self.dict_columns_position["container_number"]].strip())
+        container_number: str = re.sub(r'(?<=\w) (?=\d)', '',
+                                       row[self.dict_columns_position["container_number"]].strip())
         return self.is_digit(row[self.dict_columns_position["number_pp"]]) or (
                 not self.is_digit(row[self.dict_columns_position["number_pp"]])
                 and bool(re.findall(r"\w{4}\d{7}", container_number))
@@ -76,7 +77,7 @@ class Msc(CmaCgm, Evergreen):
 
     def add_frequently_changing_keys(self, row: list, parsed_record: dict) -> None:
         """
-        # ToDo:
+        Entry in the dictionary of those keys that are often subject to change.
         """
         parsed_record['container_size'] = \
             int(re.findall(r"\d{2}", row[self.dict_columns_position["container_size_and_type"]].strip())[0])
@@ -90,13 +91,13 @@ class Msc(CmaCgm, Evergreen):
 
     def is_duplicate_container_in_row(self, value: str, sign_repeat_container: str, key: str) -> bool:
         """
-        # ToDo:
+        Method inheritance from BaseLine.
         """
         return BaseLine.is_duplicate_container_in_row(value, sign_repeat_container, key)
 
     def is_not_duplicate_container_in_row(self, value: str, sign_repeat_container: str) -> bool:
         """
-        # ToDo:
+        Method inheritance from BaseLine.
         """
         return BaseLine.is_not_duplicate_container_in_row(value, sign_repeat_container)
 
