@@ -56,7 +56,7 @@ do
 	fi
 
 	# Will convert csv to json
-	python3 ${XL_IDP_ROOT}/scripts_for_bash_with_inheritance/flat_import_nle.py "${csv_name}" "${json_path}"
+	python3 ${XL_IDP_ROOT}/scripts/flat_import_nle.py "${csv_name}" "${json_path}"
 
   if [ $? -eq 0 ]
 	then
