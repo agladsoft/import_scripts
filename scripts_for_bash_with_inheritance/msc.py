@@ -6,7 +6,6 @@ from cma_cgm import CmaCgm
 from admiral import Admiral
 from typing import Union, Dict
 from evergreen import Evergreen
-from BaseLine import BaseLine
 
 
 class Msc(CmaCgm, Evergreen):
@@ -93,13 +92,13 @@ class Msc(CmaCgm, Evergreen):
         """
         Method inheritance from BaseLine.
         """
-        return BaseLine.is_duplicate_container_in_row(value, sign_repeat_container, key)
+        return CmaCgm.is_duplicate_container_in_row(value, sign_repeat_container, key)
 
     def is_not_duplicate_container_in_row(self, value: str, sign_repeat_container: str) -> bool:
         """
         Method inheritance from BaseLine.
         """
-        return BaseLine.is_not_duplicate_container_in_row(value, sign_repeat_container)
+        return CmaCgm.is_not_duplicate_container_in_row(value, sign_repeat_container)
 
 
 if __name__ == '__main__':
