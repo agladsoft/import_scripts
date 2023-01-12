@@ -106,22 +106,26 @@ class WriteDataFromCsvToJsonLiderLine(WriteDataFromCsvToJson):
                 parsed_record['container_type'] = line[3].strip()
                 parsed_record['container_size'] = int(float(line[2]))
                 parsed_record['shipper_country'] = line[14].strip()
-                parsed_record['city'] = line[16].strip()
-                if context['date'] == '1970-01-01':
-                    context['date'] = str(datetime.datetime.strptime(line[12].strip(), "%d.%m.%Y").date())
-                record = self.add_value_from_data_to_list(line, ir_container_number=1, ir_weight_goods=10,
-                                                          ir_package_number=9, ir_goods_name_rus=7, ir_shipper=13,
-                                                          ir_consignee=15, ir_consignment=11,
-                                                          parsed_record=parsed_record, context=context)
-                parsed_data.append(record)
+                try:
+                    parsed_record['city'] = line[16].strip()
+                    record = self.add_value_from_data_to_list(line, ir_container_number=1, ir_weight_goods=10,
+                                                              ir_package_number=9, ir_goods_name_rus=7, ir_shipper=13,
+                                                              ir_consignee=15, ir_consignment=11,
+                                                              parsed_record=parsed_record, context=context)
+                except ValueError:
+                    parsed_record['city'] = line[17].strip()
+                    record = self.add_value_from_data_to_list(line, ir_container_number=1, ir_weight_goods=11,
+                                                              ir_package_number=10, ir_goods_name_rus=7, ir_shipper=14,
+                                                              ir_consignee=16, ir_consignment=12,
+                                                              parsed_record=parsed_record, context=context)
+                finally:
+                    parsed_data.append(record)
             elif self.isDigit(line[self.ir_number_pp]) and not eng_goods_name:
                 parsed_record = dict()
                 parsed_record['container_type'] = line[3].strip()
                 parsed_record['container_size'] = int(float(line[2]))
                 parsed_record['shipper_country'] = line[13].strip()
                 parsed_record['city'] = line[15].strip()
-                if context['date'] == '1970-01-01':
-                    context['date'] = str(datetime.datetime.strptime(line[11].strip(), "%d.%m.%Y").date())
                 record = self.add_value_from_data_to_list(line, ir_container_number=1, ir_weight_goods=9,
                                                           ir_package_number=8, ir_goods_name_rus=7, ir_shipper=12,
                                                           ir_consignee=14, ir_consignment=10,
@@ -139,10 +143,10 @@ class WriteDataFromCsvToJsonLiderLine(WriteDataFromCsvToJson):
 
     def __call__(self, *args, **kwargs):
         file_name_save = self.remove_empty_columns_and_rows()
-        if re.findall('xml', os.path.basename(file_name_save)):
-            parsed_data = self.read_file_name_save_from_xml(file_name_save)
-        else:
-            parsed_data = self.read_file_name_save(file_name_save)
+        # if re.findall('xml', os.path.basename(file_name_save)):
+        parsed_data = self.read_file_name_save_from_xml(file_name_save)
+        # else:
+        #     parsed_data = self.read_file_name_save(file_name_save)
         # os.remove(file_name_save)
         return self.write_list_with_containers_in_file(parsed_data)
 
