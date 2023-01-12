@@ -3,6 +3,7 @@ import re
 import sys
 import logging
 import datetime
+import sys
 from lider_line import WriteDataFromCsvToJsonLiderLine
 
 input_file_path = os.path.abspath(sys.argv[1])
