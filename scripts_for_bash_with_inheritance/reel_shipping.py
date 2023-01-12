@@ -53,14 +53,14 @@ class WriteDataFromCsvToJsonReelShipping(WriteDataFromCsvToJsonEconomou):
         return parsed_data
 
     def write_duplicate_containers_in_dict(self, parsed_data, values, is_reversed):
-        parsed_data_with_duplicate_containers = list()
-        context = dict()
-        list_last_value = dict()
+        parsed_data_with_duplicate_containers = []
+        context = {}
+        list_last_value = {}
         if is_reversed == 'reversed': parsed_data = reversed(parsed_data)
         for line in parsed_data:
             keys_list = list(line.keys())
             values_list = list(line.values())
-            parsed_record = dict()
+            parsed_record = {}
             for key, value in zip(keys_list, values_list):
                 if value == values or (value == '' and key == 'city'):
                     try:
