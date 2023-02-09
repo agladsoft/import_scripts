@@ -69,7 +69,7 @@ do
 	then
 	  mv "${csv_name}" "${done_path}"
 	else
-    for error_code in {1..5}
+    for error_code in {1..6}
     do
       if [[ ${exit_code} == "${error_code}" ]]
       then

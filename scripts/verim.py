@@ -94,5 +94,9 @@ class Verim(Admiral):
 
 if __name__ == '__main__':
     parsed_data: Verim = Verim(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
-    print(parsed_data.main(is_reversed=True))
+    try:
+        print(parsed_data.main(is_reversed=True))
+    except (ValueError, ImportError, IndexError, SyntaxError, TypeError, AttributeError) as ex:
+        print("6", file=sys.stderr)
+        sys.exit(6)
     del parsed_data

@@ -1,17 +1,11 @@
 #!/bin/bash
 
-xls_path="${XL_IDP_PATH_IMPORT}/lines_${XL_IMPORT_TERMINAL}/milaha/"
-#xls_path=/home/timur/Anton_project/import_xls-master/lines_nutep/milaha
+xls_path="${XL_IDP_PATH_IMPORT}/lines_${XL_IMPORT_TERMINAL}/ovp/"
 
 csv_path="${xls_path}"/csv
 if [ ! -d "$csv_path" ]; then
   mkdir "${csv_path}"
 fi
-
-#fail_path="${xls_path}"/fail
-#if [ ! -d "$fail_path" ]; then
-#  mkdir "${fail_path}"
-#fi
 
 done_path="${xls_path}"/done
 if [ ! -d "$done_path" ]; then
@@ -60,7 +54,7 @@ do
 	fi
 
 	# Will convert csv to json
-	exit_message=$(python3 ${XL_IDP_ROOT}/scripts/milaha.py "${csv_name}" "${json_path}" 2>&1 > /dev/null)
+	exit_message=$(python3 ${XL_IDP_ROOT}/scripts/ovp.py "${csv_name}" "${json_path}" 2>&1 > /dev/null)
 
   exit_code=$?
   echo "Exit code ${exit_code}"

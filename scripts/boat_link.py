@@ -1,14 +1,14 @@
 import os
 import sys
-from verim import Verim
+from admiral import Admiral
 
 
-class Lam(Verim):
+class BoatLink(Admiral):
     pass
 
 
 if __name__ == '__main__':
-    parsed_data: Lam = Lam(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
+    parsed_data: BoatLink = BoatLink(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
     try:
         print(parsed_data.main())
     except (ValueError, ImportError, IndexError, SyntaxError, TypeError, AttributeError) as ex:
