@@ -8,6 +8,8 @@ from economou import Economou
 class Fesco(Economou):
 
     dict_columns_position: Dict[str, Union[bool, int]] = Admiral.dict_columns_position
+    del dict_columns_position["container_size"]
+    del dict_columns_position["container_type"]
 
     def parse_ship_and_voyage(self, parsing_row: str, row: list, column: str, context: dict, key: str,
                               index_ship: int = 0, index_voyage: int = 1) -> None:
