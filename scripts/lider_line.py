@@ -23,6 +23,16 @@ class LiderLine(CmaCgm):
         "city": 16
     }
 
+    def check_errors_in_header(self, row: list, context: dict) -> None:
+        """
+        Checking for columns in the entire document, counting more than just columns on the same line.
+        """
+        self.check_errors_in_columns([context.get("ship", None), context.get("voyage", None),
+                                      context.get("date", None)], context,
+                                     "Error code 3: Keys (ship, voyage or date) not in cells", 3)
+        self.check_errors_in_columns(list(self.dict_columns_position.values()), self.dict_columns_position,
+                                     "Error code 2: Column not in file or changed", 2)
+
     def process_row(self, row: list, index: int, list_data: List[dict], context: dict, list_columns: list,
                     coefficient_of_header: int) -> None:
         """
