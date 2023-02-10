@@ -13,6 +13,8 @@ class Evergreen(Arkas):
         """
         Checking for columns in the entire document, counting more than just columns on the same line.
         """
+        if no_need_columns is None:
+            no_need_columns = []
         self.check_errors_in_columns([context.get("ship", None), context.get("voyage", None),
                                       context.get("date", None)], context,
                                      "Error code 3: Keys (ship, voyage or date) not in cells", 3)

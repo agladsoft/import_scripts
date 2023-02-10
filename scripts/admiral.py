@@ -132,7 +132,7 @@ class Admiral(Singleton, BaseLine):
         """
         try:
             self.parse_row(index, row, context, list_data)
-        except (IndexError, ValueError):
+        except (IndexError, ValueError, TypeError):
             self.logger_write.error(f"Error code 5: error processing in row {index + 1}!")
             print(f"5_in_row_{index + 1}", file=sys.stderr)
             sys.exit(5)
