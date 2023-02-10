@@ -32,12 +32,12 @@ class Msc(CmaCgm, Evergreen):
                 if index == 0:
                     if "рейс" in parsing_row:
                         ship_and_voyage: list = parsing_row.split("рейс")
-                        context['ship'] = ship_and_voyage[0].replace("Судно:", "").strip()
-                        context['voyage'] = ship_and_voyage[1].replace(":", "").strip()
+                        context['ship'] = self.remove_keys_in_data(ship_and_voyage[0])
+                        context['voyage'] = self.remove_keys_in_data(ship_and_voyage[1])
                     else:
                         context['ship'] = parsing_row.strip()
                 elif index == 1:
-                    context['voyage'] = parsing_row.replace('рейс', "").replace(':', "").strip()
+                    context['voyage'] = self.remove_keys_in_data(parsing_row)
                 index += 1
                 self.logger_write.info(f"context now is {context}")
 

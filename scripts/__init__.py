@@ -52,6 +52,6 @@ DICT_CONTENT_BEFORE_TABLE: Dict[Tuple, str] = {
     ("ВЫГРУЗКА ГРУЗА С", "Название судна", "Наименование судна", "MANIFEST", "Судно", "Название парохода"):
         "ship_voyage",
     ("[A-Z0-9]",): "ship_voyage_in_other_cells",
-    ("Рейс", "Номер рейса"): "voyage",
+    ("Рейс", "Номер рейса", "рейс"): "voyage",
     ("ПРИЛОЖЕНИЕ", "УВЕДОМЛЕНИЕ О ПРИБЫТИИ"): "ship_voyage_msc"
 }

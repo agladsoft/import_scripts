@@ -27,6 +27,17 @@ class Arkas(AkkonLines):
         time: datetime = (temp_date + delta_days + delta_seconds)
         return time.strftime("%Y-%m-%d")
 
+    @staticmethod
+    def remove_keys_in_data(word: str) -> str:
+        """
+        Removing keys in voyage, ship and date.
+        """
+        for keys, value in list(DICT_CONTENT_BEFORE_TABLE.items()):
+            if value in ['voyage', 'ship_voyage', 'date']:
+                for key in keys:
+                    word: str = word.replace(key, "").translate({ord(c): "" for c in ":;"}).strip()
+        return word
+
     def parse_date_format_russia(self, parsing_row, context):
         """
         Getting the date in "%d.%m-%y" format.
@@ -51,7 +62,7 @@ class Arkas(AkkonLines):
                 self.logger_write.info(f"context now is {context}")
                 break
             elif re.findall(r'\d{1,2}[.]\d{1,2}[.]\d{2,4}', parsing_row):
-                self.parse_date_format_russia(parsing_row, context)
+                self.parse_date_format_russia(self.remove_keys_in_data(parsing_row), context)
                 break
             elif re.findall(r'[0-9]', parsing_row):
                 context['date'] = self.convert_xlsx_datetime_to_date(float(parsing_row))
@@ -69,9 +80,9 @@ class Arkas(AkkonLines):
             position: int = list(DICT_CONTENT_BEFORE_TABLE.values()).index("ship_voyage_in_other_cells")
             if re.findall(list(DICT_CONTENT_BEFORE_TABLE.keys())[position][0], ship_voyage):
                 if index == index_ship:
-                    context['ship'] = ship_voyage.strip()
+                    context['ship'] = self.remove_keys_in_data(ship_voyage)
                 elif index == index_voyage:
-                    context['voyage'] = ship_voyage.strip()
+                    context['voyage'] = self.remove_keys_in_data(ship_voyage)
                 index += 1
         self.logger_write.info(f"context now is {context}")
 
