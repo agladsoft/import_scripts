@@ -56,6 +56,7 @@ class Arkas(AkkonLines):
             elif re.findall(r'[0-9]', parsing_row):
                 context['date'] = self.convert_xlsx_datetime_to_date(float(parsing_row))
                 break
+        self.logger_write.info(f"context now is {context}")
 
     def parse_ship_and_voyage(self, parsing_row: str, row: list, column: str, context: dict, key: str,
                               index_ship: int = 0, index_voyage: int = 1) -> None:
