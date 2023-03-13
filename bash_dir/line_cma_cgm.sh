@@ -28,7 +28,6 @@ do
 
   if [[ "${file}" == *"error_"* ]];
   then
-    echo "Contains an error in ${file}"
     continue
   fi
 
@@ -61,13 +60,21 @@ do
 	fi
 
 	# Will convert csv to json
-	python3 ${XL_IDP_ROOT}/scripts_for_bash_with_inheritance/cma_cgm.py "${csv_name}" "${json_path}"
+	exit_message=$(python3 ${XL_IDP_ROOT}/scripts/cma_cgm.py "${csv_name}" "${json_path}" 2>&1 > /dev/null)
 
-  if [ $? -eq 0 ]
+  exit_code=$?
+  echo "Exit code ${exit_code}"
+  if [[ ${exit_code} == 0 ]]
 	then
 	  mv "${csv_name}" "${done_path}"
 	else
-	  mv "${csv_name}" "${xls_path}/error_$(basename "${csv_name}")"
+    for error_code in {1..6}
+    do
+      if [[ ${exit_code} == "${error_code}" ]]
+      then
+        mv "${csv_name}" "${xls_path}/error_code_${exit_message}_$(basename "${csv_name}")"
+      fi
+    done
 	fi
 
 done
