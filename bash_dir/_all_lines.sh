@@ -26,3 +26,4 @@ ${XL_IDP_ROOT}/bash_dir/line_ucak_line.sh
 ${XL_IDP_ROOT}/bash_dir/line_lancer.sh
 ${XL_IDP_ROOT}/bash_dir/line_ovp.sh
 ${XL_IDP_ROOT}/bash_dir/line_boat_link.sh
+${XL_IDP_ROOT}/bash_dir/line_maas.sh
