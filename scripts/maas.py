@@ -1,10 +1,18 @@
+import re
 import os
 import sys
 from cosco import Cosco
 
 
 class MAAS(Cosco):
-    pass
+
+    def is_table_starting(self, row: list) -> bool:
+        """
+        Understanding when a headerless table starts.
+        """
+        return self.is_digit(row[self.dict_columns_position["number_pp"]]) or \
+            (not self.is_digit(row[self.dict_columns_position["number_pp"]]) and
+             re.findall(r"\w{4}\d{7}", row[self.dict_columns_position["container_number"]]))
 
 
 if __name__ == '__main__':
