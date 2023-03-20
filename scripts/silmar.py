@@ -1,6 +1,7 @@
 import re
 import os
 import sys
+from arkas import Arkas
 from cma_cgm import CmaCgm
 from typing import Union, Dict
 from evergreen import Evergreen
@@ -26,7 +27,7 @@ class Silmar(CmaCgm, Evergreen):
         """
         Understanding when a headerless table starts.
         """
-        return bool(re.findall(r"\w{4}\d{7}", row[self.dict_columns_position["container_number"]]))
+        return Arkas.is_table_starting(self, row)
 
     def add_frequently_changing_keys(self, row: list, parsed_record: dict) -> None:
         """

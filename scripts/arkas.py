@@ -86,12 +86,20 @@ class Arkas(AkkonLines):
                 index += 1
         self.logger_write.info(f"context now is {context}")
 
+    def is_table_starting(self, row: list) -> bool:
+        """
+        Understanding when a headerless table starts.
+        """
+        return bool(re.findall(r"\w{4}\d{7}", row[self.dict_columns_position["container_number"]]))
+
     def add_frequently_changing_keys(self, row: list, parsed_record: dict) -> None:
         """
         Entry in the dictionary of those keys that are often subject to change.
         """
-        parsed_record['container_size'] = int(float(row[self.dict_columns_position["container_size"]].strip()))
-        parsed_record['container_type'] = row[self.dict_columns_position["container_type"]].strip()
+        parsed_record['container_size'] = int(float(row[self.dict_columns_position["container_size"]].strip())) \
+            if row[self.dict_columns_position["container_size"]] else ''
+        parsed_record['container_type'] = row[self.dict_columns_position["container_type"]].strip() \
+            if row[self.dict_columns_position["container_type"]] else ''
         city: list = list(row[self.dict_columns_position["consignee"]].split(', '))[1:]
         parsed_record['city'] = " ".join(city).strip()
         parsed_record['shipper_country'] = row[self.dict_columns_position["shipper_country"]].strip()

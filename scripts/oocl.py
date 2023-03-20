@@ -30,6 +30,15 @@ class Oocl(Msc):
             elif DICT_CONTENT_BEFORE_TABLE[columns] == ship_voyage:
                 self.parse_ship_and_voyage2(row, context)
 
+    def is_table_starting(self, row: list) -> bool:
+        """
+        Understanding when a headerless table starts.
+        """
+        return self.is_digit(row[self.dict_columns_position["number_pp"]]) or \
+            (not self.is_digit(row[self.dict_columns_position["number_pp"]]) and
+             not row[self.dict_columns_position["container_number"]] and
+             row[self.dict_columns_position["container_seal"]])
+
 
 if __name__ == '__main__':
     parsed_data: Oocl = Oocl(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)

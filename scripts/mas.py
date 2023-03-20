@@ -4,7 +4,7 @@ import sys
 from cosco import Cosco
 
 
-class MAAS(Cosco):
+class Mas(Cosco):
 
     def is_table_starting(self, row: list) -> bool:
         """
@@ -16,7 +16,7 @@ class MAAS(Cosco):
 
 
 if __name__ == '__main__':
-    parsed_data: MAAS = MAAS(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
+    parsed_data: Mas = Mas(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
     try:
         print(parsed_data.main())
     except (ValueError, ImportError, IndexError, SyntaxError, TypeError, AttributeError) as ex:
