@@ -22,7 +22,7 @@ class Verim(Admiral):
 
     @staticmethod
     def update_values_duplicate_containers(set_index: set, index: int, list_data: list, is_reversed: bool,
-                                           sign_repeat_container: str) -> None:
+                                           sign_repeat_container: str, last_row: bool) -> None:
         """
         Update values if the given column is duplicate from the previous row.
         """
@@ -31,8 +31,12 @@ class Verim(Admiral):
         positions: list = [i for i, d in enumerate(val_list) if d == sign_repeat_container]
         for index_container in list(set_index):
             for position in positions:
-                list_data[index_container][key_list[position]] = list_data[index][key_list[position]] \
-                    if is_reversed else list_data[index - len(set_index) - 1][key_list[position]]
+                if last_row:
+                    list_data[index_container][key_list[position]] = list_data[index][key_list[position]] \
+                        if is_reversed else list_data[index - len(set_index)][key_list[position]]
+                else:
+                    list_data[index_container][key_list[position]] = list_data[index][key_list[position]] \
+                        if is_reversed else list_data[index - len(set_index) - 1][key_list[position]]
             set_index.pop()
 
     @staticmethod
@@ -90,10 +94,12 @@ class Verim(Admiral):
                                                values_list, sign_repeat_container, parsed_record, context, set_index,
                                                dict_last_value, index, last_container_seal_and_container_dict, row)
             if not is_duplicate_containers_in_line and set_index:
-                self.update_values_duplicate_containers(set_index, index, list_data, is_reversed, sign_repeat_container)
+                self.update_values_duplicate_containers(set_index, index, list_data, is_reversed, sign_repeat_container,
+                                                        last_row=False)
             last_container_seal_and_container_dict[row["container_number"]] = row["container_seal"]
         if set_index:
-            self.update_values_duplicate_containers(set_index, index, list_data, is_reversed, sign_repeat_container)
+            self.update_values_duplicate_containers(set_index, index, list_data, is_reversed, sign_repeat_container,
+                                                    last_row=True)
         return list_data
 
 
