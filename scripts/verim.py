@@ -1,3 +1,4 @@
+import itertools
 import os
 import sys
 from typing import Tuple
@@ -29,15 +30,14 @@ class Verim(Admiral):
         key_list: list = list(list_data[list(set_index)[0]].keys())
         val_list: list = list(list_data[list(set_index)[0]].values())
         positions: list = [i for i, d in enumerate(val_list) if d == sign_repeat_container]
-        for index_container in list(set_index):
-            for position in positions:
-                if last_row:
-                    list_data[index_container][key_list[position]] = list_data[index][key_list[position]] \
+        for index_container, position in itertools.product(list(set_index), positions):
+            if last_row:
+                list_data[index_container][key_list[position]] = list_data[index][key_list[position]] \
                         if is_reversed else list_data[index - len(set_index)][key_list[position]]
-                else:
-                    list_data[index_container][key_list[position]] = list_data[index][key_list[position]] \
+            else:
+                list_data[index_container][key_list[position]] = list_data[index][key_list[position]] \
                         if is_reversed else list_data[index - len(set_index) - 1][key_list[position]]
-            set_index.pop()
+        set_index.clear()
 
     @staticmethod
     def find_duplicate_containers(is_duplicate_containers_in_line: bool, is_reversed: bool, *args: any) -> Tuple[bool, bool]:
