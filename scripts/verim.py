@@ -74,13 +74,12 @@ class Verim(Admiral):
         """
         Filling empty cells with data in repeating containers.
         """
+        index = 0
         context: dict = {}
         dict_last_value: dict = {}
         set_index: set = set()
         last_container_seal_and_container_dict: dict = {}
         for index, row in enumerate(list_data):
-            if row["container_number"] == 'BSIU1002598':
-                print()
             self.is_empty_values_in_keys(row, index)
             is_duplicate_containers_in_line: bool = False
             keys_list: list = list(row.keys())
@@ -93,6 +92,8 @@ class Verim(Admiral):
             if not is_duplicate_containers_in_line and set_index:
                 self.update_values_duplicate_containers(set_index, index, list_data, is_reversed, sign_repeat_container)
             last_container_seal_and_container_dict[row["container_number"]] = row["container_seal"]
+        if set_index:
+            self.update_values_duplicate_containers(set_index, index, list_data, is_reversed, sign_repeat_container)
         return list_data
 
 
