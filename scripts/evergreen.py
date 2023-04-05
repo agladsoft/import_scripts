@@ -7,7 +7,7 @@ from typing import Union, Dict
 class Evergreen(Arkas):
 
     dict_columns_position: Dict[str, Union[None, int]] = Arkas.dict_columns_position
-    dict_columns_position["goods_tnved"] = None
+    dict_columns_position["tnved"] = None
 
     def check_errors_in_header(self, row: list, context: dict, no_need_columns: list = None) -> None:
         """
@@ -32,7 +32,7 @@ class Evergreen(Arkas):
         return self.is_digit(row[self.dict_columns_position["number_pp"]]) or (
             not self.is_digit(row[self.dict_columns_position["number_pp"]])
             and row[self.dict_columns_position["container_number"]]
-            and row[self.dict_columns_position["goods_name_rus"]])
+            and row[self.dict_columns_position["goods_name"]])
 
     def is_duplicate_container_in_row(self, value: str, sign_repeat_container: str, key: str) -> bool:
         """
@@ -53,8 +53,8 @@ class Evergreen(Arkas):
         Method inheritance from Arkas.
         """
         Arkas.add_frequently_changing_keys(self, row, parsed_record)
-        parsed_record['goods_tnved'] = row[self.dict_columns_position["goods_tnved"]] \
-            if self.dict_columns_position["goods_tnved"] else None
+        parsed_record['goods_tnved'] = row[self.dict_columns_position["tnved"]] \
+            if self.dict_columns_position["tnved"] else None
 
 
 if __name__ == '__main__':

@@ -19,7 +19,7 @@ class Msc(CmaCgm, Evergreen):
         """
         Checking for columns in the entire document, counting more than just columns on the same line.
         """
-        Evergreen.check_errors_in_header(self, row, context, no_need_columns=["goods_tnved"])
+        Evergreen.check_errors_in_header(self, row, context, no_need_columns=["tnved"])
 
     def parse_ship_and_voyage2(self, row: list, context: dict) -> None:
         """
@@ -82,11 +82,11 @@ class Msc(CmaCgm, Evergreen):
             int(re.findall(r"\d{2}", row[self.dict_columns_position["container_size_and_type"]].strip())[0])
         parsed_record['container_type'] = \
             re.findall("[A-Z a-z]{1,4}", row[self.dict_columns_position["container_size_and_type"]].strip())[0]
-        city: list = list(row[self.dict_columns_position["consignee"]].split(', '))[1:]
+        city: list = list(row[self.dict_columns_position["consignee_name"]].split(', '))[1:]
         parsed_record['city'] = " ".join(city).strip()
-        parsed_record['shipper_country'] = row[self.dict_columns_position["shipper_country"]].strip()
-        parsed_record['goods_tnved'] = row[self.dict_columns_position["goods_tnved"]] \
-            if self.dict_columns_position["goods_tnved"] else None
+        parsed_record['shipper_country'] = row[self.dict_columns_position["tracking_country"]].strip()
+        parsed_record['goods_tnved'] = row[self.dict_columns_position["tnved"]] \
+            if self.dict_columns_position["tnved"] else None
 
     def is_duplicate_container_in_row(self, value: str, sign_repeat_container: str, key: str) -> bool:
         """
