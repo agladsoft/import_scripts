@@ -92,9 +92,9 @@ class Arkas(AkkonLines):
         """
         parsed_record['container_size'] = int(float(row[self.dict_columns_position["container_size"]].strip()))
         parsed_record['container_type'] = row[self.dict_columns_position["container_type"]].strip()
-        city: list = list(row[self.dict_columns_position["consignee_name"]].split(', '))[1:]
+        city: list = list(row[self.dict_columns_position["consignee"]].split(', '))[1:]
         parsed_record['city'] = " ".join(city).strip()
-        parsed_record['shipper_country'] = row[self.dict_columns_position["tracking_country"]].strip()
+        parsed_record['shipper_country'] = row[self.dict_columns_position["shipper_country"]].strip()
 
 
 if __name__ == '__main__':

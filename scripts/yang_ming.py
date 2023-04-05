@@ -8,7 +8,7 @@ from typing import Union, Dict
 class YangMing(Admiral):
 
     dict_columns_position: Dict[str, Union[None, int]] = Admiral.dict_columns_position
-    del dict_columns_position["tracking_country"]
+    del dict_columns_position["shipper_country"]
 
     def is_table_starting(self, row: list) -> bool:
         """
@@ -16,7 +16,7 @@ class YangMing(Admiral):
         """
         return self.is_digit(row[self.dict_columns_position["number_pp"]].rsplit('(')[0]) or \
             (not row[self.dict_columns_position["number_pp"]] and row[self.dict_columns_position["container_seal"]] and
-             row[self.dict_columns_position["goods_name"]])
+             row[self.dict_columns_position["goods_name_rus"]])
 
     def add_frequently_changing_keys(self, row: list, parsed_record: dict) -> None:
         """
@@ -31,7 +31,7 @@ class YangMing(Admiral):
             container_type = None
         parsed_record['container_size'] = int(container_size)
         parsed_record['container_type'] = container_type
-        shipper_country: list = list(row[self.dict_columns_position["shipper_name"]].split(', '))[-1:]
+        shipper_country: list = list(row[self.dict_columns_position["shipper"]].split(', '))[-1:]
         parsed_record['shipper_country'] = shipper_country[0].strip()
         parsed_record['city'] = row[self.dict_columns_position["city"]].strip()
 

@@ -22,17 +22,17 @@ class Admiral(Singleton, BaseLine):
         "container_size_and_type": None,
         "container_number": None,
         "container_seal": None,
-        "goods_weight_brutto": None,
+        "goods_weight": None,
         "package_number": None,
-        "goods_name": None,
-        "shipper_name": None,
-        "tracking_country": None,
-        "consignee_name": None,
+        "goods_name_rus": None,
+        "shipper": None,
+        "shipper_country": None,
+        "consignee": None,
         "consignment": None,
         "city": None
     }
 
-    def parse_date(self, parsing_rshipperow: str, month_list: list, context: dict, row: list) -> None:
+    def parse_date(self, parsing_row: str, month_list: list, context: dict, row: list) -> None:
         """
         Getting the date in "%Y-%m-%d" format.
         """
@@ -106,7 +106,7 @@ class Admiral(Singleton, BaseLine):
             parsed_record['container_size'] = row[self.dict_columns_position["container_size_and_type"]].strip()
             parsed_record['container_type'] = row[self.dict_columns_position["container_size_and_type"]].strip()
         parsed_record['city'] = row[self.dict_columns_position["city"]].strip()
-        parsed_record['shipper_country'] = row[self.dict_columns_position["tracking_country"]].strip()
+        parsed_record['shipper_country'] = row[self.dict_columns_position["shipper_country"]].strip()
 
     def parse_row(self, index: int, row: list, context: dict, list_data: list) -> None:
         """
@@ -116,11 +116,11 @@ class Admiral(Singleton, BaseLine):
         parsed_record: dict = {}
         self.add_frequently_changing_keys(row, parsed_record)
         record: dict = self.add_value_from_data_to_list(row, self.dict_columns_position["container_number"],
-                                                        self.dict_columns_position["goods_weight_brutto"],
+                                                        self.dict_columns_position["goods_weight"],
                                                         self.dict_columns_position["package_number"],
-                                                        self.dict_columns_position["goods_name"],
-                                                        self.dict_columns_position["shipper_name"],
-                                                        self.dict_columns_position["consignee_name"],
+                                                        self.dict_columns_position["goods_name_rus"],
+                                                        self.dict_columns_position["shipper"],
+                                                        self.dict_columns_position["consignee"],
                                                         self.dict_columns_position["consignment"], parsed_record,
                                                         context)
         self.logger_write.info(f"record is {record}")
