@@ -1,3 +1,4 @@
+import itertools
 import os
 import sys
 from typing import Tuple
@@ -22,28 +23,33 @@ class Verim(Admiral):
 
     @staticmethod
     def update_values_duplicate_containers(set_index: set, index: int, list_data: list, is_reversed: bool,
-                                           sign_repeat_container: str) -> None:
+                                           sign_repeat_container: str, last_row: bool) -> None:
         """
         Update values if the given column is duplicate from the previous row.
         """
         key_list: list = list(list_data[list(set_index)[0]].keys())
         val_list: list = list(list_data[list(set_index)[0]].values())
         positions: list = [i for i, d in enumerate(val_list) if d == sign_repeat_container]
-        for index_container in list(set_index):
-            for position in positions:
+        for index_container, position in itertools.product(list(set_index), positions):
+            if last_row:
                 list_data[index_container][key_list[position]] = list_data[index][key_list[position]] \
-                    if is_reversed else list_data[index - len(set_index) - 1][key_list[position]]
-            set_index.pop()
+                        if is_reversed else list_data[index - len(set_index)][key_list[position]]
+            else:
+                list_data[index_container][key_list[position]] = list_data[index][key_list[position]] \
+                        if is_reversed else list_data[index - len(set_index) - 1][key_list[position]]
+        set_index.clear()
 
     @staticmethod
-    def find_duplicate_containers(is_duplicate_containers_in_line: bool, is_reversed: bool, *args: any) \
-            -> Tuple[bool, bool]:
+    def find_duplicate_containers(is_duplicate_containers_in_line: bool, is_reversed: bool, *args: any) -> Tuple[bool, bool]:
         """
         Find columns that are duplicate from previous row.
         """
         for key, value in zip(args[1], args[2]):
             if value == args[3]:
                 try:
+                    if args[10]["container_seal"] == '' and args[10]["container_number"] != '' \
+                            and args[10]["container_size"] != '' and args[10]["container_type"] != '':
+                        continue
                     args[6].add(args[8])
                     is_duplicate_containers_in_line: bool = True
                     if args[0]["container_seal"] == list(args[9].values())[-1] and list(args[9].keys())[-1] != '':
@@ -72,6 +78,7 @@ class Verim(Admiral):
         """
         Filling empty cells with data in repeating containers.
         """
+        index = 0
         context: dict = {}
         dict_last_value: dict = {}
         set_index: set = set()
@@ -85,10 +92,14 @@ class Verim(Admiral):
             is_duplicate_containers_in_line, is_reversed = \
                 self.find_duplicate_containers(is_duplicate_containers_in_line, is_reversed, row, keys_list,
                                                values_list, sign_repeat_container, parsed_record, context, set_index,
-                                               dict_last_value, index, last_container_seal_and_container_dict)
+                                               dict_last_value, index, last_container_seal_and_container_dict, row)
             if not is_duplicate_containers_in_line and set_index:
-                self.update_values_duplicate_containers(set_index, index, list_data, is_reversed, sign_repeat_container)
+                self.update_values_duplicate_containers(set_index, index, list_data, is_reversed, sign_repeat_container,
+                                                        last_row=False)
             last_container_seal_and_container_dict[row["container_number"]] = row["container_seal"]
+        if set_index:
+            self.update_values_duplicate_containers(set_index, index, list_data, is_reversed, sign_repeat_container,
+                                                    last_row=True)
         return list_data
 
 
