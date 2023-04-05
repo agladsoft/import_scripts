@@ -13,7 +13,7 @@ class Silmar(CmaCgm, Evergreen):
     dict_columns_position["city"] = None
 
     def check_errors_in_header(self, row: list, context: dict, no_need_columns: list = None) -> None:
-        Evergreen.check_errors_in_header(self, row, context, no_need_columns=["city", "tnved"])
+        Evergreen.check_errors_in_header(self, row, context, no_need_columns=["city", "goods_tnved"])
 
     def parse_date(self, parsing_row: str, month_list: list, context: dict, row: list) -> None:
         """
@@ -36,9 +36,9 @@ class Silmar(CmaCgm, Evergreen):
         parsed_record['container_type'] = row[self.dict_columns_position["container_type"]].strip()
         parsed_record['city'] = row[self.dict_columns_position["city"]].strip() \
             if self.dict_columns_position["city"] else None
-        parsed_record['shipper_country'] = row[self.dict_columns_position["tracking_country"]].strip()
-        parsed_record['goods_tnved'] = row[self.dict_columns_position["tnved"]] \
-            if self.dict_columns_position["tnved"] else None
+        parsed_record['shipper_country'] = row[self.dict_columns_position["shipper_country"]].strip()
+        parsed_record['goods_tnved'] = row[self.dict_columns_position["goods_tnved"]] \
+            if self.dict_columns_position["goods_tnved"] else None
 
 
 if __name__ == '__main__':

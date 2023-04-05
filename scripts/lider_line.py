@@ -13,12 +13,12 @@ class LiderLine(CmaCgm):
         "container_type": 3,
         "container_number": 1,
         "container_seal": 5,
-        "goods_weight_brutto": 10,
+        "goods_weight": 10,
         "package_number": 9,
-        "goods_name": 7,
-        "shipper_name": 13,
-        "tracking_country": 14,
-        "consignee_name": 15,
+        "goods_name_rus": 7,
+        "shipper": 13,
+        "shipper_country": 14,
+        "consignee": 15,
         "consignment": 11,
         "city": 16
     }
@@ -61,11 +61,11 @@ class LiderLine(CmaCgm):
         Changing the indexes of columns in the header.
         """
         self.dict_columns_position["package_number"] = package_number
-        self.dict_columns_position["goods_weight_brutto"] = goods_weight
+        self.dict_columns_position["goods_weight"] = goods_weight
         self.dict_columns_position["consignment"] = consignment
-        self.dict_columns_position["shipper_name"] = shipper
-        self.dict_columns_position["tracking_country"] = shipper_country
-        self.dict_columns_position["consignee_name"] = consignee
+        self.dict_columns_position["shipper"] = shipper
+        self.dict_columns_position["shipper_country"] = shipper_country
+        self.dict_columns_position["consignee"] = consignee
         self.dict_columns_position["city"] = city
 
 

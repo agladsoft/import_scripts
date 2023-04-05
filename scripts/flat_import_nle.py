@@ -16,8 +16,8 @@ with open(input_file_path, newline='') as csvfile:
 headers = ["ship", "date",
            "terminal",
            "container_number",
-           "container_size", "container_type", "goods_name", "consignment", "shipper_name", "consignee_name", "line", "voyage", "tracking_country", "goods_weight_brutto", "package_number", "city", "shipper_seaport",
-           "tnved"
+           "container_size", "container_type", "goods_name_rus", "consignment", "shipper", "consignee", "line", "voyage", "shipper_country", "goods_weight", "package_number", "city", "shipper_seaport",
+           "goods_tnved"
 ]
 parsed_data = []
 for line in lines:
