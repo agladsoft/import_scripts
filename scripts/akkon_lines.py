@@ -46,7 +46,7 @@ class AkkonLines(Admiral):
         parsed_record['container_size'] = int(float(row[self.dict_columns_position["container_size"]].strip()))
         parsed_record['container_type'] = row[self.dict_columns_position["container_type"]].strip()
         parsed_record['city'] = row[self.dict_columns_position["city"]].strip()
-        parsed_record['shipper_country'] = row[self.dict_columns_position["shipper_country"]].strip()
+        parsed_record['shipper_country'] = row[self.dict_columns_position["tracking_country"]].strip()
 
 
 if __name__ == '__main__':

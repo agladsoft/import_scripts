@@ -79,14 +79,14 @@ class BaseLine:
             parsed_record['container_number'] = re.findall(r"\w{4}\d{7}", container_number)[0]
         except IndexError:
             parsed_record['container_number'] = container_number
-        parsed_record['goods_weight'] = float(re.sub(" +", "", row[ir_weight_goods]).replace(',', '.')) if row[
+        parsed_record['goods_weight_brutto'] = float(re.sub(" +", "", row[ir_weight_goods]).replace(',', '.')) if row[
             ir_weight_goods] else None
         parsed_record['package_number'] = int(float(re.sub(" +", "", row[ir_package_number]))) \
             if row[ir_package_number] else None
-        parsed_record['goods_name_rus'] = row[ir_goods_name_rus].strip()
+        parsed_record['goods_name'] = row[ir_goods_name_rus].strip()
         parsed_record['consignment'] = row[ir_consignment].strip()
-        parsed_record['shipper'] = row[ir_shipper].strip()
-        parsed_record['consignee'] = row[ir_consignee].strip()
+        parsed_record['shipper_name'] = row[ir_shipper].strip()
+        parsed_record['consignee_name'] = row[ir_consignee].strip()
         parsed_record['original_file_name'] = os.path.basename(self.input_file_path)
         parsed_record['original_file_parsed_on'] = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         return self.merge_two_dicts(context, parsed_record)
