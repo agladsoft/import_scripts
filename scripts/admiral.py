@@ -32,7 +32,7 @@ class Admiral(Singleton, BaseLine):
         "city": None
     }
 
-    def parse_date(self, parsing_rshipperow: str, month_list: list, context: dict, row: list) -> None:
+    def parse_date(self, parsing_row: str, month_list: list, context: dict, row: list) -> None:
         """
         Getting the date in "%Y-%m-%d" format.
         """
