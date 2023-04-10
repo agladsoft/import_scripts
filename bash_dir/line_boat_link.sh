@@ -2,6 +2,7 @@
 
 xls_path="${XL_IDP_PATH_IMPORT}/lines_${XL_IMPORT_TERMINAL}/boat_link/"
 
+
 csv_path="${xls_path}"/csv
 if [ ! -d "$csv_path" ]; then
   mkdir "${csv_path}"

@@ -2,15 +2,11 @@
 
 xls_path="${XL_IDP_PATH_IMPORT}/lines_${XL_IMPORT_TERMINAL}/medkon/"
 
+
 csv_path="${xls_path}"/csv
 if [ ! -d "$csv_path" ]; then
   mkdir "${csv_path}"
 fi
-
-#fail_path="${xls_path}"/fail
-#if [ ! -d "$fail_path" ]; then
-#  mkdir "${fail_path}"
-#fi
 
 done_path="${xls_path}"/done
 if [ ! -d "$done_path" ]; then

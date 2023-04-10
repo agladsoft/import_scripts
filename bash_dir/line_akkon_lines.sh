@@ -1,17 +1,12 @@
 #!/bin/bash
 
 xls_path="${XL_IDP_PATH_IMPORT}/lines_${XL_IMPORT_TERMINAL}/akkon_lines/"
-#xls_path=/home/timur/Anton_project/import_xls-master/lines_nutep/akkon_lines
+
 
 csv_path="${xls_path}"/csv
 if [ ! -d "$csv_path" ]; then
   mkdir "${csv_path}"
 fi
-
-#fail_path="${xls_path}"/fail
-#if [ ! -d "$fail_path" ]; then
-#  mkdir "${fail_path}"
-#fi
 
 done_path="${xls_path}"/done
 if [ ! -d "$done_path" ]; then
