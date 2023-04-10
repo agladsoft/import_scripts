@@ -89,6 +89,7 @@ class BaseLine:
         parsed_record['consignment'] = row[ir_consignment].strip()
         parsed_record['shipper_name'] = row[ir_shipper].strip()
         parsed_record['consignee_name'] = row[ir_consignee].strip()
+        parsed_record['expeditor'] = 'Нет данных'
         parsed_record['original_file_name'] = os.path.basename(self.input_file_path)
         parsed_record['original_file_parsed_on'] = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         parsed_record['import_id'] = str(uuid.uuid4())
