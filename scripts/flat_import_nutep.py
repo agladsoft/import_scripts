@@ -13,10 +13,10 @@ with open(input_file_path, newline='') as csvfile:
     # headers = lines.fieldnames
     lines = list(lines)
 
-headers = ["ship", "date",
+headers = ["ship_name", "shipment_date",
            "terminal",
            "container_number",
-           "container_size", "container_type", "goods_name", "consignment", "shipper_name", "consignee_name", "line", "voyage", "tracking_country", "goods_weight_brutto", "package_number", "city", "shipper_seaport",
+           "container_size", "container_type", "goods_name", "consignment", "shipper_name", "consignee_name", "line", "voyage", "tracking_country", "goods_weight_brutto", "package_number", "city", "tracking_seaport",
            "tnved"
 ]
 parsed_data = []

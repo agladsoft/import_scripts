@@ -15,9 +15,9 @@ class ReelShipping(Evergreen):
             if row[self.dict_columns_position["container_type"]] else '*'
         city: list = list(row[self.dict_columns_position["consignee_name"]].split(', '))[1:]
         parsed_record['city'] = " ".join(city).strip()
-        parsed_record['goods_tnved'] = row[self.dict_columns_position["tnved"]] \
+        parsed_record["tnved"] = row[self.dict_columns_position["tnved"]] \
             if self.dict_columns_position["tnved"] else None
-        parsed_record['shipper_country'] = row[self.dict_columns_position["tracking_country"]].strip() \
+        parsed_record["tracking_country"] = row[self.dict_columns_position["tracking_country"]].strip() \
             if row[self.dict_columns_position["tracking_country"]] else '*'
 
 

@@ -36,8 +36,8 @@ class Silmar(CmaCgm, Evergreen):
         parsed_record['container_type'] = row[self.dict_columns_position["container_type"]].strip()
         parsed_record['city'] = row[self.dict_columns_position["city"]].strip() \
             if self.dict_columns_position["city"] else None
-        parsed_record['shipper_country'] = row[self.dict_columns_position["tracking_country"]].strip()
-        parsed_record['goods_tnved'] = row[self.dict_columns_position["tnved"]] \
+        parsed_record["tracking_country"] = row[self.dict_columns_position["tracking_country"]].strip()
+        parsed_record["tnved"] = row[self.dict_columns_position["tnved"]] \
             if self.dict_columns_position["tnved"] else None
 
 

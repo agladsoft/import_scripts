@@ -15,8 +15,8 @@ class Evergreen(Arkas):
         """
         if no_need_columns is None:
             no_need_columns = []
-        self.check_errors_in_columns([context.get("ship", None), context.get("voyage", None),
-                                      context.get("date", None)], context,
+        self.check_errors_in_columns([context.get("ship_name", None), context.get("voyage", None),
+                                      context.get("shipment_date", None)], context,
                                      "Error code 3: Keys (ship, voyage or date) not in cells", 3)
         self.get_columns_position(row)
         dict_columns_position = self.dict_columns_position.copy()
@@ -53,7 +53,7 @@ class Evergreen(Arkas):
         Method inheritance from Arkas.
         """
         Arkas.add_frequently_changing_keys(self, row, parsed_record)
-        parsed_record['goods_tnved'] = row[self.dict_columns_position["tnved"]] \
+        parsed_record["tnved"] = row[self.dict_columns_position["tnved"]] \
             if self.dict_columns_position["tnved"] else None
 
 

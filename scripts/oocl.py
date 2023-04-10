@@ -25,7 +25,7 @@ class Oocl(Msc):
         Parsing from row the date, ship name and voyage in the cells before the table.
         """
         if re.findall(column, parsing_row):
-            if DICT_CONTENT_BEFORE_TABLE[columns] == "date":
+            if DICT_CONTENT_BEFORE_TABLE[columns] == "shipment_date":
                 self.parse_date(parsing_row, list_month, context, row)
             elif DICT_CONTENT_BEFORE_TABLE[columns] == ship_voyage:
                 self.parse_ship_and_voyage2(row, context)

@@ -25,9 +25,9 @@ class AkkonLines(Admiral):
                 ship_and_voyage_list: list = ship_voyage.rsplit(' ', 1)
                 try:
                     context["voyage"] = re.sub(r'[^\w\s]', '', ship_and_voyage_list[1])
-                    context["ship"] = ship_and_voyage_list[0].strip()
+                    context["ship_name"] = ship_and_voyage_list[0].strip()
                 except IndexError:
-                    context["ship"] = ship_voyage if index == 0 else context.get("ship")
+                    context["ship_name"] = ship_voyage if index == 0 else context.get("ship_name")
                     context["voyage"] = ship_voyage if index == 1 else context.get("voyage")
                 finally:
                     index += 1
@@ -46,7 +46,7 @@ class AkkonLines(Admiral):
         parsed_record['container_size'] = int(float(row[self.dict_columns_position["container_size"]].strip()))
         parsed_record['container_type'] = row[self.dict_columns_position["container_type"]].strip()
         parsed_record['city'] = row[self.dict_columns_position["city"]].strip()
-        parsed_record['shipper_country'] = row[self.dict_columns_position["tracking_country"]].strip()
+        parsed_record["tracking_country"] = row[self.dict_columns_position["tracking_country"]].strip()
 
 
 if __name__ == '__main__':

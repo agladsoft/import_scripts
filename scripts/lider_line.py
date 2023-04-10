@@ -27,8 +27,8 @@ class LiderLine(CmaCgm):
         """
         Checking for columns in the entire document, counting more than just columns on the same line.
         """
-        self.check_errors_in_columns([context.get("ship", None), context.get("voyage", None),
-                                      context.get("date", None)], context,
+        self.check_errors_in_columns([context.get("ship_name", None), context.get("voyage", None),
+                                      context.get("shipment_date", None)], context,
                                      "Error code 3: Keys (ship, voyage or date) not in cells", 3)
         self.check_errors_in_columns(list(self.dict_columns_position.values()), self.dict_columns_position,
                                      "Error code 2: Column not in file or changed", 2)

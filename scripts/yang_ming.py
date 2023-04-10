@@ -32,7 +32,7 @@ class YangMing(Admiral):
         parsed_record['container_size'] = int(container_size)
         parsed_record['container_type'] = container_type
         shipper_country: list = list(row[self.dict_columns_position["shipper_name"]].split(', '))[-1:]
-        parsed_record['shipper_country'] = shipper_country[0].strip()
+        parsed_record["tracking_country"] = shipper_country[0].strip()
         parsed_record['city'] = row[self.dict_columns_position["city"]].strip()
 
 
