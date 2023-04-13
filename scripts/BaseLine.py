@@ -2,9 +2,8 @@ import re
 import csv
 import sys
 import json
-import datetime
 import uuid
-
+import datetime
 import pandas as pd
 from re import Match
 from __init__ import *
