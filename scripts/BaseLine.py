@@ -100,9 +100,9 @@ class BaseLine:
         """
         file_name_save: str = f'{os.path.dirname(self.input_file_path)}' \
                               f'/{os.path.basename(self.input_file_path)}_empty_column_removed.csv'
-        data: pd.Dataframe = read_csv(self.input_file_path)
-        filtered_data_column: pd.Dataframe = data.dropna(axis=1, how='all')
-        filtered_data_rows: pd.Dataframe = filtered_data_column.dropna(axis=0, how='all')
+        data: pd.DataFrame = read_csv(self.input_file_path)
+        filtered_data_column: pd.DataFrame = data.dropna(axis=1, how='all')
+        filtered_data_rows: pd.DataFrame = filtered_data_column.dropna(axis=0, how='all')
         filtered_data_rows.to_csv(file_name_save, index=False)
         return file_name_save
 
