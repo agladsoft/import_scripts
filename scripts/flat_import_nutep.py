@@ -57,8 +57,6 @@ class ImportNUTEP(object):
         df: DataFrame = pd.read_excel(self.input_file_path, dtype={"ИНН": str, "voyage": str})
         df = df.dropna(axis=0, how='all')
         df = df.rename(columns=headers_eng)
-        df = df.loc[:, ~df.columns.isin(['direction', 'tnved_group_name', 'shipper_inn',
-                                         'shipper_name_unified', 'departure_country'])]
         df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
         self.add_new_columns(df)
         self.change_type_and_values(df)
