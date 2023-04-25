@@ -15,9 +15,11 @@ class Maersk(Evergreen):
     del dict_columns_position["tnved"]
     del dict_columns_position["container_size"]
     del dict_columns_position["container_type"]
+    del dict_columns_position["goods_weight_tare"]
     del dict_columns_position["container_seal"]
     del dict_columns_position["tracking_country"]
     dict_columns_position["container_size_and_type"] = None
+    dict_columns_position["goods_name"] = 0
 
     def parse_ship_and_voyage(self, parsing_row: str, row: list, column: str, context: dict, key: str,
                               index_ship: int = 0, index_voyage: int = 1) -> None:

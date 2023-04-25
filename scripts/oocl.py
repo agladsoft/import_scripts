@@ -4,14 +4,22 @@ from msc import Msc
 from __init__ import *
 from arkas import Arkas
 from typing import Union, Dict
+from evergreen import Evergreen
 
 
 class Oocl(Msc):
 
     dict_columns_position: Dict[str, Union[None, int]] = Msc.dict_columns_position
     del dict_columns_position["container_size_and_type"]
+    del dict_columns_position["tnved"]
     dict_columns_position["container_size"] = None
     dict_columns_position["container_type"] = None
+
+    def check_errors_in_header(self, row: list, context: dict, no_need_columns: list = None) -> None:
+        """
+        Checking for columns in the entire document, counting more than just columns on the same line.
+        """
+        Evergreen.check_errors_in_header(self, row, context, no_need_columns=["goods_weight_tare"])
 
     def add_frequently_changing_keys(self, row: list, parsed_record: dict) -> None:
         """

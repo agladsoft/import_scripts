@@ -11,6 +11,7 @@ class LiderLine(CmaCgm):
         "number_pp": 0,
         "container_size": 2,
         "container_type": 3,
+        "goods_weight_tare": 4,
         "container_number": 1,
         "container_seal": 5,
         "goods_weight_brutto": 10,

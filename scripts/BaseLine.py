@@ -69,7 +69,21 @@ class BaseLine:
             print(f"{error_code}", file=sys.stderr)
             sys.exit(error_code)
 
+    @staticmethod
+    def calculate_weight_netto(row: list, ir_weight_goods: int, ir_weight_goods_tare: int, parsed_record: dict) -> None:
+        goods_weight_brutto: float | None = float(re.sub(" +", "", row[ir_weight_goods]).replace(',', '.')) \
+            if row[ir_weight_goods] else None
+        if ir_weight_goods_tare:
+            goods_weight_tare: float | None = float(re.sub(" +", "", row[ir_weight_goods_tare]).replace(',', '.')) \
+                if row[ir_weight_goods_tare] else None
+        else:
+            goods_weight_tare = None
+        parsed_record['goods_weight_brutto'] = goods_weight_brutto
+        parsed_record['goods_weight_netto'] = round(goods_weight_brutto - goods_weight_tare, 2) \
+            if goods_weight_brutto and goods_weight_tare else None
+
     def add_value_from_data_to_list(self, row: list, ir_container_number: int, ir_weight_goods: int,
+                                    ir_weight_goods_tare: int,
                                     ir_package_number: int, ir_goods_name_rus: int, ir_shipper: int, ir_consignee: int,
                                     ir_consignment: int, parsed_record: dict, context: dict) -> dict:
         """
@@ -80,8 +94,7 @@ class BaseLine:
             parsed_record['container_number'] = re.findall(r"\w{4}\d{7}", container_number)[0]
         except IndexError:
             parsed_record['container_number'] = container_number
-        parsed_record['goods_weight_brutto'] = float(re.sub(" +", "", row[ir_weight_goods]).replace(',', '.')) if row[
-            ir_weight_goods] else None
+        self.calculate_weight_netto(row, ir_weight_goods, ir_weight_goods_tare, parsed_record)
         parsed_record['package_number'] = int(float(re.sub(" +", "", row[ir_package_number]))) \
             if row[ir_package_number] else None
         parsed_record['goods_name'] = row[ir_goods_name_rus].strip()
