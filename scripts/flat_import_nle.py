@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import json
 import contextlib
@@ -38,6 +39,12 @@ class ImportNLE(object):
         """
         Add new columns.
         """
+        date_previous: re.Match[str] | None = re.match(r'\d{2,4}.\d{1,2}', os.path.basename(self.input_file_path))
+        date_previous: str = f'{date_previous.group()}.01' if date_previous else date_previous
+        if date_previous is None:
+            sys.exit(1)
+        else:
+            df['parsed_on'] = str(datetime.strptime(date_previous, "%Y.%m.%d").date())
         df['original_file_name'] = os.path.basename(self.input_file_path)
         df['original_file_parsed_on'] = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
