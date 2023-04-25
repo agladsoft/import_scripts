@@ -1,6 +1,6 @@
 #!/bin/bash
 
-xls_path="${XL_IDP_PATH_IMPORT}/lines_${XL_IMPORT_TERMINAL}/flat_import_nle"z
+xls_path="${XL_IDP_PATH_IMPORT}/lines_${XL_IMPORT_TERMINAL}/flat_import_nle"
 
 done_path="${xls_path}"/done
 if [ ! -d "$done_path" ]; then
