@@ -17,7 +17,7 @@ headers_eng: dict = {
     "consignee": "consignee_name",
     "count": "container_count",
     "shipper_country": "tracking_country",
-    "goods_weight": "goods_weight_brutto",
+    "goods_weight": "goods_weight_with_package",
     "shipper_seaport": "tracking_seaport",
     "goods_tnved": "tnved"
 }
