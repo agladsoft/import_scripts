@@ -15,7 +15,6 @@ class Maersk(Evergreen):
     del dict_columns_position["tnved"]
     del dict_columns_position["container_size"]
     del dict_columns_position["container_type"]
-    del dict_columns_position["goods_weight_tare"]
     del dict_columns_position["container_seal"]
     del dict_columns_position["tracking_country"]
     dict_columns_position["container_size_and_type"] = None
@@ -59,7 +58,7 @@ class Maersk(Evergreen):
             bool(row[self.dict_columns_position["consignee_name"]]), \
             bool(row[self.dict_columns_position["container_number"]]), \
             bool(row[self.dict_columns_position["container_size_and_type"]]), \
-            bool(row[self.dict_columns_position["goods_weight_brutto"]])
+            bool(row[self.dict_columns_position["goods_weight_with_package"]])
 
     def parse_row(self, index: int, row: list, context: dict, list_data: list) -> None:
         """
@@ -92,8 +91,8 @@ class Maersk(Evergreen):
                                           row[self.dict_columns_position["container_size_and_type"]].strip())
         context['container_size'] = int(container_size[0])
         context['container_type'] = container_type[0]
-        context["goods_weight_brutto"] = float(row[self.dict_columns_position["goods_weight_brutto"]]) \
-            if row[self.dict_columns_position["goods_weight_brutto"]] else None
+        context["goods_weight_with_package"] = float(row[self.dict_columns_position["goods_weight_with_package"]]) \
+            if row[self.dict_columns_position["goods_weight_with_package"]] else None
         context['package_number'] = row[self.dict_columns_position["package_number"]].strip() \
             if row[self.dict_columns_position["package_number"]] else None
         self.merge_data(context, parsed_record, list_data)

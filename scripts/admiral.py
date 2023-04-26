@@ -22,8 +22,7 @@ class Admiral(Singleton, BaseLine):
         "container_size_and_type": None,
         "container_number": None,
         "container_seal": None,
-        "goods_weight_brutto": None,
-        "goods_weight_tare": None,
+        "goods_weight_with_package": None,
         "package_number": None,
         "goods_name": None,
         "shipper_name": None,
@@ -117,8 +116,7 @@ class Admiral(Singleton, BaseLine):
         parsed_record: dict = {}
         self.add_frequently_changing_keys(row, parsed_record)
         record: dict = self.add_value_from_data_to_list(row, self.dict_columns_position["container_number"],
-                                                        self.dict_columns_position["goods_weight_brutto"],
-                                                        self.dict_columns_position["goods_weight_tare"],
+                                                        self.dict_columns_position["goods_weight_with_package"],
                                                         self.dict_columns_position["package_number"],
                                                         self.dict_columns_position["goods_name"],
                                                         self.dict_columns_position["shipper_name"],
