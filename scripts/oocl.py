@@ -10,6 +10,7 @@ class Oocl(Msc):
 
     dict_columns_position: Dict[str, Union[None, int]] = Msc.dict_columns_position
     del dict_columns_position["container_size_and_type"]
+    del dict_columns_position["tnved"]
     dict_columns_position["container_size"] = None
     dict_columns_position["container_type"] = None
 
@@ -25,7 +26,7 @@ class Oocl(Msc):
         Parsing from row the date, ship name and voyage in the cells before the table.
         """
         if re.findall(column, parsing_row):
-            if DICT_CONTENT_BEFORE_TABLE[columns] == "date":
+            if DICT_CONTENT_BEFORE_TABLE[columns] == "shipment_date":
                 self.parse_date(parsing_row, list_month, context, row)
             elif DICT_CONTENT_BEFORE_TABLE[columns] == ship_voyage:
                 self.parse_ship_and_voyage2(row, context)

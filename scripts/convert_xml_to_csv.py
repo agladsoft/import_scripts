@@ -30,7 +30,7 @@ def main():
                          'address': getvalueofnode(node.find('doc:Cell[10]/doc:Data', ns)),
                          'weight': getvalueofnode(node.find('doc:Cell[11]/doc:Data', ns)),
                          'bill': getvalueofnode(node.find('doc:Cell[12]/doc:Data', ns)),
-                         'shipper': getvalueofnode(node.find('doc:Cell[13]/doc:Data', ns)),
+                         "shipper_name": getvalueofnode(node.find('doc:Cell[13]/doc:Data', ns)),
                          'country': getvalueofnode(node.find('doc:Cell[14]/doc:Data', ns)),
                          'country_getting': getvalueofnode(node.find('doc:Cell[15]/doc:Data', ns)),
                          'company_getting': getvalueofnode(node.find('doc:Cell[16]/doc:Data', ns)),

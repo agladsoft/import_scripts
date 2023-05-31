@@ -13,12 +13,12 @@ class LiderLine(CmaCgm):
         "container_type": 3,
         "container_number": 1,
         "container_seal": 5,
-        "goods_weight": 10,
+        "goods_weight_with_package": 10,
         "package_number": 9,
-        "goods_name_rus": 7,
-        "shipper": 13,
-        "shipper_country": 14,
-        "consignee": 15,
+        "goods_name": 7,
+        "shipper_name": 13,
+        "tracking_country": 14,
+        "consignee_name": 15,
         "consignment": 11,
         "city": 16
     }
@@ -27,8 +27,8 @@ class LiderLine(CmaCgm):
         """
         Checking for columns in the entire document, counting more than just columns on the same line.
         """
-        self.check_errors_in_columns([context.get("ship", None), context.get("voyage", None),
-                                      context.get("date", None)], context,
+        self.check_errors_in_columns([context.get("ship_name", None), context.get("voyage", None),
+                                      context.get("shipment_date", None)], context,
                                      "Error code 3: Keys (ship, voyage or date) not in cells", 3)
         self.check_errors_in_columns(list(self.dict_columns_position.values()), self.dict_columns_position,
                                      "Error code 2: Column not in file or changed", 2)
@@ -61,11 +61,11 @@ class LiderLine(CmaCgm):
         Changing the indexes of columns in the header.
         """
         self.dict_columns_position["package_number"] = package_number
-        self.dict_columns_position["goods_weight"] = goods_weight
+        self.dict_columns_position["goods_weight_with_package"] = goods_weight
         self.dict_columns_position["consignment"] = consignment
-        self.dict_columns_position["shipper"] = shipper
-        self.dict_columns_position["shipper_country"] = shipper_country
-        self.dict_columns_position["consignee"] = consignee
+        self.dict_columns_position["shipper_name"] = shipper
+        self.dict_columns_position["tracking_country"] = shipper_country
+        self.dict_columns_position["consignee_name"] = consignee
         self.dict_columns_position["city"] = city
 
 

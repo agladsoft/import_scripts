@@ -19,7 +19,7 @@ class Msc(CmaCgm, Evergreen):
         """
         Checking for columns in the entire document, counting more than just columns on the same line.
         """
-        Evergreen.check_errors_in_header(self, row, context, no_need_columns=["goods_tnved"])
+        Evergreen.check_errors_in_header(self, row, context, no_need_columns=["tnved"])
 
     def parse_ship_and_voyage2(self, row: list, context: dict) -> None:
         """
@@ -32,10 +32,10 @@ class Msc(CmaCgm, Evergreen):
                 if index == 0:
                     if "рейс" in parsing_row:
                         ship_and_voyage: list = parsing_row.split("рейс")
-                        context['ship'] = self.remove_keys_in_data(ship_and_voyage[0])
+                        context["ship_name"] = self.remove_keys_in_data(ship_and_voyage[0])
                         context['voyage'] = self.remove_keys_in_data(ship_and_voyage[1])
                     else:
-                        context['ship'] = parsing_row.strip()
+                        context["ship_name"] = parsing_row.strip()
                 elif index == 1:
                     context['voyage'] = self.remove_keys_in_data(parsing_row)
                 index += 1
@@ -47,13 +47,13 @@ class Msc(CmaCgm, Evergreen):
         Parsing from row the date, ship name and voyage in the cells before the table.
         """
         if re.findall(column, parsing_row):
-            if DICT_CONTENT_BEFORE_TABLE[columns] == "date":
+            if DICT_CONTENT_BEFORE_TABLE[columns] == "shipment_date":
                 self.parse_date(parsing_row, list_month, context, row)
-            elif DICT_CONTENT_BEFORE_TABLE[columns] == "ship_voyage" and not context.get('ship') and not \
+            elif DICT_CONTENT_BEFORE_TABLE[columns] == "ship_voyage" and not context.get("ship_name") and not \
                     context.get('voyage'):
                 self.parse_ship_and_voyage2(row, context)
             elif DICT_CONTENT_BEFORE_TABLE[columns] == "ship_voyage_msc":
-                self.parse_ship_and_voyage(parsing_row, row, column, context, "ship")
+                self.parse_ship_and_voyage(parsing_row, row, column, context, "ship_name")
 
     def parse_ship_and_voyage(self, parsing_row: str, row: list, column: str, context: dict, key: str,
                               index_ship: int = 0, index_voyage: int = 1) -> None:
@@ -82,11 +82,11 @@ class Msc(CmaCgm, Evergreen):
             int(re.findall(r"\d{2}", row[self.dict_columns_position["container_size_and_type"]].strip())[0])
         parsed_record['container_type'] = \
             re.findall("[A-Z a-z]{1,4}", row[self.dict_columns_position["container_size_and_type"]].strip())[0]
-        city: list = list(row[self.dict_columns_position["consignee"]].split(', '))[1:]
+        city: list = list(row[self.dict_columns_position["consignee_name"]].split(', '))[1:]
         parsed_record['city'] = " ".join(city).strip()
-        parsed_record['shipper_country'] = row[self.dict_columns_position["shipper_country"]].strip()
-        parsed_record['goods_tnved'] = row[self.dict_columns_position["goods_tnved"]] \
-            if self.dict_columns_position["goods_tnved"] else None
+        parsed_record["tracking_country"] = row[self.dict_columns_position["tracking_country"]].strip()
+        parsed_record["tnved"] = row[self.dict_columns_position["tnved"]] \
+            if self.dict_columns_position["tnved"] else None
 
     def is_duplicate_container_in_row(self, value: str, sign_repeat_container: str, key: str) -> bool:
         """

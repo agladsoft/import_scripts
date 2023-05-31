@@ -22,12 +22,12 @@ class Admiral(Singleton, BaseLine):
         "container_size_and_type": None,
         "container_number": None,
         "container_seal": None,
-        "goods_weight": None,
+        "goods_weight_with_package": None,
         "package_number": None,
-        "goods_name_rus": None,
-        "shipper": None,
-        "shipper_country": None,
-        "consignee": None,
+        "goods_name": None,
+        "shipper_name": None,
+        "tracking_country": None,
+        "consignee_name": None,
         "consignment": None,
         "city": None
     }
@@ -44,7 +44,7 @@ class Admiral(Singleton, BaseLine):
             if month_digit == 0:
                 month_digit = 12
         date: datetime = datetime.strptime(f'{month[2].strip()}-{str(month_digit)}-{month[0].strip()}', "%Y-%m-%d")
-        context["date"] = str(date.date())
+        context["shipment_date"] = str(date.date())
         self.logger_write.info(f"context now is {context}")
 
     def parse_content_before_table(self, column: str, columns: tuple, parsing_row: str, list_month: list,
@@ -53,7 +53,7 @@ class Admiral(Singleton, BaseLine):
         Parsing from row the date, ship name and voyage in the cells before the table.
         """
         if re.findall(column, parsing_row):
-            if DICT_CONTENT_BEFORE_TABLE[columns] == "date":
+            if DICT_CONTENT_BEFORE_TABLE[columns] == "shipment_date":
                 self.parse_date(parsing_row, list_month, context, row)
             elif DICT_CONTENT_BEFORE_TABLE[columns] == ship_voyage:
                 self.parse_ship_and_voyage(parsing_row, row, column, context, "ship_voyage")
@@ -64,7 +64,7 @@ class Admiral(Singleton, BaseLine):
         """
         self.logger_write.info(f"Will parse ship and trip in value '{parsing_row}'...")
         ship_and_voyage_list: list = parsing_row.replace(column, "").strip().rsplit(' ', 1)
-        context["ship"] = ship_and_voyage_list[0].strip()
+        context["ship_name"] = ship_and_voyage_list[0].strip()
         context["voyage"] = re.sub(r'[^\w\s]', '', ship_and_voyage_list[1])
         self.logger_write.info(f"context now is {context}")
 
@@ -106,7 +106,7 @@ class Admiral(Singleton, BaseLine):
             parsed_record['container_size'] = row[self.dict_columns_position["container_size_and_type"]].strip()
             parsed_record['container_type'] = row[self.dict_columns_position["container_size_and_type"]].strip()
         parsed_record['city'] = row[self.dict_columns_position["city"]].strip()
-        parsed_record['shipper_country'] = row[self.dict_columns_position["shipper_country"]].strip()
+        parsed_record["tracking_country"] = row[self.dict_columns_position["tracking_country"]].strip()
 
     def parse_row(self, index: int, row: list, context: dict, list_data: list) -> None:
         """
@@ -116,11 +116,11 @@ class Admiral(Singleton, BaseLine):
         parsed_record: dict = {}
         self.add_frequently_changing_keys(row, parsed_record)
         record: dict = self.add_value_from_data_to_list(row, self.dict_columns_position["container_number"],
-                                                        self.dict_columns_position["goods_weight"],
+                                                        self.dict_columns_position["goods_weight_with_package"],
                                                         self.dict_columns_position["package_number"],
-                                                        self.dict_columns_position["goods_name_rus"],
-                                                        self.dict_columns_position["shipper"],
-                                                        self.dict_columns_position["consignee"],
+                                                        self.dict_columns_position["goods_name"],
+                                                        self.dict_columns_position["shipper_name"],
+                                                        self.dict_columns_position["consignee_name"],
                                                         self.dict_columns_position["consignment"], parsed_record,
                                                         context)
         self.logger_write.info(f"record is {record}")
@@ -151,8 +151,8 @@ class Admiral(Singleton, BaseLine):
         """
         Checking for columns in the entire document, counting more than just columns on the same line.
         """
-        self.check_errors_in_columns([context.get("ship", None), context.get("voyage", None),
-                                      context.get("date", None)], context,
+        self.check_errors_in_columns([context.get("ship_name", None), context.get("voyage", None),
+                                      context.get("shipment_date", None)], context,
                                      "Error code 3: Keys (ship, voyage or date) not in cells", 3)
         self.get_columns_position(row)
         self.check_errors_in_columns(list(self.dict_columns_position.values()), self.dict_columns_position,

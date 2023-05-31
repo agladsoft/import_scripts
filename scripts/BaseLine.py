@@ -2,6 +2,7 @@ import re
 import csv
 import sys
 import json
+import uuid
 import datetime
 import pandas as pd
 from re import Match
@@ -79,16 +80,18 @@ class BaseLine:
             parsed_record['container_number'] = re.findall(r"\w{4}\d{7}", container_number)[0]
         except IndexError:
             parsed_record['container_number'] = container_number
-        parsed_record['goods_weight'] = float(re.sub(" +", "", row[ir_weight_goods]).replace(',', '.')) if row[
+        parsed_record["goods_weight_with_package"] = float(re.sub(" +", "", row[ir_weight_goods]).replace(',', '.')) if row[
             ir_weight_goods] else None
         parsed_record['package_number'] = int(float(re.sub(" +", "", row[ir_package_number]))) \
             if row[ir_package_number] else None
-        parsed_record['goods_name_rus'] = row[ir_goods_name_rus].strip()
+        parsed_record['goods_name'] = row[ir_goods_name_rus].strip()
         parsed_record['consignment'] = row[ir_consignment].strip()
-        parsed_record['shipper'] = row[ir_shipper].strip()
-        parsed_record['consignee'] = row[ir_consignee].strip()
+        parsed_record['shipper_name'] = row[ir_shipper].strip()
+        parsed_record['consignee_name'] = row[ir_consignee].strip()
+        parsed_record['expeditor'] = 'Нет данных'
         parsed_record['original_file_name'] = os.path.basename(self.input_file_path)
         parsed_record['original_file_parsed_on'] = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        parsed_record['import_id'] = str(uuid.uuid4())
         return self.merge_two_dicts(context, parsed_record)
 
     def remove_empty_columns_and_rows(self) -> str:
@@ -97,9 +100,9 @@ class BaseLine:
         """
         file_name_save: str = f'{os.path.dirname(self.input_file_path)}' \
                               f'/{os.path.basename(self.input_file_path)}_empty_column_removed.csv'
-        data: pd.Dataframe = read_csv(self.input_file_path)
-        filtered_data_column: pd.Dataframe = data.dropna(axis=1, how='all')
-        filtered_data_rows: pd.Dataframe = filtered_data_column.dropna(axis=0, how='all')
+        data: pd.DataFrame = read_csv(self.input_file_path)
+        filtered_data_column: pd.DataFrame = data.dropna(axis=1, how='all')
+        filtered_data_rows: pd.DataFrame = filtered_data_column.dropna(axis=0, how='all')
         filtered_data_rows.to_csv(file_name_save, index=False)
         return file_name_save
 
@@ -111,7 +114,7 @@ class BaseLine:
         """
         self.logger_write.info(f'file is {os.path.basename(input_file_path)} {datetime.datetime.now()}')
         context: dict = dict(line=os.path.basename(self.line_file).replace(".py", ""))
-        context['terminal'] = os.environ.get('XL_IMPORT_TERMINAL')
+        context['terminal'] = "НУТЭП" if os.environ.get('XL_IMPORT_TERMINAL') == "nutep" else "НЛЭ"
         date_previous: Match[str] | None = re.match(r'\d{2,4}.\d{1,2}', os.path.basename(file_name_save))
         date_previous: str = f'{date_previous.group()}.01' if date_previous else date_previous
         if date_previous is None:

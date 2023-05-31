@@ -33,7 +33,7 @@ class Arkas(AkkonLines):
         Removing keys in voyage, ship and date.
         """
         for keys, value in list(DICT_CONTENT_BEFORE_TABLE.items()):
-            if value in ['voyage', 'ship_voyage', 'date']:
+            if value in ['voyage', 'ship_voyage', "shipment_date"]:
                 for key in keys:
                     word: str = word.replace(key, "").translate({ord(c): "" for c in ":;"}).strip()
         return word
@@ -47,7 +47,7 @@ class Arkas(AkkonLines):
             date: datetime = datetime.strptime(parsing_row, "%d.%m.%Y")
         except ValueError:
             date: datetime = datetime.strptime(parsing_row, "%d.%m.%y")
-        context['date'] = str(date.date())
+        context["shipment_date"] = str(date.date())
         self.logger_write.info(f"context now is {context}")
 
     def parse_date(self, parsing_row: str, month_list: list, context: dict, row: list) -> None:
@@ -58,14 +58,14 @@ class Arkas(AkkonLines):
             if re.findall(r'\d{4}-\d{1,2}-\d{1,2}', parsing_row):
                 self.logger_write.info(f"Will parse date in value {parsing_row}...")
                 date: datetime = datetime.strptime(parsing_row.replace("T00:00:00.000", ""), "%Y-%m-%d")
-                context['date'] = str(date.date())
+                context["shipment_date"] = str(date.date())
                 self.logger_write.info(f"context now is {context}")
                 break
             elif re.findall(r'\d{1,2}[.]\d{1,2}[.]\d{2,4}', parsing_row):
                 self.parse_date_format_russia(self.remove_keys_in_data(parsing_row), context)
                 break
             elif re.findall(r'[0-9]', parsing_row):
-                context['date'] = self.convert_xlsx_datetime_to_date(float(parsing_row))
+                context["shipment_date"] = self.convert_xlsx_datetime_to_date(float(parsing_row))
                 break
         self.logger_write.info(f"context now is {context}")
 
@@ -80,29 +80,21 @@ class Arkas(AkkonLines):
             position: int = list(DICT_CONTENT_BEFORE_TABLE.values()).index("ship_voyage_in_other_cells")
             if re.findall(list(DICT_CONTENT_BEFORE_TABLE.keys())[position][0], ship_voyage):
                 if index == index_ship:
-                    context['ship'] = self.remove_keys_in_data(ship_voyage)
+                    context["ship_name"] = self.remove_keys_in_data(ship_voyage)
                 elif index == index_voyage:
                     context['voyage'] = self.remove_keys_in_data(ship_voyage)
                 index += 1
         self.logger_write.info(f"context now is {context}")
 
-    def is_table_starting(self, row: list) -> bool:
-        """
-        Understanding when a headerless table starts.
-        """
-        return bool(re.findall(r"\w{4}\d{7}", row[self.dict_columns_position["container_number"]]))
-
     def add_frequently_changing_keys(self, row: list, parsed_record: dict) -> None:
         """
         Entry in the dictionary of those keys that are often subject to change.
         """
-        parsed_record['container_size'] = int(float(row[self.dict_columns_position["container_size"]].strip())) \
-            if row[self.dict_columns_position["container_size"]] else ''
-        parsed_record['container_type'] = row[self.dict_columns_position["container_type"]].strip() \
-            if row[self.dict_columns_position["container_type"]] else ''
-        city: list = list(row[self.dict_columns_position["consignee"]].split(', '))[1:]
+        parsed_record['container_size'] = int(float(row[self.dict_columns_position["container_size"]].strip()))
+        parsed_record['container_type'] = row[self.dict_columns_position["container_type"]].strip()
+        city: list = list(row[self.dict_columns_position["consignee_name"]].split(', '))[1:]
         parsed_record['city'] = " ".join(city).strip()
-        parsed_record['shipper_country'] = row[self.dict_columns_position["shipper_country"]].strip()
+        parsed_record["tracking_country"] = row[self.dict_columns_position["tracking_country"]].strip()
 
 
 if __name__ == '__main__':

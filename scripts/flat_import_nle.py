@@ -1,44 +1,78 @@
-import csv
-import datetime
-import json
 import os
 import re
 import sys
+import json
+import uuid
+import contextlib
+import numpy as np
+import pandas as pd
+from pandas import DataFrame
+from datetime import datetime
 
-input_file_path = os.path.abspath(sys.argv[1])
-output_folder = sys.argv[2]
+headers_eng: dict = {
+    "date": "shipment_date",
+    "ship": "ship_name",
+    "goods_name_rus": "goods_name",
+    "shipper": "shipper_name",
+    "consignee": "consignee_name",
+    "count": "container_count",
+    "shipper_country": "tracking_country",
+    "goods_weight": "goods_weight_with_package",
+    "shipper_seaport": "tracking_seaport",
+    "goods_tnved": "tnved"
+}
 
-with open(input_file_path, newline='') as csvfile:
-    lines = csv.DictReader(csvfile)
-    # headers = lines.fieldnames
-    lines = list(lines)
 
-headers = ["ship", "date",
-           "terminal",
-           "container_number",
-           "container_size", "container_type", "goods_name_rus", "consignment", "shipper", "consignee", "line", "voyage", "shipper_country", "goods_weight", "package_number", "city", "shipper_seaport",
-           "goods_tnved"
-]
-parsed_data = []
-for line in lines:
-    if not "".join(line.values()):
-        continue
-    parsed_record = {k: v for k, v in line.items() if k in headers}
-    for key, value in parsed_record.items():
-        if not value:
-            parsed_record[key] = None
-    parsed_record['terminal'] = os.environ.get('XL_IMPORT_TERMINAL')
-    date_previous = re.match('\d{2,4}.\d{1,2}', os.path.basename(input_file_path))
-    date_previous = f'{date_previous.group()}.01' if date_previous else date_previous
-    if date_previous is None:
-        raise Exception('Date not in file name!')
-    else:
-        parsed_record['parsed_on'] = str(datetime.datetime.strptime(date_previous, "%Y.%m.%d").date())
-    parsed_record['original_file_name'] = os.path.basename(input_file_path)
-    parsed_record['original_file_parsed_on'] = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-    parsed_data.append(parsed_record)
+class ImportNLE(object):
+    def __init__(self, input_file_path: str, output_folder: str):
+        self.input_file_path: str = input_file_path
+        self.output_folder: str = output_folder
 
-basename = os.path.basename(input_file_path)
-output_file_path = os.path.join(output_folder, f'{basename}.json')
-with open(f"{output_file_path}", 'w', encoding='utf-8') as f:
-    json.dump(parsed_data, f, ensure_ascii=False, indent=4)
+    @staticmethod
+    def change_type_and_values(df: DataFrame) -> None:
+        """
+        Change data types or changing values.
+        """
+        with contextlib.suppress(Exception):
+            df['shipment_date'] = df['shipment_date'].dt.date.astype(str)
+            df[['expeditor']] = df[['expeditor']].apply(lambda x: x.fillna('Нет данных'))
+
+    def add_new_columns(self, df: DataFrame) -> None:
+        """
+        Add new columns.
+        """
+        date_previous: re.Match[str] | None = re.match(r'\d{2,4}.\d{1,2}', os.path.basename(self.input_file_path))
+        date_previous: str = f'{date_previous.group()}.01' if date_previous else date_previous
+        if date_previous is None:
+            sys.exit(1)
+        else:
+            df['parsed_on'] = str(datetime.strptime(date_previous, "%Y.%m.%d").date())
+        df['import_id'] = df.apply(lambda x: str(uuid.uuid4()), axis=1)
+        df['original_file_name'] = os.path.basename(self.input_file_path)
+        df['original_file_parsed_on'] = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+
+    def write_to_json(self, parsed_data: list) -> None:
+        """
+        Write data to json.
+        """
+        basename: str = os.path.basename(self.input_file_path)
+        output_file_path: str = os.path.join(self.output_folder, f'{basename}.json')
+        with open(f"{output_file_path}", 'w', encoding='utf-8') as f:
+            json.dump(parsed_data, f, ensure_ascii=False, indent=4)
+
+    def main(self) -> None:
+        """
+        The main function where we read the Excel file and write the file to json.
+        """
+        df: DataFrame = pd.read_excel(self.input_file_path, dtype={"ИНН": str, "voyage": str})
+        df = df.dropna(axis=0, how='all')
+        df = df.rename(columns=headers_eng)
+        df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+        self.add_new_columns(df)
+        self.change_type_and_values(df)
+        df = df.replace({np.nan: None, "NaT": None})
+        self.write_to_json(df.to_dict('records'))
+
+
+import_nw: ImportNLE = ImportNLE(sys.argv[1], sys.argv[2])
+import_nw.main()

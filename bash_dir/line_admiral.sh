@@ -1,7 +1,6 @@
 #!/bin/bash
 
 xls_path="${XL_IDP_PATH_IMPORT}/lines_${XL_IMPORT_TERMINAL}/admiral/"
-#xls_path=/home/timur/Anton_project/import_xls-master/lines_nutep/admiral
 
 
 csv_path="${xls_path}"/csv
