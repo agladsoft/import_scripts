@@ -1,9 +1,9 @@
 import os
 import sys
-from cosco import Cosco
+from mas import MAS
 
 
-class RcLine(Cosco):
+class RcLine(MAS):
     pass
 
 
