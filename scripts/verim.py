@@ -12,7 +12,7 @@ class Verim(Admiral):
         Understanding when a headerless table starts.
         """
         return self.is_digit(row[self.dict_columns_position["number_pp"]].replace('/', '.')) \
-            or row[self.dict_columns_position["goods_name_rus"]]
+            or row[self.dict_columns_position["goods_name"]]
 
     def add_frequently_changing_keys(self, row: list, parsed_record: dict) -> None:
         """
