@@ -28,7 +28,7 @@ class BaseLine:
         self.input_file_path: str = input_file_path
         self.output_folder: str = output_folder
         self.logger_write: Logger = write_log(line_file)
-        self.line_file: str = line_file
+        self.line_file: str = os.path.basename(line_file).replace(".py", "")
 
     @staticmethod
     def is_digit(x: str) -> bool:
@@ -113,7 +113,7 @@ class BaseLine:
         assigning a terminal and a line.
         """
         self.logger_write.info(f'file is {os.path.basename(input_file_path)} {datetime.datetime.now()}')
-        context: dict = dict(line=os.path.basename(self.line_file).replace(".py", ""))
+        context: dict = dict(line=self.line_file)
         context['terminal'] = "НУТЭП" if os.environ.get('XL_IMPORT_TERMINAL') == "nutep" else "НЛЭ"
         date_previous: Match[str] | None = re.match(r'\d{2,4}.\d{1,2}', os.path.basename(file_name_save))
         date_previous: str = f'{date_previous.group()}.01' if date_previous else date_previous

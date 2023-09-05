@@ -4,6 +4,7 @@ from __init__ import *
 from typing import Union
 from datetime import datetime
 from BaseLine import BaseLine
+from parsed import Parsed
 
 
 class Singleton(object):
@@ -13,6 +14,8 @@ class Singleton(object):
         if not isinstance(cls._instance, cls):
             cls._instance = object.__new__(cls)
         return cls._instance
+
+LIST_LINES = ['arkas','msc','sinokor','reel_shipping']
 
 
 class Admiral(Singleton, BaseLine):
@@ -202,6 +205,12 @@ class Admiral(Singleton, BaseLine):
             self.process_row(row, index, list_data, context, list_columns, coefficient_of_header)
         return list_data
 
+    def parsed_line(self,parsed_list):
+        for row in parsed_list:
+            Parsed().get_port(row,self.line_file)
+        return parsed_list
+
+
     def main(self, is_need_duplicate_containers: bool = True, is_reversed: bool = False, sign: str = '',
              coefficient_of_header: int = 30) -> int:
         """
@@ -213,8 +222,11 @@ class Admiral(Singleton, BaseLine):
         if is_need_duplicate_containers:
             list_data = self.fill_data_with_duplicate_containers(list_data, sign, is_reversed=is_reversed)
         os.remove(file_name_save)
+        if self.line_file in LIST_LINES:
+            list_data = self.parsed_line(list_data)
         self.write_data_in_file(list_data)
         return len(self.count_unique_containers(list_data))
+
 
 
 if __name__ == '__main__':
