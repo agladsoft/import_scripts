@@ -7,7 +7,7 @@ LINES = ['REEL SHIPPING', 'СИНОКОР РУС ООО', 'HEUNG-A LINE CO., LTD
 class Parsed:
     def __init__(self):
         # self.df = df
-        self.url = "http://10.23.4.203:8004"
+        self.url = "http://service_consignment:8004"
         self.headers = {
             'Content-Type': 'application/json'
         }
