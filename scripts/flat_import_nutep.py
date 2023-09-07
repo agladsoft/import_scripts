@@ -6,6 +6,7 @@ import uuid
 import contextlib
 import numpy as np
 import pandas as pd
+from parsed import ParsedDf
 from pandas import DataFrame
 from datetime import datetime
 
@@ -71,6 +72,7 @@ class ImportNUTEP(object):
         self.add_new_columns(df)
         self.change_type_and_values(df)
         df = df.replace({np.nan: None})
+        ParsedDf(df).get_port()
         self.write_to_json(df.to_dict('records'))
 
 
