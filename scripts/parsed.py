@@ -38,6 +38,8 @@ class Parsed:
         port = self.get_result(row, line)
         self.write_port(row, port)
 
+
+
     def write_port(self, row, port):
         row['is_auto_tracking'] = True
         if port:
@@ -50,7 +52,7 @@ class Parsed:
         row['is_auto_tracking'] = None
 
 
-LINES = ['REEL SHIPPING', 'СИНОКОР РУС ООО', 'HEUNG-A LINE CO., LTD', 'MSC', 'SINOKOR']
+LINES = ['REEL SHIPPING', 'СИНОКОР РУС ООО', 'HEUNG-A LINE CO., LTD', 'MSC', 'SINOKOR','SINAKOR','SKR','sinokor']
 IMPORT = ['импорт','import']
 
 

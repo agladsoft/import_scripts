@@ -207,7 +207,9 @@ class Admiral(Singleton, BaseLine):
 
     def parsed_line(self,parsed_list):
         for row in parsed_list:
-            Parsed().get_port(row,self.line_file)
+            if row.get('enforce_auto_tracking',True):
+                Parsed().get_port(row,self.line_file)
+
         return parsed_list
 
 
