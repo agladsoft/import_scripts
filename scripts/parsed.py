@@ -49,7 +49,8 @@ class Parsed:
             row['is_auto_tracking_ok'] = False
 
     def add_new_columns(self, row):
-        row['is_auto_tracking'] = None
+        if "enforce_auto_tracking" not in row:
+            row['is_auto_tracking'] = None
 
 
 LINES = ['REEL SHIPPING', 'СИНОКОР РУС ООО', 'HEUNG-A LINE CO., LTD', 'MSC', 'SINOKOR','SINAKOR','SKR','sinokor']
@@ -114,4 +115,5 @@ class ParsedDf:
         return False
 
     def add_new_columns(self):
-        self.df['is_auto_tracking'] = None
+        if "enforce_auto_tracking" not in self.df.columns:
+            self.df['is_auto_tracking'] = None
