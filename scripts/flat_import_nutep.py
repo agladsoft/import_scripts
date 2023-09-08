@@ -2,7 +2,6 @@ import os
 import re
 import sys
 import json
-import uuid
 import contextlib
 import numpy as np
 import pandas as pd
@@ -48,7 +47,6 @@ class ImportNUTEP(object):
             sys.exit(1)
         else:
             df['parsed_on'] = str(datetime.strptime(date_previous, "%Y.%m.%d").date())
-        df['import_id'] = df.apply(lambda x: str(uuid.uuid4()), axis=1)
         df['original_file_name'] = os.path.basename(self.input_file_path)
         df['original_file_parsed_on'] = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 

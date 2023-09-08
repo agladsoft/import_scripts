@@ -2,7 +2,6 @@ import re
 import csv
 import sys
 import json
-import uuid
 import datetime
 import pandas as pd
 from re import Match
@@ -91,7 +90,6 @@ class BaseLine:
         parsed_record['expeditor'] = 'Нет данных'
         parsed_record['original_file_name'] = os.path.basename(self.input_file_path)
         parsed_record['original_file_parsed_on'] = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-        parsed_record['import_id'] = str(uuid.uuid4())
         return self.merge_two_dicts(context, parsed_record)
 
     def remove_empty_columns_and_rows(self) -> str:
