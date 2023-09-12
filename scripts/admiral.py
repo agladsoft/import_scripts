@@ -216,11 +216,11 @@ class Admiral(Singleton, BaseLine):
                     Parsed().get_port(row,self.line_file)
                     tracking_seaport = row.get('tracking_seaport')
                     is_auto_tracking = row.get('is_auto_tracking')
-                    is_auto_tracking_ok = row.get('is_auto_tracking')
+                    is_auto_tracking_ok = row.get('is_auto_tracking_ok')
             else:
                 row.setdefault('tracking_seaport',tracking_seaport)
                 row.setdefault('is_auto_tracking', is_auto_tracking)
-                row.setdefault('is_auto_tracking', is_auto_tracking_ok)
+                row.setdefault('is_auto_tracking_ok', is_auto_tracking_ok)
         return parsed_list
 
 
