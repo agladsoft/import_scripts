@@ -47,6 +47,7 @@ class Parsed:
             row['tracking_seaport'] = port
         else:
             row['is_auto_tracking_ok'] = False
+            row['tracking_seaport'] = None
 
     def add_new_columns(self, row):
         if "enforce_auto_tracking" not in row:

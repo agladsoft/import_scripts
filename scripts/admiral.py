@@ -17,7 +17,6 @@ class Singleton(object):
 
 LIST_LINES = ['arkas','msc','sinokor','reel_shipping']
 
-
 class Admiral(Singleton, BaseLine):
 
     dict_columns_position: Dict[str, Union[None, int]] = {
@@ -206,10 +205,22 @@ class Admiral(Singleton, BaseLine):
         return list_data
 
     def parsed_line(self,parsed_list):
+        consignment = None
+        tracking_seaport = None
+        is_auto_tracking = None
+        is_auto_tracking_ok = None
         for row in parsed_list:
-            if row.get('enforce_auto_tracking',True):
-                Parsed().get_port(row,self.line_file)
-
+            if row.get('consignment',False) != consignment:
+                consignment = row.get('consignment')
+                if row.get('enforce_auto_tracking',True):
+                    Parsed().get_port(row,self.line_file)
+                    tracking_seaport = row.get('tracking_seaport')
+                    is_auto_tracking = row.get('is_auto_tracking')
+                    is_auto_tracking_ok = row.get('is_auto_tracking')
+            else:
+                row.setdefault('tracking_seaport',tracking_seaport)
+                row.setdefault('is_auto_tracking', is_auto_tracking)
+                row.setdefault('is_auto_tracking', is_auto_tracking_ok)
         return parsed_list
 
 
