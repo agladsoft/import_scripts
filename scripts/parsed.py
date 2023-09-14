@@ -113,9 +113,9 @@ class ParsedDf:
                     row.get('consignment')) is not None else None
                 is_auto_tracking_ok = data.get(row.get('consignment')).get('is_auto_tracking_ok') if data.get(
                     row.get('consignment')) is not None else None
-                row.setdefault('tracking_seaport', tracking_seaport)
-                row.setdefault('is_auto_tracking', is_auto_tracking)
-                row.setdefault('is_auto_tracking_ok', is_auto_tracking_ok)
+                self.df.at[index,'tracking_seaport'] = tracking_seaport
+                self.df.at[index,'is_auto_tracking'] = is_auto_tracking
+                self.df.at[index,'is_auto_tracking_ok'] = is_auto_tracking_ok
         logging.info('Обработка закончена')
 
 
