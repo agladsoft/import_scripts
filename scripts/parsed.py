@@ -47,6 +47,7 @@ class Parsed:
             row['tracking_seaport'] = port
         else:
             row['is_auto_tracking_ok'] = False
+            row['tracking_seaport'] = None
 
     def add_new_columns(self, row):
         if "enforce_auto_tracking" not in row:
@@ -95,11 +96,28 @@ class ParsedDf:
     def get_port(self):
         self.add_new_columns()
         logging.info("Запросы к микросервису")
+        data = {}
         for index, row in self.df.iterrows():
-            port = self.get_result(row)
-            self.write_port(index,port)
+            if row.get('consignment', False) not in data:
+                data[row.get('consignment')] = {}
+                if row.get('enforce_auto_tracking', True):
+                    port = self.get_result(row)
+                    self.write_port(index, port)
+                    data[row.get('consignment')]['tracking_seaport'] = row.get('tracking_seaport')
+                    data[row.get('consignment')]['is_auto_tracking'] = row.get('is_auto_tracking')
+                    data[row.get('consignment')]['is_auto_tracking_ok'] = row.get('is_auto_tracking_ok')
+            else:
+                tracking_seaport = data.get(row.get('consignment')).get('tracking_seaport') if data.get(
+                    row.get('consignment')) is not None else None
+                is_auto_tracking = data.get(row.get('consignment')).get('is_auto_tracking') if data.get(
+                    row.get('consignment')) is not None else None
+                is_auto_tracking_ok = data.get(row.get('consignment')).get('is_auto_tracking_ok') if data.get(
+                    row.get('consignment')) is not None else None
+                self.df.at[index,'tracking_seaport'] = tracking_seaport
+                self.df.at[index,'is_auto_tracking'] = is_auto_tracking
+                self.df.at[index,'is_auto_tracking_ok'] = is_auto_tracking_ok
         logging.info('Обработка закончена')
-        return self.df
+
 
     def write_port(self, index, port):
         self.df.at[index, 'is_auto_tracking'] = True

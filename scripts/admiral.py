@@ -15,11 +15,11 @@ class Singleton(object):
             cls._instance = object.__new__(cls)
         return cls._instance
 
-LIST_LINES = ['arkas','msc','sinokor','reel_shipping']
+
+LIST_LINES = ['arkas', 'msc', 'sinokor', 'reel_shipping']
 
 
 class Admiral(Singleton, BaseLine):
-
     dict_columns_position: Dict[str, Union[None, int]] = {
         "number_pp": None,
         "container_size_and_type": None,
@@ -205,13 +205,28 @@ class Admiral(Singleton, BaseLine):
             self.process_row(row, index, list_data, context, list_columns, coefficient_of_header)
         return list_data
 
-    def parsed_line(self,parsed_list):
+    def parsed_line(self, parsed_list):
+        data = {}
         for row in parsed_list:
-            if row.get('enforce_auto_tracking',True):
-                Parsed().get_port(row,self.line_file)
+            if row.get('consignment', False) not in data:
+                data[row.get('consignment')] = {}
+                if row.get('enforce_auto_tracking', True):
+                    Parsed().get_port(row, self.line_file)
+                    data[row.get('consignment')]['tracking_seaport'] = row.get('tracking_seaport')
+                    data[row.get('consignment')]['is_auto_tracking'] = row.get('is_auto_tracking')
+                    data[row.get('consignment')]['is_auto_tracking_ok'] = row.get('is_auto_tracking_ok')
 
+            else:
+                tracking_seaport = data.get(row.get('consignment')).get('tracking_seaport') if data.get(
+                    row.get('consignment')) is not None else None
+                is_auto_tracking = data.get(row.get('consignment')).get('is_auto_tracking') if data.get(
+                    row.get('consignment')) is not None else None
+                is_auto_tracking_ok = data.get(row.get('consignment')).get('is_auto_tracking_ok') if data.get(
+                    row.get('consignment')) is not None else None
+                row.setdefault('tracking_seaport', tracking_seaport)
+                row.setdefault('is_auto_tracking', is_auto_tracking)
+                row.setdefault('is_auto_tracking_ok', is_auto_tracking_ok)
         return parsed_list
-
 
     def main(self, is_need_duplicate_containers: bool = True, is_reversed: bool = False, sign: str = '',
              coefficient_of_header: int = 30) -> int:
@@ -228,7 +243,6 @@ class Admiral(Singleton, BaseLine):
             list_data = self.parsed_line(list_data)
         self.write_data_in_file(list_data)
         return len(self.count_unique_containers(list_data))
-
 
 
 if __name__ == '__main__':
