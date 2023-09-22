@@ -5,6 +5,7 @@ import json
 import contextlib
 import numpy as np
 import pandas as pd
+from typing import Union
 from pandas import DataFrame
 from datetime import datetime
 
@@ -40,7 +41,7 @@ class ImportNLE(object):
         """
         Add new columns.
         """
-        date_previous: re.Match[str] | None = re.match(r'\d{2,4}.\d{1,2}', os.path.basename(self.input_file_path))
+        date_previous: Union[re.Match[str], None] = re.match(r'\d{2,4}.\d{1,2}', os.path.basename(self.input_file_path))
         date_previous: str = f'{date_previous.group()}.01' if date_previous else date_previous
         if date_previous is None:
             sys.exit(1)

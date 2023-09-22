@@ -2,9 +2,10 @@ import re
 import sys
 from __init__ import *
 from typing import Union
+from parsed import Parsed
 from datetime import datetime
 from BaseLine import BaseLine
-from parsed import Parsed
+from update_seaport_with_empty_containers import SeaportEmptyContainers
 
 
 class Singleton(object):
@@ -228,6 +229,20 @@ class Admiral(Singleton, BaseLine):
                 row.setdefault('is_auto_tracking_ok', is_auto_tracking_ok)
         return parsed_list
 
+    def get_seaport_from_website(self, list_data: list):
+        """
+
+        """
+        seaport_empty_containers = SeaportEmptyContainers(self.logger_write)
+        if self.line_file in LIST_LINES:
+            list_data = self.parsed_line(list_data)
+            if self.line_file == 'msc':
+                dict_consignment_and_seaport: dict = {}
+                for row in list_data:
+                    if row["consignment"] not in dict_consignment_and_seaport and row["tracking_seaport"] is None:
+                        seaports = seaport_empty_containers.get_seaport_for_empty_containers(row["consignment"])
+                        dict_consignment_and_seaport[row["consignment"]] = ", ".join(list(seaports))
+
     def main(self, is_need_duplicate_containers: bool = True, is_reversed: bool = False, sign: str = '',
              coefficient_of_header: int = 30) -> int:
         """
@@ -239,8 +254,7 @@ class Admiral(Singleton, BaseLine):
         if is_need_duplicate_containers:
             list_data = self.fill_data_with_duplicate_containers(list_data, sign, is_reversed=is_reversed)
         os.remove(file_name_save)
-        if self.line_file in LIST_LINES:
-            list_data = self.parsed_line(list_data)
+        self.get_seaport_from_website(list_data)
         self.write_data_in_file(list_data)
         return len(self.count_unique_containers(list_data))
 
