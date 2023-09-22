@@ -42,25 +42,6 @@ class SeaportEmptyContainers:
             sys.exit(1)
         return client, ref_region
 
-    def get_group_consignment_and_shipper(self, consignment: str):
-        dict_consignment_and_seaport = {}
-        rows: QueryResult = self.client.query(f"SELECT consignment, shipper_name FROM import_enriched "
-                                              f"WHERE consignment='{consignment}' and is_empty = true"
-                                              f"GROUP BY consignment, shipper_name")
-        index_shipper: int = rows.column_names.index('shipper_name')
-        index_seaport: int = self.ref_region.column_names.index('seaport')
-        index_country: int = self.ref_region.column_names.index('country')
-        for row in rows.result_rows:
-            if consignment not in dict_consignment_and_seaport:
-                for seaport in self.ref_region.result_rows:
-                    if seaport[index_seaport] in row[index_shipper].split() \
-                            and seaport[index_seaport] != seaport[index_country]:
-                        self.logger.info(f"Getting seaport {seaport[index_seaport]} "
-                                         f"from reference_region by field shipper_name")
-                        dict_consignment_and_seaport[consignment] = seaport[index_seaport]
-                        return seaport[index_seaport]
-            return dict_consignment_and_seaport[consignment]
-
     def get_seaport_for_empty_containers(self, consignment: str) -> Optional[str]:
         """
         Find the seaport in the shipper_name field with empty containers.

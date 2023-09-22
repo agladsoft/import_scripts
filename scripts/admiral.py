@@ -235,7 +235,7 @@ class Admiral(Singleton, BaseLine):
         """
         seaport_empty_containers = SeaportEmptyContainers(self.logger_write)
         if self.line_file in LIST_LINES:
-            list_data = self.parsed_line(list_data)
+            # list_data = self.parsed_line(list_data)
             if self.line_file == 'msc':
                 dict_consignment_and_seaport: dict = {}
                 for row in list_data:
@@ -264,6 +264,7 @@ if __name__ == '__main__':
     try:
         print(parsed_data.main(is_reversed=True))
     except (ValueError, ImportError, IndexError, SyntaxError, TypeError, AttributeError) as ex:
+        print(f"Exception is {ex}. Type is {type(ex)}")
         print("6", file=sys.stderr)
         sys.exit(6)
     del parsed_data
