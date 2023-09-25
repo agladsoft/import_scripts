@@ -54,7 +54,7 @@ class SeaportEmptyContainers:
         index_seaport_unified: int = self.ref_region.column_names.index('seaport_unified')
         index_country: int = self.ref_region.column_names.index('country')
         for seaport in self.ref_region.result_rows:
-            if seaport[index_seaport] in row['shipper_name'] \
+            if seaport[index_seaport] in row['shipper_name'].split() \
                     and seaport[index_seaport] != seaport[index_country]:
                 self.logger.info(f"Getting seaport {seaport[index_seaport]} "
                                  f"from reference_region by field shipper_name")
