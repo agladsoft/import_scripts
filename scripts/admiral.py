@@ -229,19 +229,28 @@ class Admiral(Singleton, BaseLine):
                 row.setdefault('is_auto_tracking_ok', is_auto_tracking_ok)
         return parsed_list
 
+    def get_seaport_from_shipper(self, seaport_empty_containers: SeaportEmptyContainers, list_data: list):
+        """
+        Getting seaport from shipper in line MSC. This is done so that the data did not come from the site.
+        """
+        if self.line_file == 'msc':
+            dict_consignment_and_seaport: dict = {}
+            for row in list_data:
+                if row["tracking_seaport"] is None:
+                    if row["consignment"] not in dict_consignment_and_seaport:
+                        seaports = seaport_empty_containers.get_seaport_for_empty_containers(row)
+                        dict_consignment_and_seaport[row["consignment"]] = ", ".join(set(seaports))
+                    else:
+                        row["tracking_seaport"] = dict_consignment_and_seaport[row["consignment"]] or None
+
     def get_seaport_from_website(self, list_data: list):
         """
-
+        Getting seaport from website.
         """
-        seaport_empty_containers = SeaportEmptyContainers(self.logger_write)
+        seaport_empty_containers: SeaportEmptyContainers = SeaportEmptyContainers(self.logger_write)
         if self.line_file in LIST_LINES:
             list_data = self.parsed_line(list_data)
-            if self.line_file == 'msc':
-                dict_consignment_and_seaport: dict = {}
-                for row in list_data:
-                    if row["consignment"] not in dict_consignment_and_seaport and row["tracking_seaport"] is None:
-                        seaports = seaport_empty_containers.get_seaport_for_empty_containers(row["consignment"])
-                        dict_consignment_and_seaport[row["consignment"]] = ", ".join(list(seaports))
+            self.get_seaport_from_shipper(seaport_empty_containers, list_data)
 
     def main(self, is_need_duplicate_containers: bool = True, is_reversed: bool = False, sign: str = '',
              coefficient_of_header: int = 30) -> int:

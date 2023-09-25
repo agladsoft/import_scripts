@@ -35,30 +35,27 @@ class SeaportEmptyContainers:
             client: Client = get_client(host=get_my_env_var('HOST'), database=get_my_env_var('DATABASE'),
                                         username=get_my_env_var('USERNAME_DB'), password=get_my_env_var('PASSWORD'))
             self.logger.info("Successfully connect ot db")
-            ref_region: QueryResult = client.query("SELECT * FROM reference_is_empty")
+            ref_region: QueryResult = client.query("SELECT * FROM reference_region")
+            # Чтобы проверить, есть ли данные. Так как переменная образуется, но внутри нее могут быть ошибки.
+            print(ref_region.result_rows[0])
         except Exception as ex_connect:
             self.logger.error(f"Error connection to db {ex_connect}. Type error is {type(ex_connect)}.")
             print("error_connect_db", file=sys.stderr)
             sys.exit(1)
         return client, ref_region
 
-    def get_seaport_for_empty_containers(self, consignment: str) -> Optional[str]:
+    def get_seaport_for_empty_containers(self, row: dict) -> Optional[str]:
         """
         Find the seaport in the shipper_name field with empty containers.
-        :param consignment: Number of consignment.
+        :param row: Number of consignment.
         :return: seaport from reference_region.
         """
-        rows: QueryResult = self.client.query(f"SELECT consignment, shipper_name FROM import_enriched "
-                                              f"WHERE consignment='{consignment}' and is_empty = true "
-                                              f"GROUP BY consignment, shipper_name")
-        self.logger.info("Got data from sql-query")
-        index_shipper: int = rows.column_names.index('shipper_name')
         index_seaport: int = self.ref_region.column_names.index('seaport')
+        index_seaport_unified: int = self.ref_region.column_names.index('seaport_unified')
         index_country: int = self.ref_region.column_names.index('country')
-        for row in rows.result_rows:
-            for seaport in self.ref_region.result_rows:
-                if seaport[index_seaport] in row[index_shipper].split() \
-                        and seaport[index_seaport] != seaport[index_country]:
-                    self.logger.info(f"Getting seaport {seaport[index_seaport]} "
-                                     f"from reference_region by field shipper_name")
-                    yield seaport[index_seaport]
+        for seaport in self.ref_region.result_rows:
+            if seaport[index_seaport] in row['shipper_name'] \
+                    and seaport[index_seaport] != seaport[index_country]:
+                self.logger.info(f"Getting seaport {seaport[index_seaport]} "
+                                 f"from reference_region by field shipper_name")
+                yield seaport[index_seaport_unified]
