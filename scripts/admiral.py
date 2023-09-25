@@ -247,8 +247,8 @@ class Admiral(Singleton, BaseLine):
         """
         Getting seaport from website.
         """
-        seaport_empty_containers: SeaportEmptyContainers = SeaportEmptyContainers(self.logger_write)
         if self.line_file in LIST_LINES:
+            seaport_empty_containers: SeaportEmptyContainers = SeaportEmptyContainers(self.logger_write)
             list_data = self.parsed_line(list_data)
             self.get_seaport_from_shipper(seaport_empty_containers, list_data)
 
