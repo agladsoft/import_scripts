@@ -241,6 +241,7 @@ class Admiral(Singleton, BaseLine):
                         seaports = seaport_empty_containers.get_seaport_for_empty_containers(row)
                         dict_consignment_and_seaport[row["consignment"]] = ", ".join(set(seaports)) or None
                     row["tracking_seaport"] = dict_consignment_and_seaport[row["consignment"]]
+                    row["is_auto_tracking_ok"] = True
 
     def get_seaport_from_website(self, list_data: list):
         """
