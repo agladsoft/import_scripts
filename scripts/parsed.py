@@ -38,8 +38,6 @@ class Parsed:
         port = self.get_result(row, line)
         self.write_port(row, port)
 
-
-
     def write_port(self, row, port):
         row['is_auto_tracking'] = True
         if port:
@@ -54,8 +52,8 @@ class Parsed:
             row['is_auto_tracking'] = None
 
 
-LINES = ['REEL SHIPPING', 'СИНОКОР РУС ООО', 'HEUNG-A LINE CO., LTD', 'MSC', 'SINOKOR','SINAKOR','SKR','sinokor']
-IMPORT = ['импорт','import']
+LINES = ['REEL SHIPPING', 'СИНОКОР РУС ООО', 'HEUNG-A LINE CO., LTD', 'MSC', 'SINOKOR', 'SINAKOR', 'SKR', 'sinokor']
+IMPORT = ['импорт', 'import']
 
 
 class ParsedDf:
@@ -66,10 +64,11 @@ class ParsedDf:
             'Content-Type': 'application/json'
         }
 
-    def get_direction(self,direction):
+    def get_direction(self, direction):
         if direction.lower() in IMPORT:
             return 'import'
-        else:return 'export'
+        else:
+            return 'export'
 
     def body(self, row):
         data = {
@@ -103,9 +102,15 @@ class ParsedDf:
                 if row.get('enforce_auto_tracking', True):
                     port = self.get_result(row)
                     self.write_port(index, port)
-                    data[row.get('consignment')]['tracking_seaport'] = row.get('tracking_seaport')
-                    data[row.get('consignment')]['is_auto_tracking'] = row.get('is_auto_tracking')
-                    data[row.get('consignment')]['is_auto_tracking_ok'] = row.get('is_auto_tracking_ok')
+                    try:
+                        data[row.get('consignment')].setdefault('tracking_seaport',
+                                                                self.df.get('tracking_seaport')[index])
+                        data[row.get('consignment')].setdefault('is_auto_tracking',
+                                                                self.df.get('is_auto_tracking')[index])
+                        data[row.get('consignment')].setdefault('is_auto_tracking_ok',
+                                                                self.df.get('is_auto_tracking_ok')[index])
+                    except KeyError as ex:
+                        logging.info(f'Ошибка при получение ключа из DataFrame {ex}')
             else:
                 tracking_seaport = data.get(row.get('consignment')).get('tracking_seaport') if data.get(
                     row.get('consignment')) is not None else None
@@ -113,11 +118,10 @@ class ParsedDf:
                     row.get('consignment')) is not None else None
                 is_auto_tracking_ok = data.get(row.get('consignment')).get('is_auto_tracking_ok') if data.get(
                     row.get('consignment')) is not None else None
-                self.df.at[index,'tracking_seaport'] = tracking_seaport
-                self.df.at[index,'is_auto_tracking'] = is_auto_tracking
-                self.df.at[index,'is_auto_tracking_ok'] = is_auto_tracking_ok
+                self.df.at[index, 'tracking_seaport'] = tracking_seaport
+                self.df.at[index, 'is_auto_tracking'] = is_auto_tracking
+                self.df.at[index, 'is_auto_tracking_ok'] = is_auto_tracking_ok
         logging.info('Обработка закончена')
-
 
     def write_port(self, index, port):
         self.df.at[index, 'is_auto_tracking'] = True
