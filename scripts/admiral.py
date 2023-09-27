@@ -209,6 +209,8 @@ class Admiral(Singleton, BaseLine):
     def parsed_line(self, parsed_list):
         data = {}
         for row in parsed_list:
+            if row.get('consignment') == 'MEDUCD719935':
+                l = ''
             if row.get('consignment', False) not in data:
                 data[row.get('consignment')] = {}
                 if row.get('enforce_auto_tracking', True):
@@ -218,12 +220,9 @@ class Admiral(Singleton, BaseLine):
                     data[row.get('consignment')]['is_auto_tracking_ok'] = row.get('is_auto_tracking_ok')
 
             else:
-                tracking_seaport = data.get(row.get('consignment')).get('tracking_seaport') if data.get(
-                    row.get('consignment')) is not None else None
-                is_auto_tracking = data.get(row.get('consignment')).get('is_auto_tracking') if data.get(
-                    row.get('consignment')) is not None else None
-                is_auto_tracking_ok = data.get(row.get('consignment')).get('is_auto_tracking_ok') if data.get(
-                    row.get('consignment')) is not None else None
+                tracking_seaport = data.get(row.get('consignment')).get('tracking_seaport')
+                is_auto_tracking = data.get(row.get('consignment')).get('is_auto_tracking')
+                is_auto_tracking_ok = data.get(row.get('consignment')).get('is_auto_tracking_ok')
                 row.setdefault('tracking_seaport', tracking_seaport)
                 row.setdefault('is_auto_tracking', is_auto_tracking)
                 row.setdefault('is_auto_tracking_ok', is_auto_tracking_ok)
@@ -241,7 +240,8 @@ class Admiral(Singleton, BaseLine):
                         seaports = seaport_empty_containers.get_seaport_for_empty_containers(row)
                         dict_consignment_and_seaport[row["consignment"]] = ", ".join(set(seaports)) or None
                     row["tracking_seaport"] = dict_consignment_and_seaport[row["consignment"]]
-                    row["is_auto_tracking_ok"] = True
+                    if row.get('tracking_seaport') is not None:
+                        row["is_auto_tracking_ok"] = True
 
     def get_seaport_from_website(self, list_data: list):
         """
