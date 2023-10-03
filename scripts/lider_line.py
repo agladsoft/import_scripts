@@ -33,7 +33,7 @@ class LiderLine(CmaCgm):
         self.check_errors_in_columns(list(self.dict_columns_position.values()), self.dict_columns_position,
                                      "Error code 2: Column not in file or changed", 2)
 
-    def process_row(self, row: list, index: int, list_data: List[dict], context: dict, list_columns: list,
+    def process_row(self, row: list, rows: list, index: int, list_data: List[dict], context: dict, list_columns: list,
                     coefficient_of_header: int) -> None:
         """
         The process of processing each line.
@@ -41,7 +41,7 @@ class LiderLine(CmaCgm):
         if self.get_probability_of_header(row, list_columns) > coefficient_of_header:
             self.check_errors_in_header(row, context)
         elif self.is_table_starting(row):
-            self.get_content_in_table(row, index, list_data, context)
+            self.get_content_in_table(row, rows, index, list_data, context)
         elif "английское" in row and "класс опасности / ООН" in row:
             self.change_index_of_column(10, 11, 12, 14, 15, 16, 17)
         elif "русское" in row and "английское" not in row:

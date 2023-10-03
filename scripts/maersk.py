@@ -60,7 +60,7 @@ class Maersk(Evergreen):
             bool(row[self.dict_columns_position["container_size_and_type"]]), \
             bool(row[self.dict_columns_position["goods_weight_with_package"]])
 
-    def parse_row(self, index: int, row: list, context: dict, list_data: list) -> None:
+    def parse_row(self, index: int, row: list, rows: list, context: dict, list_data: list) -> None:
         """
         Getting values from columns in a table.
         """
