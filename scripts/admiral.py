@@ -253,6 +253,7 @@ class Admiral(Singleton, BaseLine):
         if self.line_file in LIST_LINES:
             seaport_empty_containers: SeaportEmptyContainers = SeaportEmptyContainers(self.logger_write)
             list_data = self.parsed_line(list_data)
+            self.logger_write.info('Все данные по порту получены')
             self.get_seaport_from_shipper(seaport_empty_containers, list_data)
 
     def main(self, is_need_duplicate_containers: bool = True, is_reversed: bool = False, sign: str = '',
