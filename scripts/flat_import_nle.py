@@ -8,6 +8,8 @@ import pandas as pd
 from typing import Union
 from pandas import DataFrame
 from datetime import datetime
+from notifiers import get_notifier
+from notifiers.core import Provider
 
 headers_eng: dict = {
     "date": "shipment_date",
@@ -21,6 +23,9 @@ headers_eng: dict = {
     "shipper_seaport": "tracking_seaport",
     "goods_tnved": "tnved"
 }
+
+TOKEN_TELEGRAM: str = "6557326533:AAHy6ls9LhTVTGztix8PUSK7BUSaHVEojXc"
+CHAT_ID: str = "-906821802"
 
 
 class ImportNLE(object):
@@ -73,5 +78,17 @@ class ImportNLE(object):
         self.write_to_json(df.to_dict('records'))
 
 
-import_nw: ImportNLE = ImportNLE(sys.argv[1], sys.argv[2])
-import_nw.main()
+if __name__ == "__main__":
+    try:
+        import_nw: ImportNLE = ImportNLE(sys.argv[1], sys.argv[2])
+        import_nw.main()
+    except Exception as ex:
+        telegram: Provider = get_notifier('telegram')
+        telegram.notify(
+            token=TOKEN_TELEGRAM,
+            chat_id=CHAT_ID,
+            message=f'Файл {os.path.basename(sys.argv[1])} не обработался. Код ошибки № 6'
+        )
+        print("6", file=sys.stderr)
+        sys.exit(6)
+

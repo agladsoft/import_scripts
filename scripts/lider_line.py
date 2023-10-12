@@ -27,8 +27,8 @@ class LiderLine(CmaCgm):
         """
         Checking for columns in the entire document, counting more than just columns on the same line.
         """
-        self.check_errors_in_columns([context.get("ship_name", None), context.get("voyage", None),
-                                      context.get("shipment_date", None)], context,
+        self.check_errors_in_columns([context.get("ship_name"), context.get("voyage"),
+                                      context.get("shipment_date")], context,
                                      "Error code 3: Keys (ship, voyage or date) not in cells", 3)
         self.check_errors_in_columns(list(self.dict_columns_position.values()), self.dict_columns_position,
                                      "Error code 2: Column not in file or changed", 2)
@@ -71,9 +71,5 @@ class LiderLine(CmaCgm):
 
 if __name__ == '__main__':
     parsed_data: LiderLine = LiderLine(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
-    try:
-        print(parsed_data.main())
-    except (ValueError, ImportError, IndexError, SyntaxError, TypeError, AttributeError) as ex:
-        print("6", file=sys.stderr)
-        sys.exit(6)
+    print(parsed_data.main())
     del parsed_data

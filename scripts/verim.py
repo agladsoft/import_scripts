@@ -1,8 +1,8 @@
-import itertools
 import os
 import sys
+import itertools
 from typing import Tuple
-from admiral import Admiral
+from admiral import Admiral, telegram, CHAT_ID, TOKEN_TELEGRAM
 
 
 class Verim(Admiral):
@@ -40,7 +40,8 @@ class Verim(Admiral):
         set_index.clear()
 
     @staticmethod
-    def find_duplicate_containers(is_duplicate_containers_in_line: bool, is_reversed: bool, *args: any) -> Tuple[bool, bool]:
+    def find_duplicate_containers(is_duplicate_containers_in_line: bool, is_reversed: bool, *args: any) \
+            -> Tuple[bool, bool]:
         """
         Find columns that are duplicate from previous row.
         """
@@ -69,6 +70,11 @@ class Verim(Admiral):
         """
         if row["container_number"] == '' and row["container_seal"] == '' and row['container_type'] == '' \
                 and row['container_size'] == '':
+            telegram.notify(
+                token=TOKEN_TELEGRAM,
+                chat_id=CHAT_ID,
+                message=f'Файл {os.path.basename(sys.argv[1])} не обработался. Код ошибки № 5'
+            )
             self.logger_write.error(f'Container_seal is empty on row {index}')
             print(f"5_in_row_{index + 1}", file=sys.stderr)
             sys.exit(5)
@@ -105,9 +111,5 @@ class Verim(Admiral):
 
 if __name__ == '__main__':
     parsed_data: Verim = Verim(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
-    try:
-        print(parsed_data.main(is_reversed=True))
-    except (ValueError, ImportError, IndexError, SyntaxError, TypeError, AttributeError) as ex:
-        print("6", file=sys.stderr)
-        sys.exit(6)
+    print(parsed_data.main(is_reversed=True))
     del parsed_data

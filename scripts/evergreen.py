@@ -15,8 +15,8 @@ class Evergreen(Arkas):
         """
         if no_need_columns is None:
             no_need_columns = []
-        self.check_errors_in_columns([context.get("ship_name", None), context.get("voyage", None),
-                                      context.get("shipment_date", None)], context,
+        self.check_errors_in_columns([context.get("ship_name"), context.get("voyage"),
+                                      context.get("shipment_date")], context,
                                      "Error code 3: Keys (ship, voyage or date) not in cells", 3)
         self.get_columns_position(row)
         dict_columns_position = self.dict_columns_position.copy()
@@ -59,9 +59,5 @@ class Evergreen(Arkas):
 
 if __name__ == '__main__':
     parsed_data: Evergreen = Evergreen(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
-    try:
-        print(parsed_data.main(sign='*'))
-    except (ValueError, ImportError, IndexError, SyntaxError, TypeError, AttributeError) as ex:
-        print("6", file=sys.stderr)
-        sys.exit(6)
+    print(parsed_data.main(sign='*'))
     del parsed_data

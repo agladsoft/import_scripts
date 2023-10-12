@@ -7,7 +7,11 @@ import pandas as pd
 from re import Match
 from __init__ import *
 from typing import Union
+from notifiers import get_notifier
+from notifiers.core import Provider
 from pandas.io.parsers import read_csv
+
+telegram: Provider = get_notifier('telegram')
 
 
 class JsonEncoder(json.JSONEncoder):
@@ -63,6 +67,11 @@ class BaseLine:
         Checks for the presence of all columns in the header.
         """
         if not all(i for i in list_columns if i is None):
+            telegram.notify(
+                token=TOKEN_TELEGRAM,
+                chat_id=CHAT_ID,
+                message=f'Файл {os.path.basename(self.input_file_path)} не обработался. Код ошибки № {error_code}'
+            )
             self.logger_write.error(message)
             self.logger_write.error(dict_columns)
             print(f"{error_code}", file=sys.stderr)
@@ -79,8 +88,8 @@ class BaseLine:
             parsed_record['container_number'] = re.findall(r"\w{4}\d{7}", container_number)[0]
         except IndexError:
             parsed_record['container_number'] = container_number
-        parsed_record["goods_weight_with_package"] = float(re.sub(" +", "", row[ir_weight_goods]).replace(',', '.')) if row[
-            ir_weight_goods] else None
+        parsed_record["goods_weight_with_package"] = float(re.sub(" +", "", row[ir_weight_goods]).replace(',', '.')) \
+            if row[ir_weight_goods] else None
         parsed_record['package_number'] = int(float(re.sub(" +", "", row[ir_package_number]))) \
             if row[ir_package_number] else None
         parsed_record['goods_name'] = row[ir_goods_name_rus].strip()
@@ -89,7 +98,7 @@ class BaseLine:
         parsed_record['consignee_name'] = row[ir_consignee].strip()
         parsed_record['expeditor'] = 'Нет данных'
         parsed_record['original_file_name'] = os.path.basename(self.input_file_path)
-        parsed_record['original_file_parsed_on'] = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        parsed_record['original_file_parsed_on'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         return self.merge_two_dicts(context, parsed_record)
 
     def remove_empty_columns_and_rows(self) -> str:
@@ -116,6 +125,11 @@ class BaseLine:
         date_previous: Union[Match[str], None] = re.match(r'\d{2,4}.\d{1,2}', os.path.basename(file_name_save))
         date_previous: str = f'{date_previous.group()}.01' if date_previous else date_previous
         if date_previous is None:
+            telegram.notify(
+                token=TOKEN_TELEGRAM,
+                chat_id=CHAT_ID,
+                message=f'Файл {os.path.basename(self.input_file_path)} не обработался. Код ошибки № 1'
+            )
             self.logger_write.error("Error code 1: date not in file name!")
             print("1", file=sys.stderr)
             sys.exit(1)
@@ -197,6 +211,11 @@ class BaseLine:
         Writing data to json.
         """
         if not list_data:
+            telegram.notify(
+                token=TOKEN_TELEGRAM,
+                chat_id=CHAT_ID,
+                message=f'Файл {os.path.basename(self.input_file_path)} не обработался. Код ошибки № 4'
+            )
             self.logger_write.error("Error code 4: length list equals 0!")
             print("4", file=sys.stderr)
             sys.exit(4)

@@ -4,7 +4,7 @@ from __init__ import *
 from typing import Union
 from parsed import Parsed
 from datetime import datetime
-from BaseLine import BaseLine
+from BaseLine import BaseLine, telegram
 from update_seaport_with_empty_containers import SeaportEmptyContainers
 
 
@@ -82,6 +82,11 @@ class Admiral(Singleton, BaseLine):
                     for column in columns:
                         self.parse_content_before_table(column, columns, parsing_row, list_month, context, row)
         except (IndexError, ValueError):
+            telegram.notify(
+                token=TOKEN_TELEGRAM,
+                chat_id=CHAT_ID,
+                message=f'Файл {os.path.basename(self.input_file_path)} не обработался. Код ошибки № 3'
+            )
             self.logger_write.error("Error code 3: Date or Ship or Voyage not in cells")
             print("3", file=sys.stderr)
             sys.exit(3)
@@ -137,6 +142,11 @@ class Admiral(Singleton, BaseLine):
         try:
             self.parse_row(index, row, context, list_data)
         except (IndexError, ValueError, TypeError):
+            telegram.notify(
+                token=TOKEN_TELEGRAM,
+                chat_id=CHAT_ID,
+                message=f'Файл {os.path.basename(self.input_file_path)} не обработался. Код ошибки № 5'
+            )
             self.logger_write.error(f"Error code 5: error processing in row {index + 1}!")
             print(f"5_in_row_{index + 1}", file=sys.stderr)
             sys.exit(5)
@@ -155,8 +165,8 @@ class Admiral(Singleton, BaseLine):
         """
         Checking for columns in the entire document, counting more than just columns on the same line.
         """
-        self.check_errors_in_columns([context.get("ship_name", None), context.get("voyage", None),
-                                      context.get("shipment_date", None)], context,
+        self.check_errors_in_columns([context.get("ship_name"), context.get("voyage"),
+                                      context.get("shipment_date")], context,
                                      "Error code 3: Keys (ship, voyage or date) not in cells", 3)
         self.get_columns_position(row)
         self.check_errors_in_columns(list(self.dict_columns_position.values()), self.dict_columns_position,
@@ -258,22 +268,26 @@ class Admiral(Singleton, BaseLine):
         Complete processing of the file. As well as deleting empty columns, rows and filling repeating containers
         with data, followed by saving the file in json.
         """
-        file_name_save: str = self.remove_empty_columns_and_rows()
-        list_data: List[dict] = self.__get_content_from_file(file_name_save, coefficient_of_header)
-        if is_need_duplicate_containers:
-            list_data = self.fill_data_with_duplicate_containers(list_data, sign, is_reversed=is_reversed)
-        os.remove(file_name_save)
-        self.get_seaport_from_website(list_data)
-        self.write_data_in_file(list_data)
-        return len(self.count_unique_containers(list_data))
+        try:
+            file_name_save: str = self.remove_empty_columns_and_rows()
+            list_data: List[dict] = self.__get_content_from_file(file_name_save, coefficient_of_header)
+            if is_need_duplicate_containers:
+                list_data = self.fill_data_with_duplicate_containers(list_data, sign, is_reversed=is_reversed)
+            os.remove(file_name_save)
+            self.get_seaport_from_website(list_data)
+            self.write_data_in_file(list_data)
+            return len(self.count_unique_containers(list_data))
+        except (ValueError, ImportError, IndexError, SyntaxError, TypeError, AttributeError):
+            telegram.notify(
+                token=TOKEN_TELEGRAM,
+                chat_id=CHAT_ID,
+                message=f'Файл {os.path.basename(self.input_file_path)} не обработался. Код ошибки № 6'
+            )
+            print("6", file=sys.stderr)
+            sys.exit(6)
 
 
 if __name__ == '__main__':
     parsed_data: Admiral = Admiral(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
-    try:
-        print(parsed_data.main(is_reversed=True))
-    except (ValueError, ImportError, IndexError, SyntaxError, TypeError, AttributeError) as ex:
-        print(f"Exception is {ex}. Type is {type(ex)}")
-        print("6", file=sys.stderr)
-        sys.exit(6)
+    print(parsed_data.main(is_reversed=True))
     del parsed_data
