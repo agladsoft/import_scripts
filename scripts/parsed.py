@@ -74,7 +74,7 @@ class ParsedDf:
         data = {
             'line': row.get('line'),
             'consignment': row.get('consignment'),
-            'direction': self.get_direction(row['direction'])
+            'direction': self.get_direction(row.get('direction','not'))
 
         }
         return data
