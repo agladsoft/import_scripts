@@ -6,3 +6,4 @@ python-Levenshtein==0.20.8
 requests==2.31.0
 python-dotenv==1.0.0
 clickhouse_connect==0.6.13
+requests==2.31.0
