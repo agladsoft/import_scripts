@@ -2,9 +2,11 @@ import os
 from typing import Dict, Tuple, List
 from logging import Logger, getLogger, INFO, FileHandler
 
+# XL_IDP_ROOT = '/home/uventus/PycharmProjects/New_Proect/ruscon/docker_project/import_scripts/scripts/None'
 
 def write_log(line_file: str) -> Logger:
     full_dir_name_logging: str = f'{os.environ.get("XL_IDP_ROOT")}/logging'
+    # full_dir_name_logging: str = f'{XL_IDP_ROOT}/logging'
     if not os.path.exists(full_dir_name_logging):
         os.mkdir(full_dir_name_logging)
     logger_handler: FileHandler = FileHandler(filename=f'{full_dir_name_logging}/'
@@ -22,8 +24,10 @@ LIST_MONTH: List[str] = ["января", "февраля", "марта", "апр
                          "август", "сентябрь", "октябрь", "ноябрь", "декабрь", 'ЯНВАРЯ', 'ФЕВРАЛЯ', 'МАРТА', 'АПРЕЛЯ',
                          'МАЯ', 'ИЮНЯ', 'ИЮЛЯ', 'АВГУСТА', 'СЕНТЯБРЯ', 'ОКТЯБРЯ', 'НОЯБРЯ', 'ДЕКАБРЯ', 'ЯНВАРЬ',
                          'ФЕВРАЛЬ', 'МАРТ', 'АПРЕЛЬ', 'МАЙ', 'ИЮНЬ', 'ИЮЛЬ', 'АВГУСТ', 'СЕНТЯБРЬ', 'ОКТЯБРЬ', 'НОЯБРЬ',
-                         'ДЕКАБРЬ',"Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", "Июля", "Августа", "Сентября",
-                         "Октября", "Ноября", "Декабря","Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь",
+                         'ДЕКАБРЬ', "Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", "Июля", "Августа",
+                         "Сентября",
+                         "Октября", "Ноября", "Декабря", "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль",
+                         "Август", "Сентябрь",
                          "Октябрь", "Ноябрь", "Декабрь"]
 
 DICT_HEADERS_COLUMN_ENG: Dict[Tuple, str] = {

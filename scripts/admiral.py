@@ -2,8 +2,10 @@ import re
 import sys
 from __init__ import *
 from typing import Union
+from parsed import Parsed
 from datetime import datetime
 from BaseLine import BaseLine
+from update_seaport_with_empty_containers import SeaportEmptyContainers
 
 
 class Singleton(object):
@@ -15,8 +17,10 @@ class Singleton(object):
         return cls._instance
 
 
-class Admiral(Singleton, BaseLine):
+LIST_LINES = ['arkas', 'msc', 'sinokor', 'reel_shipping']
 
+
+class Admiral(Singleton, BaseLine):
     dict_columns_position: Dict[str, Union[None, int]] = {
         "number_pp": None,
         "container_size_and_type": None,
@@ -206,6 +210,56 @@ class Admiral(Singleton, BaseLine):
             self.process_row(row, rows[index:], index, list_data, context, list_columns, coefficient_of_header)
         return list_data
 
+    def parsed_line(self, parsed_list):
+        data = {}
+        for row in parsed_list:
+            if row.get('consignment', False) not in data:
+                data[row.get('consignment')] = {}
+                if row.get('enforce_auto_tracking', True):
+                    Parsed().get_port(row, self.line_file)
+                    try:
+                        data[row.get('consignment')].setdefault('tracking_seaport', row.get('tracking_seaport'))
+                        data[row.get('consignment')].setdefault('is_auto_tracking', row.get('is_auto_tracking'))
+                        data[row.get('consignment')].setdefault('is_auto_tracking_ok', row.get('is_auto_tracking_ok'))
+                    except KeyError as key:
+                        self.logger_write.info(f'Шибка при использование ключа {key}')
+            else:
+                tracking_seaport = data.get(row.get('consignment')).get('tracking_seaport') if data.get(
+                    row.get('consignment')) is not None else None
+                is_auto_tracking = data.get(row.get('consignment')).get('is_auto_tracking') if data.get(
+                    row.get('consignment')) is not None else None
+                is_auto_tracking_ok = data.get(row.get('consignment')).get('is_auto_tracking_ok') if data.get(
+                    row.get('consignment')) is not None else None
+                row.setdefault('tracking_seaport', tracking_seaport)
+                row.setdefault('is_auto_tracking', is_auto_tracking)
+                row.setdefault('is_auto_tracking_ok', is_auto_tracking_ok)
+        return parsed_list
+
+    def get_seaport_from_shipper(self, seaport_empty_containers: SeaportEmptyContainers, list_data: list):
+        """
+        Getting seaport from shipper in line MSC. This is done so that the data did not come from the site.
+        """
+        if self.line_file == 'msc':
+            dict_consignment_and_seaport: dict = {}
+            for row in list_data:
+                if row["tracking_seaport"] is None:
+                    if row["consignment"] not in dict_consignment_and_seaport:
+                        seaports = seaport_empty_containers.get_seaport_for_empty_containers(row)
+                        dict_consignment_and_seaport[row["consignment"]] = ", ".join(set(seaports)) or None
+                    row["tracking_seaport"] = dict_consignment_and_seaport[row["consignment"]]
+                    if row.get('tracking_seaport') is not None:
+                        row["is_auto_tracking_ok"] = True
+
+    def get_seaport_from_website(self, list_data: list):
+        """
+        Getting seaport from website.
+        """
+        if self.line_file in LIST_LINES:
+            seaport_empty_containers: SeaportEmptyContainers = SeaportEmptyContainers(self.logger_write)
+            list_data = self.parsed_line(list_data)
+            self.logger_write.info('Все данные по порту получены')
+            self.get_seaport_from_shipper(seaport_empty_containers, list_data)
+
     def main(self, is_need_duplicate_containers: bool = True, is_reversed: bool = False, sign: str = '',
              coefficient_of_header: int = 30) -> int:
         """
@@ -217,6 +271,7 @@ class Admiral(Singleton, BaseLine):
         if is_need_duplicate_containers:
             list_data = self.fill_data_with_duplicate_containers(list_data, sign, is_reversed=is_reversed)
         os.remove(file_name_save)
+        self.get_seaport_from_website(list_data)
         self.write_data_in_file(list_data)
         return len(self.count_unique_containers(list_data))
 
@@ -226,6 +281,7 @@ if __name__ == '__main__':
     try:
         print(parsed_data.main(is_reversed=True))
     except (ValueError, ImportError, IndexError, SyntaxError, TypeError, AttributeError) as ex:
+        print(f"Exception is {ex}. Type is {type(ex)}")
         print("6", file=sys.stderr)
         sys.exit(6)
     del parsed_data

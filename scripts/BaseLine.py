@@ -2,7 +2,6 @@ import re
 import csv
 import sys
 import json
-import uuid
 import datetime
 import pandas as pd
 from re import Match
@@ -28,7 +27,7 @@ class BaseLine:
         self.input_file_path: str = input_file_path
         self.output_folder: str = output_folder
         self.logger_write: Logger = write_log(line_file)
-        self.line_file: str = line_file
+        self.line_file: str = os.path.basename(line_file).replace(".py", "")
 
     @staticmethod
     def is_digit(x: str) -> bool:
@@ -91,7 +90,6 @@ class BaseLine:
         parsed_record['expeditor'] = 'Нет данных'
         parsed_record['original_file_name'] = os.path.basename(self.input_file_path)
         parsed_record['original_file_parsed_on'] = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-        parsed_record['import_id'] = str(uuid.uuid4())
         return self.merge_two_dicts(context, parsed_record)
 
     def remove_empty_columns_and_rows(self) -> str:
@@ -113,9 +111,9 @@ class BaseLine:
         assigning a terminal and a line.
         """
         self.logger_write.info(f'file is {os.path.basename(input_file_path)} {datetime.datetime.now()}')
-        context: dict = dict(line=os.path.basename(self.line_file).replace(".py", ""))
+        context: dict = dict(line=self.line_file)
         context['terminal'] = "НУТЭП" if os.environ.get('XL_IMPORT_TERMINAL') == "nutep" else "НЛЭ"
-        date_previous: Match[str] | None = re.match(r'\d{2,4}.\d{1,2}', os.path.basename(file_name_save))
+        date_previous: Union[Match[str], None] = re.match(r'\d{2,4}.\d{1,2}', os.path.basename(file_name_save))
         date_previous: str = f'{date_previous.group()}.01' if date_previous else date_previous
         if date_previous is None:
             self.logger_write.error("Error code 1: date not in file name!")
