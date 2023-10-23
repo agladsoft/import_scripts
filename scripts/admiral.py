@@ -285,3 +285,4 @@ if __name__ == '__main__':
         print("6", file=sys.stderr)
         sys.exit(6)
     del parsed_data
+
