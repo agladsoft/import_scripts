@@ -72,8 +72,8 @@ class ParsedDf:
 
     def body(self, row):
         data = {
-            'line': row['line'],
-            'consignment': row['consignment'],
+            'line': row.get('line'),
+            'consignment': row.get('consignment'),
             'direction': self.get_direction(row['direction'])
 
         }
