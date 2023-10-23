@@ -112,12 +112,16 @@ class Admiral(Singleton, BaseLine):
         parsed_record['city'] = row[self.dict_columns_position["city"]].strip()
         parsed_record["tracking_country"] = row[self.dict_columns_position["tracking_country"]].strip()
 
-    def parse_row(self, index: int, row: list, context: dict, list_data: list) -> None:
+    def transfer_data_non_merged_cells(self, row: list, rows: list):
+        pass
+
+    def parse_row(self, index: int, row: list, rows: list, context: dict, list_data: list) -> None:
         """
         Getting values from columns in a table.
         """
         self.logger_write.info(f'row {index} is {row}')
         parsed_record: dict = {}
+        self.transfer_data_non_merged_cells(row, rows)
         self.add_frequently_changing_keys(row, parsed_record)
         record: dict = self.add_value_from_data_to_list(row, self.dict_columns_position["container_number"],
                                                         self.dict_columns_position["goods_weight_with_package"],
@@ -130,12 +134,12 @@ class Admiral(Singleton, BaseLine):
         self.logger_write.info(f"record is {record}")
         list_data.append(record)
 
-    def get_content_in_table(self, row: list, index: int, list_data: list, context: dict) -> None:
+    def get_content_in_table(self, row: list, rows: list, index: int, list_data: list, context: dict) -> None:
         """
         Getting values from columns in a table. And also catching the error.
         """
         try:
-            self.parse_row(index, row, context, list_data)
+            self.parse_row(index, row, rows, context, list_data)
         except (IndexError, ValueError, TypeError):
             self.logger_write.error(f"Error code 5: error processing in row {index + 1}!")
             print(f"5_in_row_{index + 1}", file=sys.stderr)
@@ -170,7 +174,7 @@ class Admiral(Singleton, BaseLine):
         count: int = sum(element in list_columns for element in row)
         return int(count / len(row) * 100)
 
-    def process_row(self, row: list, index: int, list_data: List[dict], context: dict, list_columns: list,
+    def process_row(self, row: list, rows: list, index: int, list_data: List[dict], context: dict, list_columns: list,
                     coefficient_of_header: int) -> None:
         """
         The process of processing each line.
@@ -179,7 +183,7 @@ class Admiral(Singleton, BaseLine):
             if self.get_probability_of_header(row, list_columns) > coefficient_of_header:
                 self.check_errors_in_header(row, context)
             elif self.is_table_starting(row):
-                self.get_content_in_table(row, index, list_data, context)
+                self.get_content_in_table(row, rows, index, list_data, context)
         except TypeError:
             self.get_content_before_table(row, context, LIST_MONTH)
 
@@ -203,7 +207,7 @@ class Admiral(Singleton, BaseLine):
         list_data: List[dict] = []
         list_columns: List[str] = self.__get_list_columns()
         for index, row in enumerate(rows):
-            self.process_row(row, index, list_data, context, list_columns, coefficient_of_header)
+            self.process_row(row, rows[index:], index, list_data, context, list_columns, coefficient_of_header)
         return list_data
 
     def parsed_line(self, parsed_list):
