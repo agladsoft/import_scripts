@@ -18,7 +18,7 @@ def write_log(line_file: str) -> Logger:
 
 
 TOKEN_TELEGRAM: str = "6557326533:AAHy6ls9LhTVTGztix8PUSK7BUSaHVEojXc"
-CHAT_ID: str = "-906821802"
+CHAT_ID: str = "-4051876751"
 
 LIST_MONTH: List[str] = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября",
                          "октября", "ноября", "декабря", "январь", "февраль", "март", "апрель", "май", "июнь", "июль",
