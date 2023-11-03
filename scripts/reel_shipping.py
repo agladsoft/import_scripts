@@ -5,6 +5,12 @@ from evergreen import Evergreen
 
 class ReelShipping(Evergreen):
 
+    def check_errors_in_header(self, row: list, context: dict, no_need_columns: list = None) -> None:
+        """
+        Checking for columns in the entire document, counting more than just columns on the same line.
+        """
+        Evergreen.check_errors_in_header(self, row, context, no_need_columns=["tnved"])
+
     def add_frequently_changing_keys(self, row: list, parsed_record: dict) -> None:
         """
         Entry in the dictionary of those keys that are often subject to change.
