@@ -213,6 +213,8 @@ class Admiral(Singleton, BaseLine):
     def parsed_line(self, parsed_list):
         data = {}
         for row in parsed_list:
+            if row.get('tracking_seaport') is not None:
+                continue
             if row.get('consignment', False) not in data:
                 data[row.get('consignment')] = {}
                 if row.get('enforce_auto_tracking', True):
