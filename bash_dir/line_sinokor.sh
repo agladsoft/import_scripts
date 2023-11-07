@@ -1,6 +1,6 @@
 #!/bin/bash
 
-xls_path="${XL_IDP_PATH_IMPORT}/lines_${XL_IMPORT_TERMINAL}/sinokor/"
+xls_path="${XL_IDP_PATH_IMPORT}/lines_${XL_IMPORT_TERMINAL}/sinokor_tracking/"
 
 csv_path="${xls_path}"/csv
 if [ ! -d "$csv_path" ]; then
