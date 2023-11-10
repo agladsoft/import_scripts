@@ -6,7 +6,7 @@ import requests
 
 class Parsed:
     def __init__(self):
-        self.url = "http://158.160.77.121:8004"
+        self.url = "http://158.160.77.121:8005"
         self.headers = {
             'Content-Type': 'application/json'
         }
@@ -59,7 +59,7 @@ IMPORT = ['импорт', 'import']
 class ParsedDf:
     def __init__(self, df):
         self.df = df
-        self.url = "http://158.160.77.121:8004"
+        self.url = "http://158.160.77.121:8005"
         self.headers = {
             'Content-Type': 'application/json'
         }
