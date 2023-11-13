@@ -97,20 +97,21 @@ class ParsedDf:
         logging.info("Запросы к микросервису")
         data = {}
         for index, row in self.df.iterrows():
+            if row.get('tracking_seaport') is not None or row.get('enforce_auto_tracking', False):
+                continue
             if row.get('consignment', False) not in data:
                 data[row.get('consignment')] = {}
-                if row.get('enforce_auto_tracking', True):
-                    port = self.get_result(row)
-                    self.write_port(index, port)
-                    try:
-                        data[row.get('consignment')].setdefault('tracking_seaport',
-                                                                self.df.get('tracking_seaport')[index])
-                        data[row.get('consignment')].setdefault('is_auto_tracking',
-                                                                self.df.get('is_auto_tracking')[index])
-                        data[row.get('consignment')].setdefault('is_auto_tracking_ok',
-                                                                self.df.get('is_auto_tracking_ok')[index])
-                    except KeyError as ex:
-                        logging.info(f'Ошибка при получение ключа из DataFrame {ex}')
+                port = self.get_result(row)
+                self.write_port(index, port)
+                try:
+                    data[row.get('consignment')].setdefault('tracking_seaport',
+                                                            self.df.get('tracking_seaport')[index])
+                    data[row.get('consignment')].setdefault('is_auto_tracking',
+                                                            self.df.get('is_auto_tracking')[index])
+                    data[row.get('consignment')].setdefault('is_auto_tracking_ok',
+                                                            self.df.get('is_auto_tracking_ok')[index])
+                except KeyError as ex:
+                    logging.info(f'Ошибка при получение ключа из DataFrame {ex}')
             else:
                 tracking_seaport = data.get(row.get('consignment')).get('tracking_seaport') if data.get(
                     row.get('consignment')) is not None else None
