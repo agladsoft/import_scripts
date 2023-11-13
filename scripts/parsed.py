@@ -97,7 +97,9 @@ class ParsedDf:
         logging.info("Запросы к микросервису")
         data = {}
         for index, row in self.df.iterrows():
-            if row.get('tracking_seaport') is not None or row.get('enforce_auto_tracking', False):
+            if row.get('tracking_seaport') is not None:
+                continue
+            if not row.get('enforce_auto_tracking', False):
                 continue
             if row.get('consignment', False) not in data:
                 data[row.get('consignment')] = {}
