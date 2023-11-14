@@ -24,7 +24,9 @@ class Parsed:
         body = self.body(row, line)
         body = json.dumps(body)
         try:
+            logging.info(f'Отправка запроса в микро-сервис по {body}')
             answer = requests.post(self.url, data=body, headers=self.headers,timeout=120)
+            logging.info(f'Получен ответ по запросу {body}')
             if answer.status_code != 200:
                 return None
             result = answer.json()
