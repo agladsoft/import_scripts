@@ -24,7 +24,7 @@ class Parsed:
         body = self.body(row, line)
         body = json.dumps(body)
         try:
-            answer = requests.post(self.url, data=body, headers=self.headers)
+            answer = requests.post(self.url, data=body, headers=self.headers,timeout=120)
             if answer.status_code != 200:
                 return None
             result = answer.json()
