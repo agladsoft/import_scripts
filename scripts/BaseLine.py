@@ -9,6 +9,18 @@ from __init__ import *
 from typing import Union
 from pandas.io.parsers import read_csv
 
+data_error = {
+    '1': '- Ошибка, которая возникает в случае не проставленной даты в начале названия файла.',
+    '2': '- Ошибка, которая возникает в случае изменения названия колонок или отстуствия столбца.',
+    '3': '- Ошибка, которая возникает в случае отстуствия даты, рейса или названия судна в шапке файла.'
+         ' Либо возникает при их обработке. ',
+    '4': '- Ошибка, которая возникает в случае образования пустого json. Таким образом, в базе не будет данных.',
+    '5': '- Ошибка, которая возникает в случае обработки данных внутри таблицы.'
+         ' Например, при извлечении числового значения мы получаем строку. Будет выглядеть так: error_code_5_in_row_1.'
+         ' Что обозначает код ошибки № 5, которая произошла на 1 строке.',
+    '6': '- Неизвестная ошибка, которая возникает в случае обработки скриптов. Будет выглядеть так: error_code_6.'
+}
+
 
 class JsonEncoder(json.JSONEncoder):
 
@@ -66,6 +78,8 @@ class BaseLine:
             self.logger_write.error(message)
             self.logger_write.error(dict_columns)
             print(f"{error_code}", file=sys.stderr)
+            telegram(f'Ошибка при обработке файла {self.input_file_path} , код ошибки {error_code} '
+                     f'{data_error.get(str(error_code), "Не известный номер ошибки , необходимо проверить.")}')
             sys.exit(error_code)
 
     def add_value_from_data_to_list(self, row: list, ir_container_number: int, ir_weight_goods: int,
@@ -79,8 +93,9 @@ class BaseLine:
             parsed_record['container_number'] = re.findall(r"\w{4}\d{7}", container_number)[0]
         except IndexError:
             parsed_record['container_number'] = container_number
-        parsed_record["goods_weight_with_package"] = float(re.sub(" +", "", row[ir_weight_goods]).replace(',', '.')) if row[
-            ir_weight_goods] else None
+        parsed_record["goods_weight_with_package"] = float(re.sub(" +", "", row[ir_weight_goods]).replace(',', '.')) if \
+            row[
+                ir_weight_goods] else None
         parsed_record['package_number'] = int(float(re.sub(" +", "", row[ir_package_number]))) \
             if row[ir_package_number] else None
         parsed_record['goods_name'] = row[ir_goods_name_rus].strip()
@@ -117,6 +132,7 @@ class BaseLine:
         date_previous: str = f'{date_previous.group()}.01' if date_previous else date_previous
         if date_previous is None:
             self.logger_write.error("Error code 1: date not in file name!")
+            telegram(f'Не указана дата в файле {file_name_save}')
             print("1", file=sys.stderr)
             sys.exit(1)
         else:
@@ -199,6 +215,8 @@ class BaseLine:
         if not list_data:
             self.logger_write.error("Error code 4: length list equals 0!")
             print("4", file=sys.stderr)
+            telegram(f'В Файле {self.input_file_path}:'
+                     f'Отсутствуют данные : Error code 4: length list equals 0!')
             sys.exit(4)
         basename = os.path.basename(self.input_file_path)
         output_file_path = os.path.join(self.output_folder, f'{basename}.json')

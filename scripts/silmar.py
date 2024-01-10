@@ -3,7 +3,7 @@ import os
 import sys
 from cma_cgm import CmaCgm
 from typing import Union, Dict
-from evergreen import Evergreen
+from evergreen import Evergreen, telegram
 
 
 class Silmar(CmaCgm, Evergreen):
@@ -47,5 +47,6 @@ if __name__ == '__main__':
         print(parsed_data.main(is_need_duplicate_containers=False))
     except (ValueError, ImportError, IndexError, SyntaxError, TypeError, AttributeError) as ex:
         print("6", file=sys.stderr)
+        telegram(f'Ошибка при обработке файла {ex}')
         sys.exit(6)
     del parsed_data

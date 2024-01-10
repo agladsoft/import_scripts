@@ -9,6 +9,7 @@ from typing import Union
 from parsed import ParsedDf
 from pandas import DataFrame
 from datetime import datetime
+from __init__ import *
 
 headers_eng: dict = {
     "date": "shipment_date",
@@ -45,6 +46,7 @@ class ImportNUTEP(object):
         date_previous: Union[re.Match[str], None] = re.match(r'\d{2,4}.\d{1,2}', os.path.basename(self.input_file_path))
         date_previous: str = f'{date_previous.group()}.01' if date_previous else date_previous
         if date_previous is None:
+            telegram(f'Отсутствует дата в наименование файла {self.input_file_path}')
             sys.exit(1)
         else:
             df['parsed_on'] = str(datetime.strptime(date_previous, "%Y.%m.%d").date())

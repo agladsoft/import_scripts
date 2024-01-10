@@ -1,7 +1,7 @@
 import re
 import os
 import sys
-from admiral import Admiral
+from admiral import Admiral, telegram
 from typing import Union, Dict
 
 
@@ -42,5 +42,6 @@ if __name__ == '__main__':
         print(parsed_data.main(is_need_duplicate_containers=False))
     except (ValueError, ImportError, IndexError, SyntaxError, TypeError, AttributeError) as ex:
         print("6", file=sys.stderr)
+        telegram(f'Ошибка при обработке файла {ex}')
         sys.exit(6)
     del parsed_data

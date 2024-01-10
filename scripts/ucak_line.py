@@ -1,6 +1,6 @@
 import os
 import sys
-from lider_line import LiderLine
+from lider_line import LiderLine, telegram
 
 
 class UcakLine(LiderLine):
@@ -13,5 +13,6 @@ if __name__ == '__main__':
         print(parsed_data.main())
     except (ValueError, ImportError, IndexError, SyntaxError, TypeError, AttributeError) as ex:
         print("6", file=sys.stderr)
+        telegram(f'Ошибка при обработке файла {ex}')
         sys.exit(6)
     del parsed_data

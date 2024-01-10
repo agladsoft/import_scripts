@@ -1,6 +1,6 @@
 import os
 import sys
-from admiral import Admiral
+from admiral import Admiral, telegram
 
 
 class Cosco(Admiral):
@@ -17,6 +17,7 @@ if __name__ == '__main__':
     try:
         print(parsed_data.main(is_need_duplicate_containers=False))
     except (ValueError, ImportError, IndexError, SyntaxError, TypeError, AttributeError) as ex:
+        telegram(f'Ошибка при обработке файла {ex}')
         print("6", file=sys.stderr)
         sys.exit(6)
     del parsed_data

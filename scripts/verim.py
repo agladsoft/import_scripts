@@ -2,7 +2,7 @@ import itertools
 import os
 import sys
 from typing import Tuple
-from admiral import Admiral
+from admiral import Admiral, telegram
 
 
 class Verim(Admiral):
@@ -71,6 +71,7 @@ class Verim(Admiral):
                 and row['container_size'] == '':
             self.logger_write.error(f'Container_seal is empty on row {index}')
             print(f"5_in_row_{index + 1}", file=sys.stderr)
+            telegram(f'Ошибка при обработке файла, отсутствуют данные о контенере в строке {index + 1}')
             sys.exit(5)
 
     def fill_data_with_duplicate_containers(self, list_data: list, sign_repeat_container: str,
@@ -109,5 +110,6 @@ if __name__ == '__main__':
         print(parsed_data.main(is_reversed=True))
     except (ValueError, ImportError, IndexError, SyntaxError, TypeError, AttributeError) as ex:
         print("6", file=sys.stderr)
+        telegram(f'Ошибка при обработке файла {ex}')
         sys.exit(6)
     del parsed_data

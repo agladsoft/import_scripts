@@ -1,6 +1,8 @@
 import os
+from notifiers import get_notifier
 from typing import Dict, Tuple, List
 from logging import Logger, getLogger, INFO, FileHandler
+
 
 # XL_IDP_ROOT = '/home/uventus/PycharmProjects/New_Proect/ruscon/docker_project/import_scripts/scripts/None'
 
@@ -62,3 +64,19 @@ DICT_CONTENT_BEFORE_TABLE: Dict[Tuple, str] = {
     ("Рейс", "Номер рейса", "рейс"): "voyage",
     ("ПРИЛОЖЕНИЕ", "УВЕДОМЛЕНИЕ О ПРИБЫТИИ"): "ship_voyage_msc"
 }
+
+
+def get_my_env_var(var_name: str) -> str:
+    try:
+        return os.environ[var_name]
+    except KeyError as e:
+        raise MissingEnvironmentVariable(f"{var_name} does not exist") from e
+
+
+class MissingEnvironmentVariable(Exception):
+    pass
+
+
+def telegram(message):
+    teg = get_notifier('telegram')
+    teg.notify(token=get_my_env_var('TOKEN'), chat_id=get_my_env_var('CHAT_ID'), message=message)

@@ -1,6 +1,5 @@
 import json
-import logging
-
+from __init__ import *
 import requests
 
 
@@ -10,6 +9,7 @@ class Parsed:
         self.headers = {
             'Content-Type': 'application/json'
         }
+        self.logging = write_log(__file__)
 
     def body(self, row, line):
         data = {
@@ -24,14 +24,14 @@ class Parsed:
         body = self.body(row, line)
         body = json.dumps(body)
         try:
-            logging.info(f'Отправка запроса в микро-сервис по {body}')
+            self.logging.info(f'Отправка запроса в микро-сервис по {body}')
             answer = requests.post(self.url, data=body, headers=self.headers,timeout=120)
-            logging.info(f'Получен ответ по запросу {body}')
+            self.logging.info(f'Получен ответ по запросу {body}')
             if answer.status_code != 200:
                 return None
             result = answer.json()
         except Exception as ex:
-            logging.info(f'Ошибка {ex}')
+            self.logging.info(f'Ошибка {ex}')
             return None
         return result
 
@@ -65,6 +65,7 @@ class ParsedDf:
         self.headers = {
             'Content-Type': 'application/json'
         }
+        self.logging = write_log(__file__)
 
     def get_direction(self, direction):
         if direction.lower() in IMPORT:
@@ -85,18 +86,18 @@ class ParsedDf:
         body = self.body(row)
         body = json.dumps(body)
         try:
-            answer = requests.post(self.url, data=body, headers=self.headers)
+            answer = requests.post(self.url, data=body, headers=self.headers, timeout=120)
             if answer.status_code != 200:
                 return None
             result = answer.json()
         except Exception as ex:
-            logging.info(f'Ошибка {ex}')
+            self.logging.info(f'Ошибка {ex}')
             return None
         return result
 
     def get_port(self):
         self.add_new_columns()
-        logging.info("Запросы к микросервису")
+        self.logging.info("Запросы к микросервису")
         data = {}
         for index, row in self.df.iterrows():
             if row.get('tracking_seaport') is not None:
@@ -115,7 +116,7 @@ class ParsedDf:
                     data[row.get('consignment')].setdefault('is_auto_tracking_ok',
                                                             self.df.get('is_auto_tracking_ok')[index])
                 except KeyError as ex:
-                    logging.info(f'Ошибка при получение ключа из DataFrame {ex}')
+                    self.logging.info(f'Ошибка при получение ключа из DataFrame {ex}')
             else:
                 tracking_seaport = data.get(row.get('consignment')).get('tracking_seaport') if data.get(
                     row.get('consignment')) is not None else None
@@ -126,7 +127,7 @@ class ParsedDf:
                 self.df.at[index, 'tracking_seaport'] = tracking_seaport
                 self.df.at[index, 'is_auto_tracking'] = is_auto_tracking
                 self.df.at[index, 'is_auto_tracking_ok'] = is_auto_tracking_ok
-        logging.info('Обработка закончена')
+        self.logging.info('Обработка закончена')
 
     def write_port(self, index, port):
         self.df.at[index, 'is_auto_tracking'] = True

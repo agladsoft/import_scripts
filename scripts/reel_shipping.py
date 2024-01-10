@@ -1,6 +1,6 @@
 import os
 import sys
-from evergreen import Evergreen
+from evergreen import Evergreen, telegram
 
 
 class ReelShipping(Evergreen):
@@ -32,6 +32,7 @@ if __name__ == '__main__':
     try:
         print(parsed_data.main(sign="*"))
     except (ValueError, ImportError, IndexError, SyntaxError, TypeError, AttributeError) as ex:
+        telegram(f'Ошибка при обработке файла {ex}')
         print("6", file=sys.stderr)
         sys.exit(6)
     del parsed_data

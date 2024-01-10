@@ -1,6 +1,6 @@
 import os
 import sys
-from admiral import Admiral
+from admiral import Admiral, telegram
 
 
 class Zim(Admiral):
@@ -13,5 +13,6 @@ if __name__ == '__main__':
         print(parsed_data.main(is_reversed=True))
     except (ValueError, ImportError, IndexError, SyntaxError, TypeError, AttributeError) as ex:
         print("6", file=sys.stderr)
+        telegram(f'Ошибка при обработке файла {ex}')
         sys.exit(6)
     del parsed_data

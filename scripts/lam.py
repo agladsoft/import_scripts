@@ -1,6 +1,7 @@
 import os
 import sys
 from verim import Verim
+from __init__ import *
 
 
 class Lam(Verim):
@@ -12,6 +13,7 @@ if __name__ == '__main__':
     try:
         print(parsed_data.main())
     except (ValueError, ImportError, IndexError, SyntaxError, TypeError, AttributeError) as ex:
+        telegram(f'Ошибка при обработке файла {ex}')
         print("6", file=sys.stderr)
         sys.exit(6)
     del parsed_data

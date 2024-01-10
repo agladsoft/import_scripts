@@ -1,6 +1,7 @@
 import os
 import sys
 from rc_line import RcLine
+from __init__ import telegram
 
 
 class PjscTranscontainer(RcLine):
@@ -13,5 +14,6 @@ if __name__ == '__main__':
         print(parsed_data.main())
     except (ValueError, ImportError, IndexError, SyntaxError, TypeError, AttributeError) as ex:
         print("6", file=sys.stderr)
+        telegram(f'Ошибка при обработке файла {ex}')
         sys.exit(6)
     del parsed_data

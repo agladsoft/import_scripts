@@ -82,6 +82,7 @@ class Admiral(Singleton, BaseLine):
                     for column in columns:
                         self.parse_content_before_table(column, columns, parsing_row, list_month, context, row)
         except (IndexError, ValueError):
+            telegram(f'Не указана информация об Ship or Voyage. Файл : {self.input_file_path}.')
             self.logger_write.error("Error code 3: Date or Ship or Voyage not in cells")
             print("3", file=sys.stderr)
             sys.exit(3)
@@ -141,6 +142,7 @@ class Admiral(Singleton, BaseLine):
         try:
             self.parse_row(index, row, rows, context, list_data)
         except (IndexError, ValueError, TypeError):
+            telegram(f'Ошибка возникла в строке {index + 1} Файла {self.input_file_path}.')
             self.logger_write.error(f"Error code 5: error processing in row {index + 1}!")
             print(f"5_in_row_{index + 1}", file=sys.stderr)
             sys.exit(5)
@@ -273,7 +275,7 @@ class Admiral(Singleton, BaseLine):
         if is_need_duplicate_containers:
             list_data = self.fill_data_with_duplicate_containers(list_data, sign, is_reversed=is_reversed)
         os.remove(file_name_save)
-        self.get_seaport_from_website(list_data)
+        # self.get_seaport_from_website(list_data)
         self.write_data_in_file(list_data)
         return len(self.count_unique_containers(list_data))
 
@@ -283,6 +285,7 @@ if __name__ == '__main__':
     try:
         print(parsed_data.main(is_reversed=True))
     except (ValueError, ImportError, IndexError, SyntaxError, TypeError, AttributeError) as ex:
+        telegram(f'Ошибка при обработке файла {ex}')
         print(f"Exception is {ex}. Type is {type(ex)}")
         print("6", file=sys.stderr)
         sys.exit(6)
