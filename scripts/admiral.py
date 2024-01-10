@@ -275,7 +275,7 @@ class Admiral(Singleton, BaseLine):
         if is_need_duplicate_containers:
             list_data = self.fill_data_with_duplicate_containers(list_data, sign, is_reversed=is_reversed)
         os.remove(file_name_save)
-        # self.get_seaport_from_website(list_data)
+        self.get_seaport_from_website(list_data)
         self.write_data_in_file(list_data)
         return len(self.count_unique_containers(list_data))
 
