@@ -1,4 +1,5 @@
 import os
+import requests
 from notifiers import get_notifier
 from typing import Dict, Tuple, List
 from logging import Logger, getLogger, INFO, FileHandler
@@ -77,6 +78,13 @@ class MissingEnvironmentVariable(Exception):
     pass
 
 
+
 def telegram(message):
     teg = get_notifier('telegram')
-    teg.notify(token=get_my_env_var('TOKEN'), chat_id=get_my_env_var('CHAT_ID'), message=message)
+    chat_id = get_my_env_var('CHAT_ID')
+    token = get_my_env_var('TOKEN')
+    topic = get_my_env_var('TOPIC')
+    # teg.notify(token=get_my_env_var('TOKEN'), chat_id=get_my_env_var('CHAT_ID'), message=message)
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    params = {"chat_id": f"{chat_id}/{topic}", "text": message}  # Добавляем /2 для указания второго подканала
+    response = requests.get(url, params=params)
