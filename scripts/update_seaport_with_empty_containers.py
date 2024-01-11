@@ -25,9 +25,9 @@ class SeaportEmptyContainers:
 
     def __init__(self, logger):
         self.logger = logger
-        self.client, self.ref_region = self.connect_to_db()
+        self.client, self.ref_region, self.is_empty = self.connect_to_db()
 
-    def connect_to_db(self) -> Tuple[Client, QueryResult]:
+    def connect_to_db(self) -> Tuple[Client, QueryResult, QueryResult]:
         """
         Connecting to clickhouse.
         :return: Client ClickHouse.
@@ -37,6 +37,8 @@ class SeaportEmptyContainers:
                                         username=get_my_env_var('USERNAME_DB'), password=get_my_env_var('PASSWORD'))
             self.logger.info("Successfully connect ot db")
             ref_region: QueryResult = client.query("SELECT * FROM reference_region")
+
+            is_empty: QueryResult = client.query("SELECT * FROM reference_is_empty")
             # Чтобы проверить, есть ли данные. Так как переменная образуется, но внутри нее могут быть ошибки.
             print(ref_region.result_rows[0])
         except Exception as ex_connect:
@@ -44,7 +46,7 @@ class SeaportEmptyContainers:
             telegram(f'Ошибка при подключение к базен данных {ex_connect}')
             print("error_connect_db", file=sys.stderr)
             sys.exit(1)
-        return client, ref_region
+        return client, ref_region, is_empty
 
     def get_seaport_for_empty_containers(self, row: dict) -> Optional[str]:
         """

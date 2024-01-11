@@ -245,8 +245,10 @@ class Admiral(Singleton, BaseLine):
         """
         if self.line_file == 'msc':
             dict_consignment_and_seaport: dict = {}
+            list_is_empty = [name[0] for name in seaport_empty_containers.is_empty.result_rows]
             for row in list_data:
-                if row["tracking_seaport"] is None:
+                if (row.get("tracking_seaport") is None and
+                        row.get('goods_name', '').upper() in list_is_empty):
                     if row["consignment"] not in dict_consignment_and_seaport:
                         seaports = seaport_empty_containers.get_seaport_for_empty_containers(row)
                         dict_consignment_and_seaport[row["consignment"]] = ", ".join(set(seaports)) or None
