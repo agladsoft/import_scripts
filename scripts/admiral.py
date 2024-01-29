@@ -82,7 +82,7 @@ class Admiral(Singleton, BaseLine):
                     for column in columns:
                         self.parse_content_before_table(column, columns, parsing_row, list_month, context, row)
         except (IndexError, ValueError):
-            telegram(f'Не указана информация об Ship or Voyage. Файл : {self.input_file_path}.')
+            telegram(f'Не указана информация о Дате прихода или Ship or Voyage. Файл : {self.input_file_path}.')
             self.logger_write.error("Error code 3: Date or Ship or Voyage not in cells")
             print("3", file=sys.stderr)
             sys.exit(3)
