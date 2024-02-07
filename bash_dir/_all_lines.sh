@@ -31,3 +31,4 @@ ${XL_IDP_ROOT}/bash_dir/line_sinokor.sh
 ${XL_IDP_ROOT}/bash_dir/line_xinhelu.sh
 ${XL_IDP_ROOT}/bash_dir/line_verim_uneti.sh
 ${XL_IDP_ROOT}/bash_dir/line_c_star.sh
+${XL_IDP_ROOT}/bash_dir/line_sidra.sh
