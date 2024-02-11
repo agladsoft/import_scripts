@@ -8,7 +8,6 @@ from datetime import datetime, timedelta
 
 
 class Arkas(AkkonLines):
-
     dict_columns_position: Dict[str, Union[None, int]] = AkkonLines.dict_columns_position
     del dict_columns_position["city"]
 
@@ -95,6 +94,16 @@ class Arkas(AkkonLines):
         city: list = list(row[self.dict_columns_position["consignee_name"]].split(', '))[1:]
         parsed_record['city'] = " ".join(city).strip()
         parsed_record["tracking_country"] = row[self.dict_columns_position["tracking_country"]].strip()
+
+    def is_table_starting(self, row: list) -> bool:
+        """
+        Understanding when a headerless table starts.
+        """
+        return self.is_digit(row[self.dict_columns_position["number_pp"]]) or \
+            (not self.is_digit(row[self.dict_columns_position["number_pp"]]) and
+             not row[self.dict_columns_position["number_pp"]].isalpha() and row[
+                 self.dict_columns_position["container_number"]] and
+             row[self.dict_columns_position["consignment"]])
 
 
 if __name__ == '__main__':

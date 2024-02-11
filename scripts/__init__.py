@@ -53,7 +53,7 @@ DICT_HEADERS_COLUMN_ENG: Dict[Tuple, str] = {
         "tracking_country",
     ("Получатель", "Грузополучатель", "Consignee Seal", "Грузополуча тель"): "consignee_name",
     ("Коносамент", "№ к/с", "№ Коносамента", "№коносамента", "Bill of Lading", "№ К/с"): "consignment",
-    ("Город", "Место доставки", "Отправитель Город"): "city"
+    ("Город", "Место доставки", "Отправитель Город", "Грузополучатель АДРЕС"): "city"
 }
 
 DICT_CONTENT_BEFORE_TABLE: Dict[Tuple, str] = {
