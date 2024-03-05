@@ -101,7 +101,7 @@ class Arkas(AkkonLines):
         """
         return self.is_digit(row[self.dict_columns_position["number_pp"]]) or \
             (not self.is_digit(row[self.dict_columns_position["number_pp"]]) and
-             not row[self.dict_columns_position["number_pp"]].isalpha() and row[
+              row[self.dict_columns_position["number_pp"]].strip().isdigit() and row[
                  self.dict_columns_position["container_number"]] and
              row[self.dict_columns_position["consignment"]])
 
