@@ -1,10 +1,9 @@
 import os
 import sys
-from verim import Verim, telegram
+from admiral import Admiral, telegram
 
 
-class United(Verim):
-    pass
+class United(Admiral): ...
 
 
 if __name__ == '__main__':
