@@ -42,10 +42,13 @@ class Arkas(AkkonLines):
         Getting the date in "%d.%m-%y" format.
         """
         self.logger_write.info(f"Will parse date in value {parsing_row}...")
-        try:
-            date: datetime = datetime.strptime(parsing_row, "%d.%m.%Y")
-        except ValueError:
-            date: datetime = datetime.strptime(parsing_row, "%d.%m.%y")
+        for date_format in DATE_FORMAT:
+            with contextlib.suppress(ValueError):
+                date: datetime = datetime.strptime(parsing_row, date_format)
+        # try:
+        #     date: datetime = datetime.strptime(parsing_row, "%d.%m.%Y")
+        # except ValueError:
+        #     date: datetime = datetime.strptime(parsing_row, "%d.%m.%y")
         context["shipment_date"] = str(date.date())
         self.logger_write.info(f"context now is {context}")
 
@@ -101,7 +104,7 @@ class Arkas(AkkonLines):
         """
         return self.is_digit(row[self.dict_columns_position["number_pp"]]) or \
             (not self.is_digit(row[self.dict_columns_position["number_pp"]]) and
-              row[self.dict_columns_position["number_pp"]].strip().isdigit() and row[
+             row[self.dict_columns_position["number_pp"]].strip().isdigit() and row[
                  self.dict_columns_position["container_number"]] and
              row[self.dict_columns_position["consignment"]])
 

@@ -1,7 +1,8 @@
 import os
 import requests
+import contextlib
 from notifiers import get_notifier
-from typing import Dict, Tuple, List
+from typing import Dict, Tuple, List, Union
 from logging import Logger, getLogger, INFO, FileHandler
 
 
@@ -65,6 +66,11 @@ DICT_CONTENT_BEFORE_TABLE: Dict[Tuple, str] = {
     ("Рейс", "Номер рейса", "рейс"): "voyage",
     ("ПРИЛОЖЕНИЕ", "УВЕДОМЛЕНИЕ О ПРИБЫТИИ"): "ship_voyage_msc"
 }
+
+DATE_FORMAT: tuple = (
+    "%d.%m.%Y",
+    "%d.%m.%Y г."
+)
 
 
 def get_my_env_var(var_name: str) -> str:
