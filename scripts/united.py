@@ -1,3 +1,4 @@
+import re
 import sys
 from __init__ import *
 from arkas import Arkas
@@ -29,6 +30,16 @@ class United(Admiral):
             Admiral.parse_date(self, parsing_row, month_list, context, row)
         except IndexError:
             Arkas.parse_date(self, parsing_row, month_list, context, row)
+
+    def parse_ship_and_voyage(self, parsing_row: str, row: list, column: str, context: dict, key: str) -> None:
+        """
+        Parsing ship name and voyage in the cells before the table.
+        """
+        self.logger_write.info(f"Will parse ship and trip in value '{parsing_row}'...")
+        ship_and_voyage_list: list = parsing_row.replace(column, "").replace("_", " ").strip().rsplit(' ', 1)
+        context["ship_name"] = ship_and_voyage_list[0].strip()
+        context["voyage"] = re.sub(r'[^\w\s]', '', ship_and_voyage_list[1])
+        self.logger_write.info(f"context now is {context}")
 
 
 if __name__ == '__main__':
