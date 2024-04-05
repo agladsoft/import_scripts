@@ -73,6 +73,7 @@ DATE_FORMAT: tuple = (
 )
 
 
+
 def get_my_env_var(var_name: str) -> str:
     try:
         return os.environ[var_name]
