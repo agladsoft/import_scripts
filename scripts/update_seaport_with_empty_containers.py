@@ -43,7 +43,7 @@ class SeaportEmptyContainers:
             print(ref_region.result_rows[0])
         except Exception as ex_connect:
             self.logger.error(f"Error connection to db {ex_connect}. Type error is {type(ex_connect)}.")
-            telegram(f'Ошибка при подключение к базен данных {ex_connect}')
+            telegram(f'Ошибка при подключение к базе данных {ex_connect}')
             print("error_connect_db", file=sys.stderr)
             sys.exit(1)
         return client, ref_region, is_empty

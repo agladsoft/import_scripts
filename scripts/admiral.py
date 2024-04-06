@@ -141,7 +141,7 @@ class Admiral(Singleton, BaseLine):
         """
         try:
             self.parse_row(index, row, rows, context, list_data)
-        except (IndexError, ValueError, TypeError):
+        except (IndexError, ValueError, TypeError) as ex:
             telegram(f'Ошибка возникла в строке {index + 1} Файла {self.input_file_path}.')
             self.logger_write.error(f"Error code 5: error processing in row {index + 1}!")
             print(f"5_in_row_{index + 1}", file=sys.stderr)
@@ -287,7 +287,7 @@ if __name__ == '__main__':
     try:
         print(parsed_data.main(is_reversed=True))
     except (ValueError, ImportError, IndexError, SyntaxError, TypeError, AttributeError) as ex:
-        telegram(f'Ошибка при обработке файла {ex}')
+        telegram(f'Ошибка {ex} при обработке файла {parsed_data.input_file_path}.')
         print(f"Exception is {ex}. Type is {type(ex)}")
         print("6", file=sys.stderr)
         sys.exit(6)

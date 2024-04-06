@@ -13,6 +13,6 @@ if __name__ == '__main__':
         print(parsed_data.main(is_reversed=True))
     except (ValueError, ImportError, IndexError, SyntaxError, TypeError, AttributeError) as ex:
         print("6", file=sys.stderr)
-        telegram(f'Ошибка при обработке файла {ex}')
+        telegram(f'Ошибка {ex} при обработке файла {parsed_data.input_file_path}')
         sys.exit(6)
     del parsed_data
