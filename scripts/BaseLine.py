@@ -223,6 +223,16 @@ class BaseLine:
         with open(output_file_path, 'w', encoding='utf-8') as f:
             json.dump(list_data, f, ensure_ascii=False, indent=4, cls=JsonEncoder)
 
+    def convert_city_and_consignment(self, list_data: List[dict]) -> List[dict]:
+        """
+        Converting city and consignment to uppercase.
+        """
+        for record in list_data:
+            if record.get('line').lower().strip() in LIST_LINE_CITY:
+                record['consignee_name'] = ', '.join([record['consignee_name'], record['city']])
+
+        return list_data
+
     def __del__(self):
         class_name: str = self.__class__.__name__
         print(f"{class_name} deleted")
