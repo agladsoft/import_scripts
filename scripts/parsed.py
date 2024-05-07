@@ -1,6 +1,8 @@
 import json
+import time
 from __init__ import *
 import requests
+from typing import Optional
 
 
 class Parsed:
@@ -11,14 +13,13 @@ class Parsed:
         }
         self.logging = write_log(__file__)
 
-    def body(self, row, line):
-        data = {
+    @staticmethod
+    def body(row, line):
+        return {
             'line': line,
             'consignment': row['consignment'],
-            'direction': 'import'
-
+            'direction': 'import',
         }
-        return data
 
     def get_result(self, row, line):
         body = self.body(row, line)
@@ -40,7 +41,8 @@ class Parsed:
         port = self.get_result(row, line)
         self.write_port(row, port)
 
-    def write_port(self, row, port):
+    @staticmethod
+    def write_port(row, port):
         row['is_auto_tracking'] = True
         if port:
             row['is_auto_tracking_ok'] = True
@@ -49,7 +51,8 @@ class Parsed:
             row['is_auto_tracking_ok'] = False
             row['tracking_seaport'] = None
 
-    def add_new_columns(self, row):
+    @staticmethod
+    def add_new_columns(row):
         if "enforce_auto_tracking" not in row:
             row['is_auto_tracking'] = None
 
@@ -67,33 +70,31 @@ class ParsedDf:
         }
         self.logging = write_log(__file__)
 
-    def get_direction(self, direction):
-        if direction.lower() in IMPORT:
-            return 'import'
-        else:
-            return 'export'
+    @staticmethod
+    def get_direction(direction):
+        return 'import' if direction.lower() in IMPORT else 'export'
 
     def body(self, row):
-        data = {
+        return {
             'line': row.get('line'),
             'consignment': row.get('consignment'),
-            'direction': self.get_direction(row.get('direction','not'))
-
+            'direction': self.get_direction(row.get('direction', 'not')),
         }
-        return data
 
-    def get_result(self, row):
-        body = self.body(row)
-        body = json.dumps(body)
-        try:
-            answer = requests.post(self.url, data=body, headers=self.headers, timeout=120)
-            if answer.status_code != 200:
-                return None
-            result = answer.json()
-        except Exception as ex:
-            self.logging.info(f'Ошибка {ex}')
+    def get_port_with_recursion(self, number_attempts: int, row) -> Optional[str]:
+        if number_attempts == 0:
             return None
-        return result
+        try:
+            body = self.body(row)
+            body = json.dumps(body)
+            response = requests.post(self.url, data=body, headers=self.headers, timeout=120)
+            response.raise_for_status()
+            return response.json()
+        except Exception as ex:
+            self.logging.error(f"Exception is {ex}")
+            time.sleep(30)
+            number_attempts -= 1
+            self.get_port_with_recursion(number_attempts, row)
 
     def get_port(self):
         self.add_new_columns()
@@ -106,7 +107,8 @@ class ParsedDf:
                 continue
             if row.get('consignment', False) not in data:
                 data[row.get('consignment')] = {}
-                port = self.get_result(row)
+                number_attempts = 3
+                port = self.get_port_with_recursion(number_attempts, row)
                 self.write_port(index, port)
                 try:
                     data[row.get('consignment')].setdefault('tracking_seaport',
@@ -137,10 +139,9 @@ class ParsedDf:
         else:
             self.df.at[index, 'is_auto_tracking_ok'] = False
 
-    def check_line(self, line):
-        if line not in LINES:
-            return True
-        return False
+    @staticmethod
+    def check_line(line):
+        return line not in LINES
 
     def add_new_columns(self):
         if "enforce_auto_tracking" not in self.df.columns:
