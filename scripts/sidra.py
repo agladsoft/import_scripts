@@ -71,7 +71,7 @@ class Sidra(Admiral):
                 and row['container_size'] == '':
             self.logger_write.error(f'Container_seal is empty on row {index}')
             print(f"5_in_row_{index + 1}", file=sys.stderr)
-            telegram(f'Ошибка при обработке файла {self.input_file_path}, отсутствуют данные о контейнере в строке {index + 1}')
+            telegram(f'Ошибка при обработке файла {self.input_file_path}, отсутствуют данные о контейнере, который идет по счету {index + 1}')
             sys.exit(5)
 
     def fill_data_with_duplicate_containers(self, list_data: list, sign_repeat_container: str,
