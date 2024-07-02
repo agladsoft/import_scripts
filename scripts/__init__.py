@@ -89,7 +89,7 @@ class MissingEnvironmentVariable(Exception):
 def telegram(message):
     # teg = get_notifier('telegram')
     chat_id = get_my_env_var('CHAT_ID')
-    token = get_my_env_var('TOKEN')
+    token = get_my_env_var('TOKEN_TELEGRAM')
     topic = get_my_env_var('TOPIC')
     message_id = get_my_env_var('ID')
     # teg.notify(token=get_my_env_var('TOKEN'), chat_id=get_my_env_var('CHAT_ID'), message=message)
