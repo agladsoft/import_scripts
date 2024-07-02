@@ -35,3 +35,4 @@ ${XL_IDP_ROOT}/bash_dir/line_sidra.sh
 ${XL_IDP_ROOT}/bash_dir/line_safetrans.sh
 ${XL_IDP_ROOT}/bash_dir/line_united.sh
 ${XL_IDP_ROOT}/bash_dir/line_smart.sh
+${XL_IDP_ROOT}/bash_dir/line_login.sh
