@@ -1,7 +1,21 @@
 import json
 import time
+import sys
 from __init__ import *
+from database import DataBase
 from typing import Optional
+
+database = DataBase()
+
+
+def get_line_unified(item: dict, line_name: str):
+    for key, value in item.items():
+        if line_name in value:
+            return key
+    return line_name
+
+
+LINES = database.get_list_unified_lines()
 
 
 class Parsed:
@@ -12,10 +26,10 @@ class Parsed:
         }
         self.logging = write_log(__file__)
 
-    @staticmethod
-    def body(row, line):
+    def body(self, row, line):
+        line_unified = get_line_unified(LINES, line.upper())
         return {
-            'line': line,
+            'line': line_unified,
             'consignment': row['consignment'],
             'direction': 'import',
         }
@@ -25,7 +39,7 @@ class Parsed:
         body = json.dumps(body)
         try:
             self.logging.info(f'Отправка запроса в микро-сервис по {body}')
-            answer = requests.post(self.url, data=body, headers=self.headers,timeout=120)
+            answer = requests.post(self.url, data=body, headers=self.headers, timeout=120)
             self.logging.info(f'Получен ответ по запросу {body}')
             if answer.status_code != 200:
                 return None
@@ -56,7 +70,7 @@ class Parsed:
             row['is_auto_tracking'] = None
 
 
-LINES = ['REEL SHIPPING', 'СИНОКОР РУС ООО', 'HEUNG-A LINE CO., LTD', 'MSC', 'SINOKOR', 'SINAKOR', 'SKR', 'sinokor']
+# LINES = ['REEL SHIPPING', 'СИНОКОР РУС ООО', 'HEUNG-A LINE CO., LTD', 'MSC', 'SINOKOR', 'SINAKOR', 'SKR', 'sinokor']
 IMPORT = ['импорт', 'import']
 
 
@@ -74,8 +88,9 @@ class ParsedDf:
         return 'import' if direction.lower() in IMPORT else 'export'
 
     def body(self, row):
+        line_unified = get_line_unified(LINES, row.get('line', '').upper())
         return {
-            'line': row.get('line'),
+            'line': line_unified,
             'consignment': row.get('consignment'),
             'direction': self.get_direction(row.get('direction', 'not')),
         }
