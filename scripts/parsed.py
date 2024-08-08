@@ -20,7 +20,7 @@ LINES = database.get_list_unified_lines()
 
 class Parsed:
     def __init__(self):
-        self.url = f"http://{os.environ['IP_ADDRESS_CONSIGNMENTS']}:8004"
+        self.url = f"http://{os.environ['IP_ADDRESS_CONSIGNMENTS']}:{os.environ['PORT']}"
         self.headers = {
             'Content-Type': 'application/json'
         }
