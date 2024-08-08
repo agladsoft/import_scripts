@@ -27,7 +27,7 @@ class Parsed:
         self.logging = write_log(__file__)
 
     def body(self, row, line):
-        line_unified = get_line_unified(LINES, line.upper())
+        line_unified = get_line_unified(LINES, line)
         return {
             'line': line_unified,
             'consignment': row['consignment'],
@@ -88,7 +88,7 @@ class ParsedDf:
         return 'import' if direction.lower() in IMPORT else 'export'
 
     def body(self, row):
-        line_unified = get_line_unified(LINES, row.get('line', '').upper())
+        line_unified = get_line_unified(LINES, row.get('line', ''))
         return {
             'line': line_unified,
             'consignment': row.get('consignment'),
