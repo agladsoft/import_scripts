@@ -1,5 +1,3 @@
-import os
-import sys
 from c_star import CStart
 from __init__ import *
 
