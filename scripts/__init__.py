@@ -79,7 +79,7 @@ DATE_FORMAT: tuple = (
 )
 
 LIST_LINE_CITY: List[str] = ['admiral', 'akkon_lines', 'c_star', 'sidra', 'safetrans', 'ucak_line', 'verim_uneti',
-                             'login']
+                             'login', 'econship']
 
 
 def get_my_env_var(var_name: str) -> str:
