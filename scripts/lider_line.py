@@ -1,4 +1,3 @@
-import sys
 from __init__ import *
 from typing import Union
 from cma_cgm import CmaCgm
@@ -23,15 +22,29 @@ class LiderLine(CmaCgm):
         "city": 16
     }
 
-    def check_errors_in_header(self, row: list, context: dict) -> None:
+    def check_errors_in_header(self, row: list, context: dict, no_need_columns: list = None) -> None:
         """
         Checking for columns in the entire document, counting more than just columns on the same line.
         """
-        self.check_errors_in_columns([context.get("ship_name", None), context.get("voyage", None),
-                                      context.get("shipment_date", None)], context,
-                                     "Error code 3: Keys (ship, voyage or date) not in cells", 3)
-        self.check_errors_in_columns(list(self.dict_columns_position.values()), self.dict_columns_position,
-                                     "Error code 2: Column not in file or changed", 2)
+        if no_need_columns is None:
+            no_need_columns = []
+        self.check_errors_in_columns(
+            list_columns=[context.get("ship_name"), context.get("voyage"), context.get("shipment_date")],
+            dict_columns=context,
+            message="Error code 3: Keys (ship, voyage or date) not in cells",
+            error_code=3
+        )
+        if "Наименование товара на русском" in row:
+            self.get_columns_position(row)
+        dict_columns_position = self.dict_columns_position.copy()
+        for delete_column in no_need_columns:
+            del dict_columns_position[delete_column]
+        self.check_errors_in_columns(
+            list_columns=list(dict_columns_position.values()),
+            dict_columns=dict_columns_position,
+            message="Error code 2: Column not in file or changed",
+            error_code=2
+        )
 
     def process_row(self, row: list, rows: list, index: int, list_data: List[dict], context: dict, list_columns: list,
                     coefficient_of_header: int) -> None:
@@ -39,7 +52,7 @@ class LiderLine(CmaCgm):
         The process of processing each line.
         """
         if self.get_probability_of_header(row, list_columns) > coefficient_of_header:
-            self.check_errors_in_header(row, context)
+            self.check_errors_in_header(row, context, no_need_columns=["container_size_and_type"])
         elif self.is_table_starting(row):
             self.get_content_in_table(row, rows, index, list_data, context)
         elif "английское" in row and "класс опасности / ООН" in row:
