@@ -26,7 +26,7 @@ class DataBase:
         items = {}
         line_unified_query: QueryResult = self.client.query(
             f"SELECT * FROM reference_lines where line_unified in ('REEL SHIPPING', 'ARKAS',"
-            f" 'MSC', 'SINOKOR', 'HEUNG-A LINE', 'SAFETRANS')")
+            f" 'MSC', 'SINOKOR', 'HEUNG-A LINE', 'SAFETRANS','VUXX SHIPPING')")
         line_unified = line_unified_query.result_rows
         for data in line_unified:
             key, value = data[1], data[0]

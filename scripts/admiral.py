@@ -17,7 +17,7 @@ class Singleton(object):
         return cls._instance
 
 
-LIST_LINES = ['arkas', 'msc', 'sinokor', 'reel_shipping', 'safetrans']
+LIST_LINES = ['arkas', 'msc', 'sinokor', 'reel_shipping', 'safetrans','vuxx_shipping']
 
 
 class Admiral(Singleton, BaseLine):

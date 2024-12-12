@@ -1,6 +1,7 @@
 import json
 import time
 import sys
+import re
 from __init__ import *
 from database import DataBase
 from typing import Optional
@@ -34,10 +35,22 @@ class Parsed:
             'direction': 'import',
         }
 
+    def get_vuxx_response(self, body, row):
+        vuxx_list = list(filter(None, re.split(r",|\s", row['consignment'])))
+        if len(vuxx_list) >= 1:
+            for consignment in vuxx_list:
+                body['consignment'] = consignment
+                response = requests.post(self.url, data=json.dumps(body), headers=self.headers, timeout=120)
+                response.raise_for_status()
+                if response.json():
+                    return response.json()
+
     def get_result(self, row, line):
         body = self.body(row, line)
-        body = json.dumps(body)
         try:
+            if body['line'] == 'VUXX SHIPPING':
+                return self.get_vuxx_response(body, row)
+            body = json.dumps(body)
             self.logging.info(f'Отправка запроса в микро-сервис по {body}')
             answer = requests.post(self.url, data=body, headers=self.headers, timeout=120)
             self.logging.info(f'Получен ответ по запросу {body}')
@@ -95,20 +108,34 @@ class ParsedDf:
             'direction': self.get_direction(row.get('direction', 'not')),
         }
 
-    def get_port_with_recursion(self, number_attempts: int, row) -> Optional[str]:
+    def get_vuxx_response(self, body, row):
+        vuxx_list = list(filter(None, re.split(r",|\s", row['consignment'])))
+        if len(vuxx_list) >= 1:
+            for consignment in vuxx_list:
+                body['consignment'] = consignment
+                response = requests.post(self.url, data=json.dumps(body), headers=self.headers, timeout=120)
+                response.raise_for_status()
+                if response.json():
+                    return response.json()
+
+    def get_port_with_recursion(self, number_attempts: int, row, consignment) -> Optional[str]:
         if number_attempts == 0:
             return None
         try:
-            body = self.body(row)
-            body = json.dumps(body)
-            response = requests.post(self.url, data=body, headers=self.headers, timeout=120)
-            response.raise_for_status()
-            return response.json()
+            body = self.body(row, consignment)
+            if body['line'] == 'VUXX SHIPPING':
+                return self.get_vuxx_response(body, row)
+
+            else:
+                body = json.dumps(body)
+                response = requests.post(self.url, data=body, headers=self.headers, timeout=120)
+                response.raise_for_status()
+                return response.json()
         except Exception as ex:
             self.logging.error(f"Exception is {ex}")
             time.sleep(30)
             number_attempts -= 1
-            self.get_port_with_recursion(number_attempts, row)
+            self.get_port_with_recursion(number_attempts, row, consignment)
 
     def get_port(self):
         self.add_new_columns()
