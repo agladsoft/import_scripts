@@ -118,11 +118,11 @@ class ParsedDf:
                 if response.json():
                     return response.json()
 
-    def get_port_with_recursion(self, number_attempts: int, row, consignment) -> Optional[str]:
+    def get_port_with_recursion(self, number_attempts: int, row) -> Optional[str]:
         if number_attempts == 0:
             return None
         try:
-            body = self.body(row, consignment)
+            body = self.body(row)
             if body['line'] == 'VUXX SHIPPING':
                 return self.get_vuxx_response(body, row)
 
@@ -135,7 +135,7 @@ class ParsedDf:
             self.logging.error(f"Exception is {ex}")
             time.sleep(30)
             number_attempts -= 1
-            self.get_port_with_recursion(number_attempts, row, consignment)
+            self.get_port_with_recursion(number_attempts, row)
 
     def get_port(self):
         self.add_new_columns()
