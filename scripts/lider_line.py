@@ -52,7 +52,7 @@ class LiderLine(CmaCgm):
         The process of processing each line.
         """
         if self.get_probability_of_header(row, list_columns) > coefficient_of_header:
-            self.check_errors_in_header(row, context, no_need_columns=["container_size_and_type"])
+            self.check_errors_in_header(row, context)
         elif self.is_table_starting(row):
             self.get_content_in_table(row, rows, index, list_data, context)
         elif "английское" in row and "класс опасности / ООН" in row:
