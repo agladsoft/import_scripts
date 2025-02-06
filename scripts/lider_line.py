@@ -52,7 +52,7 @@ class LiderLine(CmaCgm):
         The process of processing each line.
         """
         if self.get_probability_of_header(row, list_columns) > coefficient_of_header:
-            self.check_errors_in_header(row, context)
+            self.check_errors_in_header(row, context, no_need_columns=["container_size_and_type"])
         elif self.is_table_starting(row):
             self.get_content_in_table(row, rows, index, list_data, context)
         elif "английское" in row and "класс опасности / ООН" in row:
@@ -86,7 +86,7 @@ if __name__ == '__main__':
     parsed_data: LiderLine = LiderLine(os.path.abspath(sys.argv[1]), sys.argv[2], __file__)
     try:
         print(parsed_data.main())
-    except (ValueError, ImportError, IndexError, SyntaxError, TypeError, AttributeError) as ex:
+    except (ValueError, ImportError, IndexError, SyntaxError, TypeError, AttributeError,KeyError) as ex:
         print("6", file=sys.stderr)
         telegram(f'Ошибка {ex} при обработке файла {parsed_data.input_file_path}')
         sys.exit(6)
