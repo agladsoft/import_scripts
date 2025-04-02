@@ -60,7 +60,7 @@ class LiderLine(CmaCgm):
         elif "русское" in row and "английское" not in row:
             self.change_index_of_column(8, 9, 10, 12, 13, 14, 15)
         elif "Страна" in row:
-            self.change_index_of_column(9, 10, 11, 13, 14, 15, 16)
+            self.change_index_of_column(9, 10, 11, 13, 14, 16, 17)
         else:
             self.get_content_before_table(row, context, LIST_MONTH)
 
