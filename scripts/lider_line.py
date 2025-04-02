@@ -19,7 +19,7 @@ class LiderLine(CmaCgm):
         "tracking_country": 14,
         "consignee_name": 15,
         "consignment": 11,
-        "city": 16
+        "city": 16,
     }
 
     def check_errors_in_header(self, row: list, context: dict, no_need_columns: list = None) -> None:
@@ -59,6 +59,8 @@ class LiderLine(CmaCgm):
             self.change_index_of_column(10, 11, 12, 14, 15, 16, 17)
         elif "русское" in row and "английское" not in row:
             self.change_index_of_column(8, 9, 10, 12, 13, 14, 15)
+        elif "Страна" in row:
+            self.change_index_of_column(9, 10, 11, 13, 14, 15, 16)
         else:
             self.get_content_before_table(row, context, LIST_MONTH)
 
