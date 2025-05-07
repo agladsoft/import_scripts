@@ -12,7 +12,7 @@ from clickhouse_connect.driver.query import QueryResult
 from logging import Logger, getLogger, INFO, FileHandler
 
 
-# XL_IDP_ROOT = '/home/uventus/PycharmProjects/New_Proect/ruscon/docker_project/import_scripts/scripts/None'
+os.environ['XL_IDP_ROOT'] = os.path.dirname(os.path.dirname(__file__))
 
 def write_log(line_file: str) -> Logger:
     full_dir_name_logging: str = f'{os.environ.get("XL_IDP_ROOT")}/logging'

@@ -1,5 +1,7 @@
 import re
 import sys
+import time
+import requests
 from __init__ import *
 from typing import Union
 from parsed import Parsed
@@ -266,12 +268,30 @@ class Admiral(Singleton, BaseLine):
             self.logger_write.info('Все данные по порту получены')
             self.get_seaport_from_shipper(seaport_empty_containers, list_data)
 
+    def send_metrics(self, start_time: time, original_file_name: str, original_file_index: int, router: str) -> None:
+        """
+        Send metrics using GET request
+        """
+        try:
+            processing_time: time = time.time() - start_time
+            params: dict = {
+                "script_name": self.line_file,
+                "file_name": original_file_name,
+                "rows": original_file_index,
+                "processing_time": processing_time
+            }
+            response: requests.Response = requests.post(f"http://84.201.143.187:8090/{router}/", json=params)
+            response.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            self.logger_write.error(f"Failed to send metrics: {e}")
+
     def main(self, is_need_duplicate_containers: bool = True, is_reversed: bool = False, sign: str = '',
              coefficient_of_header: int = 30) -> int:
         """
         Complete processing of the file. As well as deleting empty columns, rows and filling repeating containers
         with data, followed by saving the file in json.
         """
+        start_time: time = time.time()
         file_name_save: str = self.remove_empty_columns_and_rows()
         list_data: List[dict] = self.__get_content_from_file(file_name_save, coefficient_of_header)
         if is_need_duplicate_containers:
@@ -280,7 +300,9 @@ class Admiral(Singleton, BaseLine):
         self.get_seaport_from_website(list_data)
         list_data = self.convert_city_and_consignment(list_data)
         self.write_data_in_file(list_data)
-        return len(self.count_unique_containers(list_data))
+        rows_count: int = len(self.count_unique_containers(list_data))
+        self.send_metrics(start_time, os.path.basename(self.input_file_path), rows_count, router="track-file")
+        return rows_count
 
 
 if __name__ == '__main__':
