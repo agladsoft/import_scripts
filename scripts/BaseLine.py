@@ -93,7 +93,7 @@ class BaseLine:
             parsed_record['container_number'] = re.findall(r"\w{4}\d{7}", container_number)[0]
         except IndexError:
             parsed_record['container_number'] = container_number
-        parsed_record["goods_weight_with_package"] = float(re.sub(" +", "", row[ir_weight_goods]).replace(',', '.')) if \
+        parsed_record["goods_weight_with_package"] = float(re.sub(" +", "", row[ir_weight_goods]).replace(',', '.').replace('\xa0', '')) if \
             row[
                 ir_weight_goods] else None
         parsed_record['package_number'] = int(float(re.sub(" +", "", row[ir_package_number]))) \

@@ -16,7 +16,7 @@ class Fesco(Economou):
         """
         Method inheritance from Economou.
         """
-        Economou.parse_ship_and_voyage(self, parsing_row, row, column, context, key)
+        Admiral.parse_ship_and_voyage(self, parsing_row, row, column, context, key)
 
     def is_table_starting(self, row: list) -> bool:
         """
@@ -29,6 +29,10 @@ class Fesco(Economou):
         Method inheritance from Admiral.
         """
         Admiral.add_frequently_changing_keys(self, row, parsed_record)
+
+    def parse_date(self, parsing_row: str, month_list: list, context: dict, row: list):
+        """"""
+        Admiral.parse_date(self, parsing_row, month_list, context, row)
 
 
 if __name__ == '__main__':
