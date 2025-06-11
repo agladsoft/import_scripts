@@ -2,8 +2,8 @@ import os
 import re
 import sys
 
-from .admiral import Admiral, telegram
-from .arkas import Arkas
+from admiral import Admiral, telegram
+from arkas import Arkas
 
 
 class MLineAdmiral(Admiral):
