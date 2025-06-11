@@ -40,3 +40,4 @@ ${XL_IDP_ROOT}/bash_dir/line_econship.sh
 ${XL_IDP_ROOT}/bash_dir/line_major_cargo_service.sh
 ${XL_IDP_ROOT}/bash_dir/line_vuxx_shipping.sh
 ${XL_IDP_ROOT}/bash_dir/line_mohill.sh
+${XL_IDP_ROOT}/bash_dir/line_m_line.sh

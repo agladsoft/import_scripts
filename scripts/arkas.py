@@ -66,9 +66,13 @@ class Arkas(AkkonLines):
             elif re.findall(r'\d{1,2}[.]\d{1,2}[.]\d{2,4}', parsing_row):
                 self.parse_date_format_russia(self.remove_keys_in_data(parsing_row), context)
                 break
+            elif re.findall(r'\d{1,2}[/]\d{1,2}[/]\d{2,4}', parsing_row):
+                self.parse_date_format_russia(self.remove_keys_in_data(parsing_row), context)
+                break
             elif re.findall(r'[0-9]', parsing_row):
                 context["shipment_date"] = self.convert_xlsx_datetime_to_date(float(parsing_row))
                 break
+
         self.logger_write.info(f"context now is {context}")
 
     def parse_ship_and_voyage(self, parsing_row: str, row: list, column: str, context: dict, key: str,

@@ -82,7 +82,7 @@ DICT_HEADERS_COLUMN_ENG: Dict[Tuple, str] = {
         "consignee_name",
     ("Коносамент", "№ к/с", "№ Коносамента", "№коносамента", "Bill of Lading", "№ К/с", "Номер Коносамента"):
         "consignment",
-    ("Город", "Место доставки", "Отправитель Город", "Грузополучатель АДРЕС", "Грузополучатель адрес"):
+    ("Город", "Место доставки", "Отправитель Город", "Грузополучатель АДРЕС", "Грузополучатель адрес","Грузополучатель ГОРОД"):
         "city"
 }
 
@@ -98,11 +98,13 @@ DICT_CONTENT_BEFORE_TABLE: Dict[Tuple, str] = {
 
 DATE_FORMAT: tuple = (
     "%d.%m.%Y",
-    "%d.%m.%Y г."
+    "%d.%m.%Y г.",
+    "%d/%m/%Y"
+
 )
 
 LIST_LINE_CITY: List[str] = ['admiral', 'akkon_lines', 'c_star', 'sidra', 'safetrans', 'ucak_line', 'verim_uneti',
-                             'login', 'econship', 'major_cargo_service','lider_line','fesco']
+                             'login', 'econship', 'major_cargo_service','lider_line','fesco','m_line']
 
 
 def get_my_env_var(var_name: str) -> str:
