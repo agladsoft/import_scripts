@@ -2,8 +2,7 @@ import os
 import re
 import sys
 
-from scripts import telegram, DICT_CONTENT_BEFORE_TABLE
-from scripts.admiral import Admiral
+from scripts.admiral import Admiral, telegram
 from scripts.arkas import Arkas
 
 
