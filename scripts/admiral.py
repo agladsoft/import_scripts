@@ -42,6 +42,7 @@ class Admiral(Singleton, BaseLine):
         """
         self.logger_write.info(f"Will parse date in value {parsing_row.rsplit(':', 1)[1]}...")
         month: List[str] = parsing_row.rsplit(':', 1)[1].strip().split()
+        month[2] = month[2].replace('г', '').replace('.', '')
         month_digit: Union[None, int] = None
         if month[1] in month_list:
             month_digit = (month_list.index(month[1]) + 1) % 12
