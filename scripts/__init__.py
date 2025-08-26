@@ -118,7 +118,7 @@ class MissingEnvironmentVariable(Exception):
     pass
 
 
-def send_email_notifiers(message: str, subject: str = "Уведомление от системы экспорта"):
+def send_email_notifiers(message: str, subject: str = "Уведомление от системы импорта"):
     """
     Отправка email через Mail.ru
     """
