@@ -42,3 +42,4 @@ ${XL_IDP_ROOT}/bash_dir/line_vuxx_shipping.sh
 ${XL_IDP_ROOT}/bash_dir/line_mohill.sh
 ${XL_IDP_ROOT}/bash_dir/line_m_line.sh
 ${XL_IDP_ROOT}/bash_dir/line_eccl.sh
+${XL_IDP_ROOT}/bash_dir/line_siv_mena_line.sh
